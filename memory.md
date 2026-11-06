@@ -28,6 +28,7 @@ Core goals:
   - Preload script (`scripts/preload.js`) running in `<head>` to prevent Flash of Unstyled Content (FOUC).
   - Custom color picker setting CSS custom property accent colors.
   - Interactive transparency slider (`scripts/widgets-transparency.js`) controlling `--transparency` on widgets.
+  - **Glassmorphism System**: Native, hardware-accelerated frosted glass layer (`backdrop-filter: blur(...) saturate(...)`) with specular edge reflections, inner glows, and floating elevation across all widgets, sidebars, shortcuts, and modals in wallpaper mode. Adapts smoothly to light/dark themes and provides accessibility fallback for `prefers-reduced-transparency`.
 - **Clock Subsystem (`scripts/clock.js`)**:
   - Dual modes: Analog (smooth rotating hands) and Digital (12h/24h formats).
   - Contextual time-of-day greetings (Morning / Afternoon / Evening).
@@ -132,7 +133,7 @@ graph TD
 - **`scripts/background.js`**: Service worker listening for extension update events and registering uninstall survey URL.
 - **`locales/*.js`**: 32 standalone translation dictionary files.
 - **`docs/`**: Dual-purpose directory holding extension HTML pages (`whats-new.html`, `feedback.html`, `Get_WeatherAPI_Key.html`) and engineering documentation (`architecture.md`, `development.md`).
-- **`tests/`**: Automated test suite containing `manifest.test.js`, `locales.test.js`, `localization-helpers.test.js`, `security-helpers.test.js`, and `backup-validation.test.js`.
+- **`tests/`**: Automated test suite containing `manifest.test.js`, `locales.test.js`, `localization-helpers.test.js`, `security-helpers.test.js`, `backup-validation.test.js`, and `glassmorphism.test.js`.
 
 ---
 
@@ -155,7 +156,8 @@ All testing and validation commands use the host's native Node.js runtime:
 
 | Command | Purpose |
 |---|---|
-| `node --test` | Runs the full automated test suite (36 tests across 5 test suites). |
+| `node --test` | Runs the full automated test suite (41 tests across 6 test suites). |
+| `node --test tests/glassmorphism.test.js` | Validates glassmorphism tokens, component filters, and accessibility. |
 | `node --test tests/manifest.test.js` | Validates Manifest V3 schema, permissions, and file existence. |
 | `node --test tests/locales.test.js` | Validates all 32 locale dictionaries, syntax, and baseline keys. |
 | `node --test tests/localization-helpers.test.js` | Validates numeral localization, decimal commas, and RTL LRM markers. |

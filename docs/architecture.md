@@ -185,6 +185,15 @@ flowchart TD
     UrlCheck -- No --> Fallback[Fallback to Default Letter Icon]
 ```
 
+### 4.4 Glassmorphism System
+MYNT features a native, hardware-accelerated Glassmorphism layer implemented via CSS custom properties and multi-layer backdrop filters. When a custom wallpaper or interface transparency is enabled (`body[data-bg="wallpaper"]`), widgets transform into frosted translucent glass surfaces:
+
+- **Multi-stop Blur & Saturation**: Uses `backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate))` (with `-webkit-` vendor prefixes) across searchbar, weather cards, to-do list, bookmarks, AI launcher, and modals.
+- **Specular Edge Reflections**: Thin, light-catching borders (`var(--glass-border-color)`) and inner top glows (`var(--glass-specular)`) simulate light refracting through glass edges.
+- **Floating Elevation**: Soft ambient drop shadows (`var(--glass-shadow-lg)`) elevate translucent cards above complex wallpaper imagery.
+- **Theme Harmonization**: Specular borders and glows automatically soften under Dark and System Dark modes (`var(--glass-border-dark)`, `var(--glass-specular-dark)`) to prevent stark white outlines.
+- **Accessibility Fallback**: Honors `@media (prefers-reduced-transparency: reduce)` by disabling backdrop filters and rendering opaque backgrounds for enhanced contrast.
+
 ---
 
 ## 5. External Network Integrations

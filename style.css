@@ -141,6 +141,19 @@
 	--md-motion-decelerate: cubic-bezier(0, 0, 0.2, 1);
 	/* exiting: Slow start, fast end (Pushes out quickly at the end) */
 	--md-motion-accelerate: cubic-bezier(0.4, 0, 1, 1);
+
+	/* Glassmorphism Design Tokens */
+	--glass-blur-sm: 8px;
+	--glass-blur: 16px;
+	--glass-blur-lg: 24px;
+	--glass-saturate: 160%;
+	--glass-border-color: rgba(255, 255, 255, 0.22);
+	--glass-border-dark: rgba(255, 255, 255, 0.08);
+	--glass-specular: inset 0 1px 1px 0 rgba(255, 255, 255, 0.3);
+	--glass-specular-dark: inset 0 1px 1px 0 rgba(255, 255, 255, 0.1);
+	--glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.14);
+	--glass-shadow-lg: 0 14px 44px 0 rgba(0, 0, 0, 0.2);
+	--glass-shadow-dark: 0 12px 36px 0 rgba(0, 0, 0, 0.4);
 }
 
 /* Theme */
@@ -5863,3 +5876,200 @@ body[data-bg="wallpaper"] .dropdown-content {
 	color: var(--darkColor-dark);
 }
 /* ------------ End of Toast---------- */
+
+/* ==============================================================
+   Glassmorphism System — Material You Translucent Layers
+   Provides depth, frosted glass blur, specular reflections, and
+   harmonized contrast across widgets, sidebars, and dialog modals.
+   ============================================================== */
+
+/* Reusable Glass Utility Classes */
+.glass-panel,
+.glass-card {
+	backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-color);
+	box-shadow: var(--glass-shadow), var(--glass-specular);
+}
+
+/* --- Search Bar Glassmorphism --- */
+body[data-bg="wallpaper"] .searchbar {
+	backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-color);
+	box-shadow: var(--glass-shadow), var(--glass-specular);
+}
+
+/* --- Weather Widget Glassmorphism --- */
+body[data-bg="wallpaper"] .rightDiv .topDiv .lrectangle {
+	backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-color);
+	box-shadow: var(--glass-shadow), var(--glass-specular);
+}
+
+/* --- Search Suggestions & Engine Dropdown --- */
+body[data-bg="wallpaper"] .resultBox.show {
+	backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-color);
+	box-shadow: var(--glass-shadow-lg), var(--glass-specular);
+}
+
+body[data-bg="wallpaper"] .dropdown-content {
+	backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-color);
+	box-shadow: var(--glass-shadow);
+}
+
+/* --- Shortcuts Glassmorphic Floating Badges --- */
+body[data-bg="wallpaper"] .shortcutsContainer .shortcuts .shortcutLogoContainer {
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-color);
+	box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.16), var(--glass-specular);
+	transition: transform 0.25s var(--md-motion-ease), box-shadow 0.25s var(--md-motion-ease);
+}
+
+body[data-bg="wallpaper"] .shortcutsContainer .shortcuts .shortcutLogoContainer:hover {
+	box-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.22), var(--glass-specular);
+}
+
+/* --- Floating Quick Action Buttons --- */
+body[data-bg="wallpaper"] .dot-icon,
+body[data-bg="wallpaper"] .bookmark-button {
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-color);
+	box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.14), var(--glass-specular);
+}
+
+/* --- To-Do List Container --- */
+body[data-bg="wallpaper"] .todo-container {
+	backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-color);
+	box-shadow: var(--glass-shadow-lg), var(--glass-specular);
+}
+
+body[data-bg="wallpaper"] .todo-container .addTaskCont {
+	background-color: color-mix(in srgb, white 45%, transparent);
+	backdrop-filter: blur(var(--glass-blur-sm));
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm));
+	border: 1px solid var(--glass-border-color);
+}
+
+/* --- Bookmarks Sidebar --- */
+body[data-bg="wallpaper"] .bookmark-sidebar {
+	background-color: color-mix(
+		in srgb,
+		var(--accentLightTint-blue) calc(var(--transparency) + 5%),
+		transparent
+	);
+	backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate));
+	border-inline-start: 1px solid var(--glass-border-color);
+	box-shadow: var(--glass-shadow-lg);
+}
+
+body[data-bg="wallpaper"] .bookmark-sidebar-header {
+	background-color: color-mix(
+		in srgb,
+		var(--bg-color-blue) calc(var(--transparency) + 5%),
+		transparent
+	);
+	border-bottom: 1px solid var(--glass-border-color);
+}
+
+/* --- Google Apps Container --- */
+body[data-bg="wallpaper"] .icon-container {
+	backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-color);
+	box-shadow: var(--glass-shadow-lg), var(--glass-specular);
+}
+
+/* --- AI Tools Dock --- */
+body[data-bg="wallpaper"] .aiToolsCont .hangno {
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-color);
+	box-shadow: var(--glass-shadow), var(--glass-specular);
+}
+
+body[data-bg="wallpaper"] .aiToolsCont .toolsCont a {
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-color);
+}
+
+/* --- Dialog Modals in Wallpaper Mode --- */
+body[data-bg="wallpaper"] #prompt-modal-container,
+body[data-bg="wallpaper"] .ai-settings-modal,
+body[data-bg="wallpaper"] #editBookmarkModal {
+	background-color: color-mix(
+		in srgb,
+		var(--accentLightTint-blue) 85%,
+		transparent
+	);
+	backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-color);
+	box-shadow: var(--glass-shadow-lg), var(--glass-specular);
+}
+
+/* --- Slide-Out Settings Drawer --- */
+body[data-bg="wallpaper"] .menuBar .menuCont {
+	background-color: color-mix(
+		in srgb,
+		var(--accentLightTint-blue) calc(var(--transparency) + 5%),
+		transparent
+	);
+	backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate));
+	border-inline-start: 1px solid var(--glass-border-color);
+	box-shadow: var(--glass-shadow-lg);
+}
+
+/* --- Dark Theme Harmonization --- */
+.black-theme,
+html[data-preferred-theme="dark"],
+body[sysTheme="systemDark"] {
+	--glass-border-color: var(--glass-border-dark);
+	--glass-specular: var(--glass-specular-dark);
+	--glass-shadow: var(--glass-shadow-dark);
+	--glass-shadow-lg: var(--glass-shadow-dark);
+}
+
+body[data-bg="wallpaper"].black-theme .todo-container .addTaskCont,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .todo-container .addTaskCont,
+body[data-bg="wallpaper"][sysTheme="systemDark"] .todo-container .addTaskCont {
+	background-color: color-mix(in srgb, #2a2a2a 70%, transparent);
+}
+
+/* --- Accessibility: Reduced Transparency Support --- */
+@media (prefers-reduced-transparency: reduce) {
+	.glass-panel,
+	.glass-card,
+	body[data-bg="wallpaper"] .searchbar,
+	body[data-bg="wallpaper"] .rightDiv .topDiv .lrectangle,
+	body[data-bg="wallpaper"] .resultBox.show,
+	body[data-bg="wallpaper"] .dropdown-content,
+	body[data-bg="wallpaper"] .shortcutsContainer .shortcuts .shortcutLogoContainer,
+	body[data-bg="wallpaper"] .dot-icon,
+	body[data-bg="wallpaper"] .bookmark-button,
+	body[data-bg="wallpaper"] .todo-container,
+	body[data-bg="wallpaper"] .bookmark-sidebar,
+	body[data-bg="wallpaper"] .icon-container,
+	body[data-bg="wallpaper"] .aiToolsCont .hangno,
+	body[data-bg="wallpaper"] .aiToolsCont .toolsCont a,
+	body[data-bg="wallpaper"] #prompt-modal-container,
+	body[data-bg="wallpaper"] .ai-settings-modal,
+	body[data-bg="wallpaper"] #editBookmarkModal,
+	body[data-bg="wallpaper"] .menuBar .menuCont {
+		backdrop-filter: none !important;
+		-webkit-backdrop-filter: none !important;
+	}
+}
+
