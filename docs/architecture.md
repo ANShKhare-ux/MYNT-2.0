@@ -194,6 +194,15 @@ MYNT features a native, hardware-accelerated Glassmorphism layer implemented via
 - **Theme Harmonization**: Specular borders and glows automatically soften under Dark and System Dark modes (`var(--glass-border-dark)`, `var(--glass-specular-dark)`) to prevent stark white outlines.
 - **Accessibility Fallback**: Honors `@media (prefers-reduced-transparency: reduce)` by disabling backdrop filters and rendering opaque backgrounds for enhanced contrast.
 
+### 4.5 Search Subsystem and Google AI Mode Integration
+The search bar (`scripts/search.js`, `scripts/search-suggestions.js`, `scripts/voice-search.js`) provides unified multi-engine routing with first-class Google AI Mode support:
+
+- **Multi-Engine Switching**: 9 supported search engines with sn-indexed radio selection (`engine0` to `engine9`), dropdown swapping, and mouse-wheel/touch-swipe cycling.
+- **Google AI Mode Pill Button**: Styled as an authentic Material pill button matching Google's native AI search UI (`[Sparkle-Lens Icon] AI Mode`).
+- **Official Parameter Routing (`udm=50`)**: Submitting an AI search navigates to `https://www.google.com/search?q=${query}&udm=50` (or `https://www.google.com/search?udm=50` when empty) using Google's official User Display Mode parameter for AI Overviews.
+- **Contextual Visibility (`isGoogleSelected`)**: The AI Mode button dynamically appears when Google (`engine1`) or Default browser search (`engine0`) is selected, and automatically hides for third-party engines (DuckDuckGo, Bing, Brave, YouTube, Reddit, Quora).
+- **User Preference & Responsive Adaptation**: Honors user visibility preference via the Settings drawer toggle (`localStorage.aiModeIconVisible`). On small screens (`<= 500px`), the text label collapses to a compact icon button to maintain search bar geometry.
+
 ---
 
 ## 5. External Network Integrations

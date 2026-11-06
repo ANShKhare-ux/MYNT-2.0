@@ -266,12 +266,12 @@ enterBTN.addEventListener("click", () => performSearch());
 // Enter key handling is managed in the search suggestions keydown listener
 
 // Function to perform Google AI Mode search
-function performAISearch() {
-    const searchTerm = searchInput.value.trim();
+function performAISearch(query) {
+    const searchTerm = (typeof query === "string" ? query : searchInput.value).trim();
     if (searchTerm !== "") {
-        window.location.href = "https://www.google.com/ai?q=" + encodeURIComponent(searchTerm);
+        window.location.href = `https://www.google.com/search?q=${encodeURIComponent(searchTerm)}&udm=50`;
     } else {
-        window.location.href = "https://www.google.com/ai";
+        window.location.href = "https://www.google.com/search?udm=50";
     }
 }
 
@@ -296,9 +296,13 @@ if (aiModeIcon) {
 // AI Mode Icon visibility control
 function isGoogleSelected() {
     const selectedRadio = document.querySelector('input[name="search-engine"]:checked');
-    if (!selectedRadio) return false;
-    const value = selectedRadio.value;
-    return value === "engine1";
+    if (selectedRadio) {
+        return selectedRadio.value === "engine1" || selectedRadio.value === "engine0";
+    }
+    const defaultDropdown = document.getElementById("default-dropdown");
+    const engineSn = defaultDropdown ? defaultDropdown.getAttribute("data-engine") : null;
+    const engineName = defaultDropdown ? defaultDropdown.getAttribute("data-engine-name") : null;
+    return engineSn === "1" || engineSn === "0" || engineName === "google" || engineName === "default";
 }
 
 function updateAiModeIconVisibility() {
@@ -309,7 +313,7 @@ function updateAiModeIconVisibility() {
 
     if (aiModeIcon) {
         aiModeIcon.classList.toggle("hidden", !shouldShow);
-        aiModeIcon.style.display = ""; 
+        aiModeIcon.style.display = shouldShow ? "inline-flex" : "none";
         
         if (!shouldShow) {
             aiModeIcon.setAttribute("tabindex", "-1");
@@ -416,6 +420,7 @@ document.querySelector(".dropdown").addEventListener("keydown", function (event)
             sortDropdown();
 
             localStorage.setItem("selectedSearchEngine", radioButton.value);
+            updateAiModeIconVisibility();
 
             // Close the dropdown after selection
             dropdown.classList.remove("show");
@@ -484,6 +489,7 @@ hideSearchWith.addEventListener("change", (e) => {
 
     swapDropdown(selector);
     sortDropdown();
+    updateAiModeIconVisibility();
 });
 
 // Intialize shortcut switch
@@ -566,6 +572,7 @@ function switchEngine(direction) {
         // Update the search mode hint text
         const newCategory = radioButton.parentElement.dataset.category;
         toggleSearchEngines(newCategory);
+        updateAiModeIconVisibility();
     }, 180);
 
     // Remove transition class after animation

@@ -39,6 +39,7 @@ Core goals:
   - Temperature display in Celsius (°C) and Fahrenheit (°F), humidity, condition text, and min/max metrics.
 - **Search & Suggestions (`scripts/search.js`, `scripts/search-suggestions.js`, `scripts/voice-search.js`)**:
   - 9 search engines supported: Google, DuckDuckGo, Bing, Brave, YouTube, Google Images, Reddit, Wikipedia, Quora.
+  - **Google AI Search Mode**: Interactive Material pill button (`[Sparkle-Lens Icon] AI Mode`) in `.searchControls`. Directs queries to Google AI Search via official parameter `udm=50` (`https://www.google.com/search?q=${query}&udm=50` or `https://www.google.com/search?udm=50`). Automatically displays for Google (`engine1`) and Default browser engine (`engine0`), while dynamically hiding for non-Google engines.
   - Dynamic autocomplete suggestions routed through a dedicated proxy (`https://mynt-proxy.rhythmcorehq.com/proxy?url=`) or user-configured proxy.
   - Speech-to-text voice search using the Web Speech API on supported Chromium browsers.
 - **Shortcuts & AI Launchers (`scripts/shortcuts.js`, `scripts/ai-tools.js`)**:
@@ -133,7 +134,7 @@ graph TD
 - **`scripts/background.js`**: Service worker listening for extension update events and registering uninstall survey URL.
 - **`locales/*.js`**: 32 standalone translation dictionary files.
 - **`docs/`**: Dual-purpose directory holding extension HTML pages (`whats-new.html`, `feedback.html`, `Get_WeatherAPI_Key.html`) and engineering documentation (`architecture.md`, `development.md`).
-- **`tests/`**: Automated test suite containing `manifest.test.js`, `locales.test.js`, `localization-helpers.test.js`, `security-helpers.test.js`, `backup-validation.test.js`, and `glassmorphism.test.js`.
+- **`tests/`**: Automated test suite containing `manifest.test.js`, `locales.test.js`, `localization-helpers.test.js`, `security-helpers.test.js`, `backup-validation.test.js`, `glassmorphism.test.js`, and `ai-search-mode.test.js`.
 
 ---
 
@@ -156,7 +157,8 @@ All testing and validation commands use the host's native Node.js runtime:
 
 | Command | Purpose |
 |---|---|
-| `node --test` | Runs the full automated test suite (41 tests across 6 test suites). |
+| `node --test` | Runs the full automated test suite (47 tests across 7 test suites). |
+| `node --test tests/ai-search-mode.test.js` | Validates Google AI Mode pill button, udm=50 search synthesis, engine filtering, and styles. |
 | `node --test tests/glassmorphism.test.js` | Validates glassmorphism tokens, component filters, and accessibility. |
 | `node --test tests/manifest.test.js` | Validates Manifest V3 schema, permissions, and file existence. |
 | `node --test tests/locales.test.js` | Validates all 32 locale dictionaries, syntax, and baseline keys. |

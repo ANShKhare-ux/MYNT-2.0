@@ -2096,8 +2096,7 @@ body[data-bg="wallpaper"] #searchQ::placeholder {
 
 /* --------- .micIcon------------- */
 
-.micIcon,
-.aiModeIcon {
+.micIcon {
 	width: 40px;
 	height: 40px;
 	margin-inline-end: 10px;
@@ -2164,84 +2163,132 @@ body[data-bg="wallpaper"] .micIcon {
 
 /* ---------End of .micIcon------------- */
 
-/* --------- .aiModeIcon------------- */
+/* --------- .aiModeIcon (Google AI Mode Pill Button) ------------- */
 
 .aiModeIcon {
-	padding: 6px;
-	background-color: transparent;
-	border: none;
-	opacity: 1;
-	transform: scale(1);
-	transform-origin: center center;
-	transition:
-		width 0.35s var(--md-motion-decelerate),
-		margin-inline-end 0.35s var(--md-motion-decelerate),
-		padding 0.35s var(--md-motion-decelerate),
-		opacity 0.3s var(--md-motion-decelerate) 0.05s,
-		transform 0.35s var(--md-motion-decelerate),
-		background-color 0.2s var(--md-motion-ease);
-}
-
-.aiModeIcon::before {
-	content: "";
-	position: absolute;
-	inset: 0;
-	border-radius: 50%;
+	height: 40px;
+	border-radius: 100px;
+	padding-inline-start: 12px;
+	padding-inline-end: 16px;
+	padding-block: 0;
+	margin-inline-end: 10px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 7px;
+	cursor: pointer;
+	border: 1px solid rgba(0, 0, 0, 0.1);
 	background-color: var(--whitishColor-blue);
-	z-index: 0;
-	transform: scale(1);
-	transform-origin: center center;
+	color: var(--darkColor-blue);
+	font-family: inherit;
+	box-sizing: border-box;
+	user-select: none;
+	position: relative;
+	outline: none;
 	transition:
-		transform 0.3s var(--md-motion-ease),
-		background-color 0.3s var(--md-motion-ease);
+		background-color 0.2s var(--md-motion-ease),
+		border-color 0.2s var(--md-motion-ease),
+		color 0.2s var(--md-motion-ease),
+		transform 0.15s ease,
+		box-shadow 0.2s ease;
 }
 
-.aiModeIcon.hidden {
-	width: 0;
-	margin-inline-end: 0;
-	padding: 0;
-	opacity: 0;
-	transform: scale(0.5);
-	pointer-events: none;
-	transition:
-		opacity 0.15s var(--md-motion-accelerate),
-		transform 0.2s var(--md-motion-accelerate),
-		width 0.3s var(--md-motion-accelerate) 0.1s,
-		margin-inline-end 0.3s var(--md-motion-accelerate) 0.1s,
-		padding 0.3s var(--md-motion-accelerate) 0.1s,
-		background-color 0.2s var(--md-motion-ease);
+.aiModeIcon:hover {
+	transform: translateY(-1px);
+	background-color: color-mix(
+		in srgb,
+		var(--whitishColor-blue) 85%,
+		var(--darkColor-blue)
+	);
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.aiModeIcon:active {
+	transform: scale(0.96);
+}
+
+.aiModeIcon:focus-visible {
+	outline: 2px solid var(--darkColor-blue);
+	outline-offset: 2px;
 }
 
 .aiModeIcon svg {
+	width: 20px;
+	height: 20px;
 	flex-shrink: 0;
-	min-width: 24px;
-	position: relative;
-	z-index: 1;
+	display: block;
 }
 
-body[data-bg="wallpaper"] .aiModeIcon::before {
+.aiModeIcon svg path {
+	fill: currentColor;
+	transition: fill 0.2s ease;
+}
+
+.aiModeIcon .aiModeText {
+	font-size: 0.95rem;
+	font-weight: 500;
+	line-height: 1;
+	letter-spacing: 0.01em;
+	white-space: nowrap;
+	color: inherit;
+}
+
+.aiModeIcon.hidden {
+	display: none !important;
+}
+
+/* Dark theme AI Mode pill styling matching Google dark surface */
+.black-theme .aiModeIcon,
+html[data-preferred-theme="dark"] .aiModeIcon,
+html:has(body[sysTheme="systemDark"] .themeSegment[data-active="system"]) .aiModeIcon {
+	background-color: #303134;
+	border-color: rgba(255, 255, 255, 0.15);
+	color: #e8eaed;
+}
+
+.black-theme .aiModeIcon:hover,
+html[data-preferred-theme="dark"] .aiModeIcon:hover,
+html:has(body[sysTheme="systemDark"] .themeSegment[data-active="system"]) .aiModeIcon:hover {
+	background-color: #3c4043;
+	border-color: rgba(255, 255, 255, 0.25);
+	color: #ffffff;
+}
+
+/* Wallpaper mode: Glassmorphic Frosted Pill Button */
+body[data-bg="wallpaper"] .aiModeIcon {
 	background-color: color-mix(
 		in srgb,
 		var(--whitishColor-blue) calc(var(--transparency) * 2),
 		transparent
 	);
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-subtle);
+	box-shadow: var(--glass-shadow-sm);
+	color: var(--darkColor-blue);
 }
 
-.black-theme body[data-bg="wallpaper"] .aiModeIcon::before {
-	background-color: var(--whitishColor-dark);
-}
-
-.aiModeIcon:not(.hidden):hover::before {
-	transform: scale(1.1);
+body[data-bg="wallpaper"] .aiModeIcon:hover {
 	background-color: color-mix(
 		in srgb,
 		var(--whitishColor-blue) calc(var(--transparency) * 3),
 		transparent
 	);
+	border-color: var(--glass-border-base);
 }
 
-.aiModeIcon:not(.hidden):active::before {
-	transform: scale(0.95);
+.black-theme body[data-bg="wallpaper"] .aiModeIcon,
+body[data-bg="wallpaper"][sysTheme="systemDark"] .aiModeIcon {
+	background-color: rgba(48, 49, 52, 0.75);
+	border-color: rgba(255, 255, 255, 0.18);
+	color: #e8eaed;
+}
+
+.black-theme body[data-bg="wallpaper"] .aiModeIcon:hover,
+body[data-bg="wallpaper"][sysTheme="systemDark"] .aiModeIcon:hover {
+	background-color: rgba(60, 64, 67, 0.88);
+	border-color: rgba(255, 255, 255, 0.28);
+	color: #ffffff;
 }
 
 .theme-transition .aiModeIcon {
@@ -4896,6 +4943,14 @@ body[data-bg="wallpaper"] .dropdown-content {
 		padding-inline-end: 0;
 	}
 	#enterBtn {
+		display: none;
+	}
+	.aiModeIcon {
+		padding-inline-start: 10px;
+		padding-inline-end: 10px;
+		margin-inline-end: 6px;
+	}
+	.aiModeIcon .aiModeText {
 		display: none;
 	}
 	#shortcuts-section {
