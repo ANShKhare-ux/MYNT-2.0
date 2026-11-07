@@ -204,4 +204,44 @@ test('Glassmorphism System Design and Implementation', async (t) => {
             'Must provide dark mode glass styling for color swatches'
         );
     });
+
+    await t.test('shortcuts and menu button adhere to active color theme in wallpaper mode and dark theme', () => {
+        // Must use active theme variable (--darkColor-blue) for shortcuts
+        assert.ok(
+            cssContent.includes('body[data-bg="wallpaper"] .shortcutsContainer .shortcuts .shortcutLogoContainer') &&
+            cssContent.includes('var(--darkColor-blue)'),
+            'Shortcut badge containers must follow active theme color var(--darkColor-blue)'
+        );
+
+        // Dark theme must retain theme color, not hardcoded greys
+        assert.ok(
+            cssContent.includes('.black-theme body[data-bg="wallpaper"] .shortcutsContainer .shortcuts .shortcutLogoContainer') &&
+            cssContent.includes('var(--darkColor-blue)'),
+            'Dark theme wallpaper shortcuts must retain active theme color'
+        );
+
+        // Preset SVGs must be tinted with theme color and have white icon paths
+        assert.ok(
+            cssContent.includes('body[data-bg="wallpaper"] #shortcuts-section .accentColor') &&
+            cssContent.includes('var(--darkColor-blue)'),
+            'Preset SVG circles must follow active theme color'
+        );
+        assert.ok(
+            cssContent.includes('body[data-bg="wallpaper"] #shortcuts-section #darkLightTint') &&
+            cssContent.includes('fill: #ffffff !important'),
+            'Preset SVG icons must remain crisp white against theme-colored badges'
+        );
+
+        // Menu button must use theme colors in both light and dark wallpaper modes
+        assert.ok(
+            cssContent.includes('body[data-bg="wallpaper"] #menuButton') &&
+            cssContent.includes('var(--darkColor-blue)'),
+            '#menuButton must use active theme color in wallpaper mode'
+        );
+        assert.ok(
+            cssContent.includes('.black-theme body[data-bg="wallpaper"] #menuButton') &&
+            cssContent.includes('var(--darkColor-blue)'),
+            '#menuButton must retain active theme color in dark theme wallpaper mode'
+        );
+    });
 });
