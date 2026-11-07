@@ -4468,8 +4468,7 @@ option:checked {
 
 .randomButton,
 .videoButton,
-.switchMediaButton,
-.videoPlayPauseButton {
+.switchMediaButton {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -4506,8 +4505,7 @@ option:checked {
 .uploadButton:hover,
 .randomButton:hover,
 .videoButton:hover,
-.switchMediaButton:hover,
-.videoPlayPauseButton:hover {
+.switchMediaButton:hover {
 	background-color: var(--darkColor-blue);
 	color: var(--whitishColor-blue);
 	transform: translateY(-1px);
@@ -4516,8 +4514,7 @@ option:checked {
 .uploadButton:active,
 .randomButton:active,
 .videoButton:active,
-.switchMediaButton:active,
-.videoPlayPauseButton:active {
+.switchMediaButton:active {
 	background-color: var(--darkerColor-blue);
 	transform: translateY(0);
 }
@@ -5468,8 +5465,7 @@ body[data-bg="wallpaper"] .dropdown-content {
 .black-theme .uploadButton,
 .black-theme .randomButton,
 .black-theme .videoButton,
-.black-theme .switchMediaButton,
-.black-theme .videoPlayPauseButton {
+.black-theme .switchMediaButton {
 	background-color: var(--darkColor-blue);
 	color: var(--whitishColor-dark);
 }
@@ -5496,7 +5492,6 @@ body[data-bg="wallpaper"] .dropdown-content {
 .black-theme .randomButton:hover,
 .black-theme .videoButton:hover,
 .black-theme .switchMediaButton:hover,
-.black-theme .videoPlayPauseButton:hover,
 .black-theme #todoAdd:hover {
 	background-color: var(--bg-color-dark);
 }
@@ -5505,7 +5500,6 @@ body[data-bg="wallpaper"] .dropdown-content {
 .black-theme .randomButton:active,
 .black-theme .videoButton:active,
 .black-theme .switchMediaButton:active,
-.black-theme .videoPlayPauseButton:active,
 .black-theme .backupRestoreBtn:active,
 .black-theme .resetbtn:active {
 	background-color: #0e0e0e;
@@ -6500,6 +6494,281 @@ body[data-bg="wallpaper"] .shortcutSettingsEntry {
 	box-shadow: var(--glass-shadow-sm);
 }
 
+/* ==============================================================
+   Glassmorphic Buttons & Interactive Controls (Wallpaper Mode)
+   Transforms all buttons into frosted translucent glass with specular
+   edges, depth shadows, and harmonized hover transitions.
+   ============================================================== */
+
+/* Wallpaper Action Buttons (.uploadButton, .randomButton, .videoButton, .switchMediaButton) */
+body[data-bg="wallpaper"] .uploadButton,
+body[data-bg="wallpaper"] .randomButton,
+body[data-bg="wallpaper"] .videoButton,
+body[data-bg="wallpaper"] .switchMediaButton {
+	background-color: color-mix(
+		in srgb,
+		var(--whitishColor-blue) calc(var(--transparency) * 1.5),
+		rgba(255, 255, 255, 0.45)
+	);
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-subtle);
+	box-shadow: var(--glass-specular), var(--glass-shadow-sm);
+	color: var(--darkColor-blue);
+	transition: background-color 0.25s ease, transform 0.15s ease, border-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
+}
+
+body[data-bg="wallpaper"] .uploadButton:hover,
+body[data-bg="wallpaper"] .randomButton:hover,
+body[data-bg="wallpaper"] .videoButton:hover,
+body[data-bg="wallpaper"] .switchMediaButton:hover {
+	background-color: var(--darkColor-blue);
+	color: var(--whitishColor-blue);
+	border-color: var(--glass-border-base);
+	transform: translateY(-1px);
+	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16), var(--glass-specular);
+}
+
+body[data-bg="wallpaper"] .uploadButton:active,
+body[data-bg="wallpaper"] .randomButton:active,
+body[data-bg="wallpaper"] .videoButton:active,
+body[data-bg="wallpaper"] .switchMediaButton:active {
+	transform: translateY(0);
+}
+
+/* Clear Background Button */
+body[data-bg="wallpaper"] .clearButton {
+	background-color: color-mix(
+		in srgb,
+		var(--darkColor-blue) 75%,
+		rgba(0, 0, 0, 0.25)
+	);
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-subtle);
+	box-shadow: var(--glass-specular), var(--glass-shadow-sm);
+	color: var(--whitishColor-blue);
+	transition: background-color 0.25s ease, transform 0.15s ease, border-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
+}
+
+body[data-bg="wallpaper"] .clearButton:hover {
+	background-color: color-mix(
+		in srgb,
+		var(--darkerColor-blue) 90%,
+		rgba(0, 0, 0, 0.4)
+	);
+	color: #ffffff;
+	border-color: var(--glass-border-base);
+	transform: translateY(-1px);
+	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22), var(--glass-specular);
+}
+
+body[data-bg="wallpaper"] .clearButton:active {
+	transform: translateY(0);
+}
+
+/* Theme Segment Controls & Indicator */
+body[data-bg="wallpaper"] .themeSegment {
+	background-color: color-mix(
+		in srgb,
+		var(--accentLightTint-blue) calc(var(--transparency) * 1.2),
+		rgba(0, 0, 0, 0.08)
+	);
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-subtle);
+	box-shadow: var(--glass-shadow-sm);
+}
+
+body[data-bg="wallpaper"] .themeIndicator {
+	background: color-mix(in srgb, white 70%, transparent);
+	backdrop-filter: blur(var(--glass-blur-sm));
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm));
+	border: 1px solid var(--glass-border-subtle);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), var(--glass-specular);
+}
+
+/* Color Palette Buttons & Containers */
+body[data-bg="wallpaper"] .themingStuff .btn,
+body[data-bg="wallpaper"] .languageIcon {
+	background-color: color-mix(
+		in srgb,
+		var(--whitishColor-blue) calc(var(--transparency) * 1.5),
+		rgba(255, 255, 255, 0.45)
+	);
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-subtle);
+	box-shadow: var(--glass-specular), var(--glass-shadow-sm);
+}
+
+body[data-bg="wallpaper"] .colorsContainer {
+	background-color: color-mix(
+		in srgb,
+		white calc(var(--transparency) * 1.4),
+		rgba(255, 255, 255, 0.45)
+	);
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-subtle);
+	box-shadow: var(--glass-specular), 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+body[data-bg="wallpaper"] .colorPickerLabel {
+	background-color: color-mix(
+		in srgb,
+		var(--accentLightTint-blue) 65%,
+		transparent
+	);
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-subtle);
+	box-shadow: var(--glass-shadow-sm);
+	color: var(--textColorDark-blue);
+}
+
+body[data-bg="wallpaper"] .colorPickerLabel:hover {
+	background-color: color-mix(
+		in srgb,
+		var(--darkColor-blue) 85%,
+		transparent
+	);
+	color: #ffffff;
+	border-color: var(--glass-border-base);
+}
+
+/* Opacity Slider Pill */
+body[data-bg="wallpaper"] .opacitySlider {
+	background-color: color-mix(
+		in srgb,
+		var(--darkColor-blue) 80%,
+		rgba(0, 0, 0, 0.22)
+	);
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-subtle);
+	box-shadow: var(--glass-specular), var(--glass-shadow-sm);
+}
+
+/* Search Bar & Task Buttons */
+body[data-bg="wallpaper"] #enterBtn {
+	background-color: color-mix(
+		in srgb,
+		var(--darkColor-blue) 80%,
+		rgba(0, 0, 0, 0.25)
+	);
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-subtle);
+	box-shadow: var(--glass-specular), var(--glass-shadow-sm);
+	color: #ffffff;
+}
+
+body[data-bg="wallpaper"] #enterBtn:hover {
+	background-color: var(--darkColor-blue);
+	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+}
+
+body[data-bg="wallpaper"] #todoAdd {
+	background-color: color-mix(
+		in srgb,
+		var(--darkColor-blue) 80%,
+		rgba(0, 0, 0, 0.2)
+	);
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-subtle);
+	box-shadow: var(--glass-specular), var(--glass-shadow-sm);
+	color: #ffffff;
+}
+
+body[data-bg="wallpaper"] #todoAdd:hover {
+	background-color: var(--darkColor-blue);
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Save, Backup, Restore, and Reset Buttons */
+body[data-bg="wallpaper"] .savebtn,
+body[data-bg="wallpaper"] .backupRestoreBtn,
+body[data-bg="wallpaper"] .resetbtn,
+body[data-bg="wallpaper"] #dontShowTips {
+	background-color: color-mix(
+		in srgb,
+		var(--whitishColor-blue) calc(var(--transparency) * 1.5),
+		rgba(255, 255, 255, 0.45)
+	);
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-subtle);
+	box-shadow: var(--glass-specular), var(--glass-shadow-sm);
+	color: var(--textColorDark-blue);
+	transition: background-color 0.25s ease, transform 0.15s ease, border-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
+}
+
+body[data-bg="wallpaper"] .savebtn:hover,
+body[data-bg="wallpaper"] .backupRestoreBtn:hover,
+body[data-bg="wallpaper"] .resetbtn:hover,
+body[data-bg="wallpaper"] #dontShowTips:hover {
+	background-color: var(--darkColor-blue);
+	color: #ffffff;
+	border-color: var(--glass-border-base);
+	transform: translateY(-1px);
+	box-shadow: var(--glass-shadow);
+}
+
+/* Modal and Dialog Action Buttons */
+body[data-bg="wallpaper"] .prompt-modal-button,
+body[data-bg="wallpaper"] .ai-reset-button,
+body[data-bg="wallpaper"] .ai-save-button {
+	background-color: color-mix(
+		in srgb,
+		var(--whitishColor-blue) calc(var(--transparency) * 1.5),
+		rgba(255, 255, 255, 0.45)
+	);
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-subtle);
+	box-shadow: var(--glass-specular), var(--glass-shadow-sm);
+	transition: background-color 0.25s ease, transform 0.15s ease, border-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
+}
+
+body[data-bg="wallpaper"] .prompt-modal-button:hover,
+body[data-bg="wallpaper"] .ai-reset-button:hover,
+body[data-bg="wallpaper"] .ai-save-button:hover {
+	background-color: var(--darkColor-blue);
+	color: #ffffff;
+	border-color: var(--glass-border-base);
+	transform: translateY(-1px);
+	box-shadow: var(--glass-shadow);
+}
+
+/* Bookmarks Sidebar Sort & View-As Buttons */
+body[data-bg="wallpaper"] .bookmark-sort-button,
+body[data-bg="wallpaper"] .bookmark-view-as-button,
+body[data-bg="wallpaper"] #saveBookmarkChanges,
+body[data-bg="wallpaper"] #cancelBookmarkEdit {
+	background-color: color-mix(
+		in srgb,
+		var(--whitishColor-blue) calc(var(--transparency) * 1.5),
+		rgba(255, 255, 255, 0.4)
+	);
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-subtle);
+	box-shadow: var(--glass-shadow-sm);
+	transition: background-color 0.25s ease, transform 0.15s ease, border-color 0.25s ease;
+}
+
+body[data-bg="wallpaper"] .bookmark-sort-button:hover,
+body[data-bg="wallpaper"] .bookmark-view-as-button:hover,
+body[data-bg="wallpaper"] #saveBookmarkChanges:hover,
+body[data-bg="wallpaper"] #cancelBookmarkEdit:hover {
+	background-color: var(--darkColor-blue);
+	color: #ffffff;
+	border-color: var(--glass-border-base);
+}
+
 /* Bookmark sidebar cleanup in wallpaper mode */
 body[data-bg="wallpaper"] .bookmark-sidebar .topOutRoundCorner {
 	display: none !important;
@@ -6748,6 +7017,155 @@ body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="
 	color: rgba(232, 234, 237, 0.6);
 }
 
+/* Dark Theme Harmonization for All Buttons in Wallpaper Mode */
+.black-theme body[data-bg="wallpaper"] .uploadButton,
+.black-theme body[data-bg="wallpaper"] .randomButton,
+.black-theme body[data-bg="wallpaper"] .videoButton,
+.black-theme body[data-bg="wallpaper"] .switchMediaButton,
+.black-theme body[data-bg="wallpaper"] .savebtn,
+.black-theme body[data-bg="wallpaper"] .backupRestoreBtn,
+.black-theme body[data-bg="wallpaper"] .resetbtn,
+.black-theme body[data-bg="wallpaper"] #dontShowTips,
+.black-theme body[data-bg="wallpaper"] .themingStuff .btn,
+.black-theme body[data-bg="wallpaper"] .languageIcon,
+.black-theme body[data-bg="wallpaper"] .colorPickerLabel,
+.black-theme body[data-bg="wallpaper"] .prompt-modal-button,
+.black-theme body[data-bg="wallpaper"] .bookmark-sort-button,
+.black-theme body[data-bg="wallpaper"] .bookmark-view-as-button,
+.black-theme body[data-bg="wallpaper"] #saveBookmarkChanges,
+.black-theme body[data-bg="wallpaper"] #cancelBookmarkEdit,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .uploadButton,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .randomButton,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .videoButton,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .switchMediaButton,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .savebtn,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .backupRestoreBtn,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .resetbtn,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] #dontShowTips,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .themingStuff .btn,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .languageIcon,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .colorPickerLabel,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .prompt-modal-button,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .uploadButton,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .randomButton,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .videoButton,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .switchMediaButton,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .savebtn,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .backupRestoreBtn,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .resetbtn,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #dontShowTips,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .themingStuff .btn,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .languageIcon,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .colorPickerLabel,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .prompt-modal-button,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .uploadButton,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .randomButton,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .videoButton,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .switchMediaButton,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .savebtn,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .backupRestoreBtn,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .resetbtn,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #dontShowTips,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .themingStuff .btn,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .languageIcon,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .colorPickerLabel,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .prompt-modal-button {
+	background-color: rgba(255, 255, 255, 0.08);
+	color: #e8eaed;
+	border: 1px solid rgba(255, 255, 255, 0.16);
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.black-theme body[data-bg="wallpaper"] .uploadButton:hover,
+.black-theme body[data-bg="wallpaper"] .randomButton:hover,
+.black-theme body[data-bg="wallpaper"] .videoButton:hover,
+.black-theme body[data-bg="wallpaper"] .switchMediaButton:hover,
+.black-theme body[data-bg="wallpaper"] .savebtn:hover,
+.black-theme body[data-bg="wallpaper"] .backupRestoreBtn:hover,
+.black-theme body[data-bg="wallpaper"] .resetbtn:hover,
+.black-theme body[data-bg="wallpaper"] #dontShowTips:hover,
+.black-theme body[data-bg="wallpaper"] .colorPickerLabel:hover,
+.black-theme body[data-bg="wallpaper"] .prompt-modal-button:hover,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .uploadButton:hover,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .randomButton:hover,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .videoButton:hover,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .switchMediaButton:hover,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .savebtn:hover,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .backupRestoreBtn:hover,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .resetbtn:hover,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] #dontShowTips:hover,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .colorPickerLabel:hover,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .prompt-modal-button:hover,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .uploadButton:hover,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .randomButton:hover,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .videoButton:hover,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .switchMediaButton:hover,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .savebtn:hover,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .backupRestoreBtn:hover,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .resetbtn:hover,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #dontShowTips:hover,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .colorPickerLabel:hover,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .prompt-modal-button:hover,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .uploadButton:hover,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .randomButton:hover,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .videoButton:hover,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .switchMediaButton:hover,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .savebtn:hover,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .backupRestoreBtn:hover,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .resetbtn:hover,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #dontShowTips:hover,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .colorPickerLabel:hover,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .prompt-modal-button:hover {
+	background-color: rgba(255, 255, 255, 0.18);
+	color: #ffffff;
+	border-color: rgba(255, 255, 255, 0.28);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.black-theme body[data-bg="wallpaper"] .clearButton,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .clearButton,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .clearButton,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .clearButton {
+	background-color: rgba(235, 75, 75, 0.22);
+	color: #ffb4ab;
+	border: 1px solid rgba(255, 180, 171, 0.25);
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.black-theme body[data-bg="wallpaper"] .clearButton:hover,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .clearButton:hover,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .clearButton:hover,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .clearButton:hover {
+	background-color: rgba(235, 75, 75, 0.38);
+	color: #ffffff;
+	border-color: rgba(255, 180, 171, 0.45);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.black-theme body[data-bg="wallpaper"] .colorsContainer,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .colorsContainer,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .colorsContainer,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .colorsContainer {
+	background-color: rgba(255, 255, 255, 0.06);
+	border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.black-theme body[data-bg="wallpaper"] .themeSegment,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .themeSegment,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .themeSegment,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .themeSegment {
+	background-color: rgba(0, 0, 0, 0.28);
+	border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.black-theme body[data-bg="wallpaper"] .themeIndicator,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .themeIndicator,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .themeIndicator,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .themeIndicator {
+	background-color: rgba(255, 255, 255, 0.14);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
 /* --- Accessibility: Reduced Transparency Support --- */
 @media (prefers-reduced-transparency: reduce) {
 	.glass-panel,
@@ -6778,7 +7196,30 @@ body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="
 	body[data-bg="wallpaper"] #newShortcutButton,
 	body[data-bg="wallpaper"] .shortcutDelete button,
 	body[data-bg="wallpaper"] .uploadCustomIconButton,
-	body[data-bg="wallpaper"] .shortcutSettingsEntry {
+	body[data-bg="wallpaper"] .shortcutSettingsEntry,
+	body[data-bg="wallpaper"] .uploadButton,
+	body[data-bg="wallpaper"] .randomButton,
+	body[data-bg="wallpaper"] .videoButton,
+	body[data-bg="wallpaper"] .switchMediaButton,
+	body[data-bg="wallpaper"] .clearButton,
+	body[data-bg="wallpaper"] .themeSegment,
+	body[data-bg="wallpaper"] .themeIndicator,
+	body[data-bg="wallpaper"] .themingStuff .btn,
+	body[data-bg="wallpaper"] .languageIcon,
+	body[data-bg="wallpaper"] .colorsContainer,
+	body[data-bg="wallpaper"] .colorPickerLabel,
+	body[data-bg="wallpaper"] .opacitySlider,
+	body[data-bg="wallpaper"] #enterBtn,
+	body[data-bg="wallpaper"] #todoAdd,
+	body[data-bg="wallpaper"] .savebtn,
+	body[data-bg="wallpaper"] .backupRestoreBtn,
+	body[data-bg="wallpaper"] .resetbtn,
+	body[data-bg="wallpaper"] #dontShowTips,
+	body[data-bg="wallpaper"] .prompt-modal-button,
+	body[data-bg="wallpaper"] .bookmark-sort-button,
+	body[data-bg="wallpaper"] .bookmark-view-as-button,
+	body[data-bg="wallpaper"] #saveBookmarkChanges,
+	body[data-bg="wallpaper"] #cancelBookmarkEdit {
 		backdrop-filter: none !important;
 		-webkit-backdrop-filter: none !important;
 	}

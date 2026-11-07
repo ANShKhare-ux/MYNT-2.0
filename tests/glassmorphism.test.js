@@ -144,4 +144,46 @@ test('Glassmorphism System Design and Implementation', async (t) => {
             'Reduced transparency must disable backdrop blur'
         );
     });
+
+    await t.test('applies glassmorphism to all buttons across wallpaper mode with dark theme adaptations', () => {
+        const requiredButtonSelectors = [
+            'body[data-bg="wallpaper"] .uploadButton',
+            'body[data-bg="wallpaper"] .randomButton',
+            'body[data-bg="wallpaper"] .videoButton',
+            'body[data-bg="wallpaper"] .switchMediaButton',
+            'body[data-bg="wallpaper"] .clearButton',
+            'body[data-bg="wallpaper"] .themeSegment',
+            'body[data-bg="wallpaper"] .themeIndicator',
+            'body[data-bg="wallpaper"] .themingStuff .btn',
+            'body[data-bg="wallpaper"] .languageIcon',
+            'body[data-bg="wallpaper"] .colorsContainer',
+            'body[data-bg="wallpaper"] .colorPickerLabel',
+            'body[data-bg="wallpaper"] .opacitySlider',
+            'body[data-bg="wallpaper"] #enterBtn',
+            'body[data-bg="wallpaper"] #todoAdd',
+            'body[data-bg="wallpaper"] .savebtn',
+            'body[data-bg="wallpaper"] .backupRestoreBtn',
+            'body[data-bg="wallpaper"] .resetbtn',
+            'body[data-bg="wallpaper"] #dontShowTips',
+            'body[data-bg="wallpaper"] .prompt-modal-button',
+            'body[data-bg="wallpaper"] .bookmark-sort-button'
+        ];
+
+        for (const selector of requiredButtonSelectors) {
+            assert.ok(
+                cssContent.includes(selector),
+                `style.css must apply glassmorphism to button selector: ${selector}`
+            );
+        }
+
+        // Dark theme button rules
+        assert.ok(
+            cssContent.includes('.black-theme body[data-bg="wallpaper"] .uploadButton'),
+            'Must provide dark mode glass styling for .uploadButton'
+        );
+        assert.ok(
+            cssContent.includes('.black-theme body[data-bg="wallpaper"] .clearButton'),
+            'Must provide dark mode glass styling for .clearButton'
+        );
+    });
 });

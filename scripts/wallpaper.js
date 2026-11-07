@@ -27,31 +27,17 @@ function checkIsVideo(blob) {
     return false;
 }
 
+// Purge any legacy paused flag so video wallpaper always plays on open and upload
+try {
+    localStorage.removeItem("bgVideoPaused");
+} catch (e) {}
+
 // Retrieve or cache the background video element
 function getBgVideoElement() {
     if (!bgVideo) {
         bgVideo = document.getElementById("bgVideo");
     }
     return bgVideo;
-}
-
-// Update play/pause toggle button UI
-function updateVideoControlsUI(isPlaying) {
-    const playIcon = document.getElementById("videoPlayIcon");
-    const pauseIcon = document.getElementById("videoPauseIcon");
-    const videoPlayPauseTrigger = document.getElementById("videoPlayPauseTrigger");
-
-    if (playIcon && pauseIcon) {
-        if (isPlaying) {
-            pauseIcon.style.display = "block";
-            playIcon.style.display = "none";
-            if (videoPlayPauseTrigger) videoPlayPauseTrigger.setAttribute("title", "Pause Video Background");
-        } else {
-            pauseIcon.style.display = "none";
-            playIcon.style.display = "block";
-            if (videoPlayPauseTrigger) videoPlayPauseTrigger.setAttribute("title", "Play Video Background");
-        }
-    }
 }
 
 // Update switch media button tooltip based on current active media
@@ -72,14 +58,10 @@ function registerGestureRecovery(video) {
 
     const onInteraction = () => {
         if (isVideoActive && video && video.paused) {
-            const isUserPaused = localStorage.getItem("bgVideoPaused") === "true";
-            const isReducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-            if (!isUserPaused && !isReducedMotion) {
-                video.muted = true;
-                video.play().then(() => {
-                    updateVideoControlsUI(true);
-                }).catch(() => {});
-            }
+            video.muted = true;
+            video.defaultMuted = true;
+            video.volume = 0;
+            video.play().catch(() => {});
         }
         window.removeEventListener("pointerdown", onInteraction, true);
         window.removeEventListener("keydown", onInteraction, true);
@@ -107,18 +89,16 @@ function attemptAutoplay(video) {
     video.setAttribute("autoplay", "");
 
     const playVideo = () => {
-        const isUserPaused = localStorage.getItem("bgVideoPaused") === "true";
-        if (isUserPaused) return;
+        if (!isVideoActive || !video) return;
+        video.muted = true;
+        video.defaultMuted = true;
+        video.volume = 0;
 
         const playPromise = video.play();
         if (playPromise !== undefined) {
             playPromise
-                .then(() => {
-                    updateVideoControlsUI(true);
-                })
                 .catch(err => {
                     console.warn("Autoplay deferred or prevented by browser policy:", err);
-                    updateVideoControlsUI(false);
                     registerGestureRecovery(video);
                 });
         }
@@ -127,9 +107,11 @@ function attemptAutoplay(video) {
     // Attempt immediate playback
     playVideo();
 
-    // Media readiness fallbacks: play the moment first frames are decoded
-    video.addEventListener("canplay", playVideo, { once: true });
+    // Media readiness fallbacks: play the moment first frames/metadata are available
+    video.addEventListener("loadedmetadata", playVideo, { once: true });
     video.addEventListener("loadeddata", playVideo, { once: true });
+    video.addEventListener("canplay", playVideo, { once: true });
+    video.addEventListener("canplaythrough", playVideo, { once: true });
 }
 
 // Play and configure video background with hardware acceleration
@@ -140,10 +122,10 @@ function setVideoBackground(url, isNewUpload = false) {
     isVideoActive = true;
     document.body.setAttribute("data-has-video", "true");
 
-    // When newly uploaded, reset paused state so the video immediately autoplays
-    if (isNewUpload) {
-        localStorage.setItem("bgVideoPaused", "false");
-    }
+    // Clean up any lingering paused state from storage
+    try {
+        localStorage.removeItem("bgVideoPaused");
+    } catch (e) {}
 
     // Set source and lock in attributes for hardware decoding and autoplay
     video.src = url;
@@ -161,26 +143,14 @@ function setVideoBackground(url, isNewUpload = false) {
 
     video.load();
 
-    const isUserPaused = localStorage.getItem("bgVideoPaused") === "true";
-    const isReducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    if (isUserPaused || isReducedMotion) {
-        video.pause();
-        updateVideoControlsUI(false);
-    } else {
-        attemptAutoplay(video);
-    }
+    // Start playback pipeline immediately
+    attemptAutoplay(video);
 
     // Continuous loop recovery
     video.onended = () => {
         video.currentTime = 0;
         video.play().catch(() => {});
     };
-
-    const videoPlayPauseTrigger = document.getElementById("videoPlayPauseTrigger");
-    if (videoPlayPauseTrigger) {
-        videoPlayPauseTrigger.style.display = "flex";
-    }
 }
 
 // Stop and flush video background to completely release RAM and GPU decoder sessions
@@ -194,11 +164,6 @@ function removeVideoBackground() {
         video.removeAttribute("src");
         video.load(); // Flush decoder session & media memory buffers
         video.style.display = "none";
-    }
-
-    const videoPlayPauseTrigger = document.getElementById("videoPlayPauseTrigger");
-    if (videoPlayPauseTrigger) {
-        videoPlayPauseTrigger.style.display = "none";
     }
 }
 
@@ -310,10 +275,9 @@ async function clearImageFromIndexedDB() {
 async function handleMediaUpload(file) {
     if (!file) return;
 
-    const isVideo = checkIsVideo(file);
-    if (isVideo) {
-        localStorage.setItem("bgVideoPaused", "false");
-    }
+    try {
+        localStorage.removeItem("bgVideoPaused");
+    } catch (e) {}
 
     // RAM/Performance safeguard: Warn if file exceeds 100MB
     const MAX_RECOMMENDED_SIZE = 100 * 1024 * 1024; // 100MB
@@ -510,26 +474,6 @@ if (switchMediaTrigger) {
     switchMediaTrigger.addEventListener("click", switchBetweenMedia);
 }
 
-// Event listener for video play/pause toggle button
-const videoPlayPauseTrigger = document.getElementById("videoPlayPauseTrigger");
-if (videoPlayPauseTrigger) {
-    videoPlayPauseTrigger.addEventListener("click", () => {
-        const video = getBgVideoElement();
-        if (!video || !video.src) return;
-
-        if (video.paused) {
-            video.play().then(() => {
-                localStorage.setItem("bgVideoPaused", "false");
-                updateVideoControlsUI(true);
-            }).catch(err => console.error(err));
-        } else {
-            video.pause();
-            localStorage.setItem("bgVideoPaused", "true");
-            updateVideoControlsUI(false);
-        }
-    });
-}
-
 // Event listener for clearing background (both image and video)
 const clearImageBtn = document.getElementById("clearImage");
 if (clearImageBtn) {
@@ -581,11 +525,16 @@ document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
         video.pause();
     } else {
-        const isUserPaused = localStorage.getItem("bgVideoPaused") === "true";
-        const isReducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        if (!isUserPaused && !isReducedMotion) {
-            attemptAutoplay(video);
-        }
+        attemptAutoplay(video);
+    }
+});
+
+// Also trigger playback on window focus to ensure video immediately plays on open/return
+window.addEventListener("focus", () => {
+    if (!isVideoActive) return;
+    const video = getBgVideoElement();
+    if (video && video.paused) {
+        attemptAutoplay(video);
     }
 });
 
@@ -600,12 +549,8 @@ if (typeof window !== "undefined" && window.matchMedia) {
 
             if (e.matches) {
                 video.pause();
-                updateVideoControlsUI(false);
             } else {
-                const isUserPaused = localStorage.getItem("bgVideoPaused") === "true";
-                if (!isUserPaused) {
-                    attemptAutoplay(video);
-                }
+                attemptAutoplay(video);
             }
         });
     }

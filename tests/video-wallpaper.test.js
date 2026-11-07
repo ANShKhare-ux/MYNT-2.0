@@ -25,12 +25,10 @@ test('Video Wallpaper Feature and Hardware Performance Optimization', async (t) 
         assert.ok(indexHtml.includes('disableremoteplayback'), 'video element must disable remote playback');
     });
 
-    await t.test('index.html contains video upload and play/pause toggle controls', () => {
+    await t.test('index.html contains video upload controls and removes manual play/pause toggle controls', () => {
         assert.ok(indexHtml.includes('id="uploadVideoTrigger"'), 'index.html must include video upload button');
-        assert.ok(indexHtml.includes('id="videoPlayPauseTrigger"'), 'index.html must include play/pause toggle button');
-        assert.ok(indexHtml.includes('id="videoPauseIcon"'), 'index.html must include pause icon');
-        assert.ok(indexHtml.includes('id="videoPlayIcon"'), 'index.html must include play icon');
         assert.ok(indexHtml.includes('id="videoUpload"'), 'index.html must include video file input');
+        assert.equal(indexHtml.includes('id="videoPlayPauseTrigger"'), false, 'play/pause button removed so video always plays cleanly');
     });
 
     await t.test('checkIsVideo correctly distinguishes video and image formats', () => {

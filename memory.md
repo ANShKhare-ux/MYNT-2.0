@@ -1,6 +1,6 @@
 # Project Memory — MYNT: Material You New Tab
 
-**Last Updated:** 2026-11-06  
+**Last Updated:** 2026-11-07  
 **Repository Branch:** `main` (`origin/main`)  
 **Git Remote:** `https://github.com/ANShKhare-ux/MYNT-2.0.git`  
 **License:** GNU General Public License v3.0 (GPL-3.0)  
@@ -28,7 +28,11 @@ Core goals:
   - Preload script (`scripts/preload.js`) running in `<head>` to prevent Flash of Unstyled Content (FOUC).
   - Custom color picker setting CSS custom property accent colors.
   - Interactive transparency slider (`scripts/widgets-transparency.js`) controlling `--transparency` on widgets.
-  - **Glassmorphism System**: Native, hardware-accelerated frosted glass layer (`backdrop-filter: blur(...) saturate(...)`) with specular edge reflections, inner glows, and floating elevation across all widgets, sidebars, shortcuts, settings drawer cards (`.sectionInner`, `.sectionOuter`, `.innerSurface`), shortcut edit page sticky header (`.topBar`), action buttons (`#backButton`, `#newShortcutButton`, `#resetButton`, `.uploadCustomIconButton`, `.shortcutDelete button`), and modals in wallpaper mode. Fixes top drawer header alignment, eliminates stark solid white headers in wallpaper/dark modes, ensures high-contrast typography, adapts smoothly to light/dark themes, and provides accessibility fallback for `prefers-reduced-transparency`.
+  - **Glassmorphism System**: Native, hardware-accelerated frosted glass layer (`backdrop-filter: blur(...) saturate(...)`) with specular edge reflections, inner glows, and floating elevation across all widgets, sidebars, shortcuts, settings drawer cards (`.sectionInner`, `.sectionOuter`, `.innerSurface`), shortcut edit page sticky header (`.topBar`), and **all interactive buttons** in wallpaper mode:
+    - **Appearance & Wallpaper Buttons**: `.uploadButton`, `.randomButton`, `.videoButton`, `.switchMediaButton`, `.clearButton`, `.themeSegment`, `.themeIndicator`, `#themeButton`, `.colorsContainer`, `.colorPickerLabel`, and `.opacitySlider`.
+    - **Search & Navigation Buttons**: `#enterBtn`, `#todoAdd`, `.dot-icon`, `.bookmark-button`, `.savebtn`, `.backupRestoreBtn`, `.resetbtn`, and `#dontShowTips`.
+    - **Shortcut & Modal Action Buttons**: `#backButton`, `#newShortcutButton`, `#resetButton`, `.uploadCustomIconButton`, `.shortcutDelete button`, `.prompt-modal-button`, `.ai-reset-button`, `.ai-save-button`, and bookmark sorting/view buttons.
+    - Fixes top drawer header alignment, eliminates stark solid white headers and buttons in wallpaper/dark modes, ensures high-contrast typography, adapts smoothly to light/dark themes, and provides accessibility fallback for `prefers-reduced-transparency`.
 - **Clock Subsystem (`scripts/clock.js`)**:
   - Dual modes: Analog (smooth rotating hands) and Digital (12h/24h formats).
   - Contextual time-of-day greetings (Morning / Afternoon / Evening).
@@ -56,9 +60,9 @@ Core goals:
   - **Hardware-Accelerated Video Backgrounds**: Supports MP4, WebM, and OGG video wallpapers. Fixed-position compositor layer (`transform: translateZ(0); will-change: transform; backface-visibility: hidden; pointer-events: none;`) leveraging Intel HD Graphics Quick Sync hardware decoding with near-zero CPU usage.
   - **Muted Autoplay Pipeline with Gesture Recovery**: Strict conformance with Chromium Autoplay Policy (`muted`, `defaultMuted`, `playsinline`, `autoplay`, `video.load()`), dual event readiness hooks (`canplay`, `loadeddata`), loop continuity recovery (`onended`), and transparent first-interaction gesture fallback ensuring instant, unbreakable autoplay.
   - **Strict Resource & Battery Optimizations**:
-    - **Tab Visibility API**: Halts video decoding (`video.pause()`) when tab is hidden or minimized, dropping CPU/GPU decoding to 0.0%.
+    - **Tab Visibility API**: Halts video decoding (`video.pause()`) when tab is hidden or minimized, dropping CPU/GPU decoding to 0.0%, and seamlessly resumes on tab focus/return.
     - **Reduced Motion Support**: Automatically pauses video when `prefers-reduced-motion: reduce` is enabled.
-    - **Interactive Play/Pause Control**: Dedicated toggle button (`#videoPlayPauseTrigger`) in settings drawer to freeze video on current frame as a static wallpaper anytime.
+    - **Zero-Friction Autoplay**: Autoplays immediately on upload, tab open, or switch without manual play/stop buttons cluttering the UI.
     - **Memory Leak Protection**: Instant `URL.revokeObjectURL(previousUrl)` cleanup and decoder flush (`video.removeAttribute('src')`, `video.load()`) prevents RAM leaks on 8GB systems.
     - **File Size Safeguards**: Warns user if video upload exceeds 100MB to protect memory bandwidth.
   - Daily random wallpaper integration via Lorem Picsum.
@@ -166,7 +170,7 @@ All testing and validation commands use the host's native Node.js runtime:
 
 | Command | Purpose |
 |---|---|
-| `node --test` | Runs the full automated test suite (60 tests across 8 test suites). |
+| `node --test` | Runs the full automated test suite (61 tests across 8 test suites). |
 | `node --test tests/video-wallpaper.test.js` | Validates video wallpaper elements, autoplay, hardware acceleration, memory cleanup, and dual-media switching. |
 | `node --test tests/ai-search-mode.test.js` | Validates Google AI Mode pill button, udm=50 search synthesis, engine filtering, and styles. |
 | `node --test tests/glassmorphism.test.js` | Validates glassmorphism tokens, component filters, and accessibility. |
