@@ -136,25 +136,32 @@
                 weather: '#hideWeather',
                 searchbar: '#searchbar',
                 quotes: '#motivationalQuotesCont',
-                shortcuts: '#shortcuts-section .shortcutsContainer',
+                shortcuts: '.shortcutsContainer',
                 todo: '#todoListCont',
                 bookmarks: '#bookmarkButton',
                 googleApps: '#googleAppsCont',
                 aiTools: '#aiToolsCont',
                 menuButton: '#menuButton'
             };
-            const FIXED_SET = new Set(['todo', 'bookmarks', 'googleApps', 'aiTools', 'menuButton']);
             for (const key in positions) {
                 const sel = SELECTOR_MAP[key];
                 const pos = positions[key];
                 if (!sel || !pos) continue;
-                if (FIXED_SET.has(key)) {
-                    css += `${sel} { left: ${pos.left}px !important; top: ${pos.top}px !important; right: auto !important; bottom: auto !important; } `;
+                const left = Math.round(typeof pos.left === 'number' ? pos.left : 0);
+                const top = Math.round(typeof pos.top === 'number' ? pos.top : 0);
+
+                if (key === 'searchbar') {
+                    css += `${sel} { position: fixed !important; left: ${left}px !important; top: ${top}px !important; width: min(640px, calc(100vw - 32px)) !important; margin: 0 !important; z-index: 40 !important; } `;
+                    css += `#resultBox { position: fixed !important; left: ${left}px !important; top: ${top + 68}px !important; width: min(640px, calc(100vw - 32px)) !important; z-index: 45 !important; } `;
+                    css += `#search-with-container { position: fixed !important; left: ${left}px !important; top: ${top + 68}px !important; z-index: 44 !important; } `;
+                } else if (key === 'quotes') {
+                    css += `${sel} { position: fixed !important; left: ${left}px !important; top: ${top}px !important; width: min(640px, calc(100vw - 32px)) !important; margin: 0 !important; z-index: 20 !important; } `;
+                } else if (key === 'shortcuts') {
+                    css += `${sel} { position: fixed !important; left: ${left}px !important; top: ${top}px !important; margin: 0 !important; z-index: 30 !important; pointer-events: auto !important; } `;
+                } else if (key === 'weather' || key === 'clock' || key === 'dateGreeting') {
+                    css += `${sel} { position: fixed !important; left: ${left}px !important; top: ${top}px !important; margin: 0 !important; z-index: 20 !important; } `;
                 } else {
-                    css += `${sel} { position: relative !important; left: ${pos.x}px !important; top: ${pos.y}px !important; } `;
-                    if (key === 'searchbar') {
-                        css += `#resultBox, #search-with-container { left: ${pos.x}px !important; top: ${pos.y}px !important; } `;
-                    }
+                    css += `${sel} { left: ${left}px !important; top: ${top}px !important; right: auto !important; bottom: auto !important; margin: 0 !important; } `;
                 }
             }
             if (css) {

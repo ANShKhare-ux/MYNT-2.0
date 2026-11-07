@@ -23,68 +23,78 @@
             id: 'clock',
             name: 'Clock',
             selector: '#analogClock, #digitalClock',
-            type: 'flow'
+            type: 'center',
+            defaultWidth: 300
         },
         {
             id: 'dateGreeting',
             name: 'Date & Greeting',
             selector: '.ttteexxtt',
-            type: 'flow'
+            type: 'center',
+            defaultWidth: 260
         },
         {
             id: 'weather',
             name: 'Weather',
             selector: '#hideWeather',
-            type: 'flow'
+            type: 'center',
+            defaultWidth: 540
         },
         {
             id: 'searchbar',
             name: 'Search Bar',
             selector: '#searchbar',
-            type: 'flow',
-            syncSelectors: ['#resultBox', '#search-with-container']
+            type: 'center',
+            defaultWidth: 640
         },
         {
             id: 'quotes',
             name: 'Quotes',
             selector: '#motivationalQuotesCont',
-            type: 'flow'
+            type: 'center',
+            defaultWidth: 640
         },
         {
             id: 'shortcuts',
             name: 'Shortcuts Dock',
-            selector: '#shortcuts-section .shortcutsContainer',
-            type: 'flow'
+            selector: '.shortcutsContainer',
+            type: 'fixed',
+            defaultWidth: 460
         },
         {
             id: 'todo',
             name: 'ToDo Icon',
             selector: '#todoListCont',
-            type: 'fixed'
+            type: 'fixed',
+            defaultWidth: 56
         },
         {
             id: 'bookmarks',
             name: 'Bookmarks Icon',
             selector: '#bookmarkButton',
-            type: 'fixed'
+            type: 'fixed',
+            defaultWidth: 56
         },
         {
             id: 'googleApps',
             name: 'Google Apps',
             selector: '#googleAppsCont',
-            type: 'fixed'
+            type: 'fixed',
+            defaultWidth: 56
         },
         {
             id: 'aiTools',
             name: 'AI Tools',
             selector: '#aiToolsCont',
-            type: 'fixed'
+            type: 'fixed',
+            defaultWidth: 140
         },
         {
             id: 'menuButton',
             name: 'Menu Button',
             selector: '#menuButton',
-            type: 'fixed'
+            type: 'fixed',
+            defaultWidth: 50
         }
     ];
 
@@ -106,7 +116,7 @@
     }
 
     /**
-     * Generates CSS rules for all saved positions and injects them into #custom-layout-positions-style.
+     * Generates clean declarative CSS rules for all saved positions and updates #custom-layout-positions-style.
      */
     function applySavedPositions(positions) {
         let styleEl = document.getElementById(STYLE_ID);
@@ -118,6 +128,10 @@
 
         if (!positions || Object.keys(positions).length === 0) {
             styleEl.textContent = '';
+            // Remove data-custom-pos attributes
+            document.querySelectorAll('[data-custom-pos]').forEach(el => {
+                el.removeAttribute('data-custom-pos');
+            });
             return;
         }
 
@@ -126,35 +140,100 @@
             const pos = positions[item.id];
             if (!pos) return;
 
-            if (item.type === 'fixed') {
-                const left = typeof pos.left === 'number' ? pos.left : 0;
-                const top = typeof pos.top === 'number' ? pos.top : 0;
+            // Mark DOM elements as customized
+            const els = document.querySelectorAll(item.selector);
+            els.forEach(el => el.setAttribute('data-custom-pos', 'true'));
+
+            const left = Math.round(typeof pos.left === 'number' ? pos.left : 0);
+            const top = Math.round(typeof pos.top === 'number' ? pos.top : 0);
+
+            if (item.id === 'searchbar') {
+                css += `
+                    ${item.selector} {
+                        position: fixed !important;
+                        left: ${left}px !important;
+                        top: ${top}px !important;
+                        width: min(640px, calc(100vw - 32px)) !important;
+                        margin: 0 !important;
+                        z-index: 40 !important;
+                    }
+                    #resultBox {
+                        position: fixed !important;
+                        left: ${left}px !important;
+                        top: ${top + 68}px !important;
+                        width: min(640px, calc(100vw - 32px)) !important;
+                        z-index: 45 !important;
+                    }
+                    #search-with-container {
+                        position: fixed !important;
+                        left: ${left}px !important;
+                        top: ${top + 68}px !important;
+                        z-index: 44 !important;
+                    }
+                `;
+            } else if (item.id === 'quotes') {
+                css += `
+                    ${item.selector} {
+                        position: fixed !important;
+                        left: ${left}px !important;
+                        top: ${top}px !important;
+                        width: min(640px, calc(100vw - 32px)) !important;
+                        margin: 0 !important;
+                        z-index: 20 !important;
+                    }
+                `;
+            } else if (item.id === 'shortcuts') {
+                css += `
+                    ${item.selector} {
+                        position: fixed !important;
+                        left: ${left}px !important;
+                        top: ${top}px !important;
+                        margin: 0 !important;
+                        z-index: 30 !important;
+                        pointer-events: auto !important;
+                    }
+                `;
+            } else if (item.id === 'weather') {
+                css += `
+                    ${item.selector} {
+                        position: fixed !important;
+                        left: ${left}px !important;
+                        top: ${top}px !important;
+                        margin: 0 !important;
+                        z-index: 20 !important;
+                    }
+                `;
+            } else if (item.id === 'clock') {
+                css += `
+                    ${item.selector} {
+                        position: fixed !important;
+                        left: ${left}px !important;
+                        top: ${top}px !important;
+                        margin: 0 !important;
+                        z-index: 20 !important;
+                    }
+                `;
+            } else if (item.id === 'dateGreeting') {
+                css += `
+                    ${item.selector} {
+                        position: fixed !important;
+                        left: ${left}px !important;
+                        top: ${top}px !important;
+                        margin: 0 !important;
+                        z-index: 20 !important;
+                        text-align: center !important;
+                    }
+                `;
+            } else {
                 css += `
                     ${item.selector} {
                         left: ${left}px !important;
                         top: ${top}px !important;
                         right: auto !important;
                         bottom: auto !important;
+                        margin: 0 !important;
                     }
                 `;
-            } else {
-                const x = typeof pos.x === 'number' ? pos.x : 0;
-                const y = typeof pos.y === 'number' ? pos.y : 0;
-                css += `
-                    ${item.selector} {
-                        position: relative !important;
-                        left: ${x}px !important;
-                        top: ${y}px !important;
-                    }
-                `;
-                if (item.syncSelectors && item.syncSelectors.length > 0) {
-                    css += `
-                        ${item.syncSelectors.join(', ')} {
-                            left: ${x}px !important;
-                            top: ${y}px !important;
-                        }
-                    `;
-                }
             }
         });
 
@@ -162,7 +241,7 @@
     }
 
     /**
-     * Saves updated positions map to localStorage and updates style tag.
+     * Saves updated positions map to localStorage and updates stylesheet.
      */
     function savePositions(positions) {
         try {
@@ -180,22 +259,40 @@
         localStorage.removeItem(STORAGE_KEY);
         applySavedPositions({});
 
-        // Animate elements back to origin smoothly
+        // Clear any inline styles that might remain
         EDITABLE_ELEMENTS.forEach(item => {
             const els = document.querySelectorAll(item.selector);
             els.forEach(el => {
-                el.style.transition = 'left 0.4s var(--fluid-spring, cubic-bezier(0.34, 1.35, 0.64, 1)), top 0.4s var(--fluid-spring, cubic-bezier(0.34, 1.35, 0.64, 1))';
-                setTimeout(() => {
-                    el.style.transition = '';
-                }, 400);
+                el.style.left = '';
+                el.style.top = '';
+                el.style.right = '';
+                el.style.bottom = '';
+                el.style.position = '';
+                el.style.margin = '';
+                el.style.zIndex = '';
+                el.removeAttribute('data-custom-pos');
             });
         });
 
-        showToast('Layout positions reset to default');
+        const resultBox = document.getElementById('resultBox');
+        if (resultBox) {
+            resultBox.style.left = '';
+            resultBox.style.top = '';
+            resultBox.style.position = '';
+        }
+
+        const searchWith = document.getElementById('search-with-container');
+        if (searchWith) {
+            searchWith.style.left = '';
+            searchWith.style.top = '';
+            searchWith.style.position = '';
+        }
+
+        showToast('Layout restored to default');
     }
 
     /**
-     * Creates badges and sets data attributes on editable elements.
+     * Prepares all dashboard elements for dragging.
      */
     function setupEditableElements() {
         EDITABLE_ELEMENTS.forEach(item => {
@@ -203,41 +300,26 @@
             els.forEach(el => {
                 el.setAttribute('data-editable-element', item.id);
                 el.setAttribute('data-element-name', item.name);
-
-                // Add visual badge if not already present
-                if (!el.querySelector(':scope > .layout-element-badge')) {
-                    const badge = document.createElement('div');
-                    badge.className = 'layout-element-badge';
-                    badge.innerHTML = `
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z"/>
-                        </svg>
-                        <span>${item.name}</span>
-                    `;
-                    el.appendChild(badge);
-                }
-
-                // Attach drag handlers
                 attachDragListener(el, item);
             });
         });
     }
 
     /**
-     * Binds pointerdown listeners for dragging in Edit Mode or Alt+Drag.
+     * Binds pointerdown listeners for dragging in Edit Mode or Shift+Drag / Alt+Drag.
      */
     function attachDragListener(element, itemConfig) {
         if (element._layoutDragAttached) return;
         element._layoutDragAttached = true;
 
         const onPointerDown = function (e) {
-            // Only left click or primary touch
+            // Only primary mouse button or touch
             if (e.button && e.button !== 0) return;
 
-            // In regular mode, only drag if Alt key is pressed
-            if (!isEditMode && !e.altKey) return;
+            // In normal mode, allow dragging if Shift or Alt key is held
+            if (!isEditMode && !e.shiftKey && !e.altKey) return;
 
-            // Ignore if clicked on settings/buttons inside the toolbar
+            // Ignore if clicked on toolbar
             if (e.target.closest('#layoutEditorToolbar')) return;
 
             startDrag(element, itemConfig, e);
@@ -259,20 +341,17 @@
         const clientY = isTouch ? e.touches[0].clientY : e.clientY;
 
         const rect = element.getBoundingClientRect();
-        const positions = getSavedPositions();
-        const currentPos = positions[itemConfig.id] || (itemConfig.type === 'fixed' ? { left: rect.left, top: rect.top } : { x: 0, y: 0 });
+        const offsetX = clientX - rect.left;
+        const offsetY = clientY - rect.top;
 
         element.classList.add('is-dragging');
+        showCenterGuide(false);
 
         activeDrag = {
             element,
             config: itemConfig,
-            startX: clientX,
-            startY: clientY,
-            initialLeft: typeof currentPos.left === 'number' ? currentPos.left : rect.left,
-            initialTop: typeof currentPos.top === 'number' ? currentPos.top : rect.top,
-            initialX: currentPos.x || 0,
-            initialY: currentPos.y || 0,
+            offsetX,
+            offsetY,
             elemWidth: rect.width,
             elemHeight: rect.height,
             isTouch
@@ -280,66 +359,62 @@
 
         const onPointerMove = function (ev) {
             if (!activeDrag) return;
-            const curX = activeDrag.isTouch ? (ev.touches ? ev.touches[0].clientX : activeDrag.startX) : ev.clientX;
-            const curY = activeDrag.isTouch ? (ev.touches ? ev.touches[0].clientY : activeDrag.startY) : ev.clientY;
+            const curX = activeDrag.isTouch ? (ev.touches ? ev.touches[0].clientX : clientX) : ev.clientX;
+            const curY = activeDrag.isTouch ? (ev.touches ? ev.touches[0].clientY : clientY) : ev.clientY;
 
-            const deltaX = curX - activeDrag.startX;
-            const deltaY = curY - activeDrag.startY;
+            let targetLeft = curX - activeDrag.offsetX;
+            let targetTop = curY - activeDrag.offsetY;
+
+            // Keep within viewport bounds
+            targetLeft = Math.max(10, Math.min(targetLeft, window.innerWidth - activeDrag.elemWidth - 10));
+            targetTop = Math.max(10, Math.min(targetTop, window.innerHeight - activeDrag.elemHeight - 10));
+
+            // Magnetic snap to center vertical axis
+            let isSnapped = false;
+            if (snapEnabled) {
+                const widgetCenterX = targetLeft + activeDrag.elemWidth / 2;
+                const screenCenterX = window.innerWidth / 2;
+                if (Math.abs(widgetCenterX - screenCenterX) < 20) {
+                    targetLeft = Math.round(screenCenterX - activeDrag.elemWidth / 2);
+                    isSnapped = true;
+                }
+            }
+
+            showCenterGuide(isSnapped);
 
             requestAnimationFrame(() => {
                 if (!activeDrag) return;
 
-                if (activeDrag.config.type === 'fixed') {
-                    let newLeft = activeDrag.initialLeft + deltaX;
-                    let newTop = activeDrag.initialTop + deltaY;
+                activeDrag.element.style.setProperty('position', 'fixed', 'important');
+                activeDrag.element.style.setProperty('left', `${targetLeft}px`, 'important');
+                activeDrag.element.style.setProperty('top', `${targetTop}px`, 'important');
+                activeDrag.element.style.setProperty('right', 'auto', 'important');
+                activeDrag.element.style.setProperty('bottom', 'auto', 'important');
+                activeDrag.element.style.setProperty('margin', '0', 'important');
+                activeDrag.element.style.setProperty('z-index', '99999', 'important');
 
-                    // Keep inside viewport bounds
-                    newLeft = Math.max(10, Math.min(newLeft, window.innerWidth - activeDrag.elemWidth - 10));
-                    newTop = Math.max(10, Math.min(newTop, window.innerHeight - activeDrag.elemHeight - 10));
-
-                    // Magnetic center snap
-                    if (snapEnabled) {
-                        const centerX = newLeft + activeDrag.elemWidth / 2;
-                        if (Math.abs(centerX - window.innerWidth / 2) < 18) {
-                            newLeft = Math.round(window.innerWidth / 2 - activeDrag.elemWidth / 2);
-                        }
+                // Sync search dropdowns
+                if (activeDrag.config.id === 'searchbar') {
+                    const resultBox = document.getElementById('resultBox');
+                    if (resultBox) {
+                        resultBox.style.setProperty('position', 'fixed', 'important');
+                        resultBox.style.setProperty('left', `${targetLeft}px`, 'important');
+                        resultBox.style.setProperty('top', `${targetTop + 68}px`, 'important');
                     }
-
-                    activeDrag.element.style.setProperty('left', `${newLeft}px`, 'important');
-                    activeDrag.element.style.setProperty('top', `${newTop}px`, 'important');
-                    activeDrag.element.style.setProperty('right', 'auto', 'important');
-                    activeDrag.element.style.setProperty('bottom', 'auto', 'important');
-
-                    activeDrag.currentPos = { left: newLeft, top: newTop };
-                } else {
-                    let newX = activeDrag.initialX + deltaX;
-                    let newY = activeDrag.initialY + deltaY;
-
-                    // Magnetic center snap for flow widgets
-                    if (snapEnabled) {
-                        const currentRect = activeDrag.element.getBoundingClientRect();
-                        const currentCenterX = currentRect.left + currentRect.width / 2;
-                        if (Math.abs(currentCenterX - window.innerWidth / 2) < 18) {
-                            newX += Math.round(window.innerWidth / 2 - currentCenterX);
-                        }
+                    const searchWith = document.getElementById('search-with-container');
+                    if (searchWith) {
+                        searchWith.style.setProperty('position', 'fixed', 'important');
+                        searchWith.style.setProperty('left', `${targetLeft}px`, 'important');
+                        searchWith.style.setProperty('top', `${targetTop + 68}px`, 'important');
                     }
-
-                    activeDrag.element.style.setProperty('position', 'relative', 'important');
-                    activeDrag.element.style.setProperty('left', `${newX}px`, 'important');
-                    activeDrag.element.style.setProperty('top', `${newY}px`, 'important');
-
-                    if (activeDrag.config.syncSelectors) {
-                        activeDrag.config.syncSelectors.forEach(sel => {
-                            const syncEl = document.querySelector(sel);
-                            if (syncEl) {
-                                syncEl.style.setProperty('left', `${newX}px`, 'important');
-                                syncEl.style.setProperty('top', `${newY}px`, 'important');
-                            }
-                        });
-                    }
-
-                    activeDrag.currentPos = { x: newX, y: newY };
                 }
+
+                activeDrag.currentPos = {
+                    left: targetLeft,
+                    top: targetTop,
+                    xRatio: (targetLeft + activeDrag.elemWidth / 2) / window.innerWidth,
+                    yRatio: (targetTop + activeDrag.elemHeight / 2) / window.innerHeight
+                };
             });
         };
 
@@ -347,12 +422,16 @@
             if (!activeDrag) return;
 
             activeDrag.element.classList.remove('is-dragging');
+            showCenterGuide(false);
 
             if (activeDrag.currentPos) {
                 const updatedPositions = getSavedPositions();
                 updatedPositions[activeDrag.config.id] = activeDrag.currentPos;
                 savePositions(updatedPositions);
             }
+
+            // Clean up temporary inline drag styles so CSS manages them cleanly
+            activeDrag.element.style.zIndex = '';
 
             window.removeEventListener('mousemove', onPointerMove);
             window.removeEventListener('mouseup', onPointerUp);
@@ -369,12 +448,27 @@
     }
 
     /**
+     * Displays a subtle vertical alignment centerline when magnetic snap is active.
+     */
+    function showCenterGuide(visible) {
+        let guide = document.getElementById('layoutCenterGuide');
+        if (!guide) {
+            guide = document.createElement('div');
+            guide.id = 'layoutCenterGuide';
+            guide.className = 'layout-center-guide';
+            document.body.appendChild(guide);
+        }
+        guide.style.display = visible ? 'block' : 'none';
+    }
+
+    /**
      * Builds and inserts the floating Layout Editor Toolbar.
      */
     function renderToolbar() {
-        if (document.getElementById('layoutEditorToolbar')) return;
+        let toolbar = document.getElementById('layoutEditorToolbar');
+        if (toolbar) return toolbar;
 
-        const toolbar = document.createElement('div');
+        toolbar = document.createElement('div');
         toolbar.id = 'layoutEditorToolbar';
         toolbar.className = 'layout-editor-toolbar';
         toolbar.setAttribute('role', 'toolbar');
@@ -386,9 +480,9 @@
                 </svg>
                 <span class="toolbar-title">Layout Editor</span>
             </div>
-            <div class="toolbar-hint">Drag any element to move it</div>
+            <div class="toolbar-hint">Drag any element anywhere on the screen</div>
             <div class="toolbar-actions">
-                <button type="button" id="layoutSnapToggle" class="toolbar-btn ${snapEnabled ? 'active' : ''}" title="Toggle magnetic snapping">
+                <button type="button" id="layoutSnapToggle" class="toolbar-btn ${snapEnabled ? 'active' : ''}" title="Toggle center snapping">
                     <span class="btn-icon">🧲</span>
                     <span class="btn-text">Snap</span>
                 </button>
@@ -410,7 +504,7 @@
         snapBtn.addEventListener('click', () => {
             snapEnabled = !snapEnabled;
             snapBtn.classList.toggle('active', snapEnabled);
-            showToast(snapEnabled ? 'Snap to center enabled' : 'Snap disabled');
+            showToast(snapEnabled ? 'Center snapping enabled' : 'Snapping disabled');
         });
 
         // Reset button
@@ -422,6 +516,8 @@
         toolbar.querySelector('#layoutDoneBtn').addEventListener('click', () => {
             exitEditMode();
         });
+
+        return toolbar;
     }
 
     /**
@@ -433,21 +529,22 @@
 
         document.body.classList.add('layout-edit-mode');
 
-        // Close menu drawer if open so user has full view
-        const menuCloseBtn = document.getElementById('menuCloseButton');
-        if (menuCloseBtn && document.querySelector('.menuBar.open, .menuBar.active, .menuCont.open')) {
-            menuCloseBtn.click();
+        // Close menu drawer properly using existing global closeMenuBar function
+        if (typeof window.closeMenuBar === 'function') {
+            window.closeMenuBar();
+        } else {
+            const menuBar = document.getElementById('menuBar');
+            if (menuBar && menuBar.style.display !== 'none' && menuBar.style.display !== '') {
+                const closeBtn = document.getElementById('menuCloseButton');
+                if (closeBtn) closeBtn.click();
+            }
         }
 
-        renderToolbar();
+        const toolbar = renderToolbar();
         setupEditableElements();
+        toolbar.style.display = 'flex';
 
-        const toolbar = document.getElementById('layoutEditorToolbar');
-        if (toolbar) {
-            toolbar.style.display = 'flex';
-        }
-
-        showToast('Layout Edit Mode active: drag any element');
+        showToast('Layout Editor active: drag any widget to reposition');
     }
 
     /**
@@ -458,6 +555,7 @@
         isEditMode = false;
 
         document.body.classList.remove('layout-edit-mode');
+        showCenterGuide(false);
 
         const toolbar = document.getElementById('layoutEditorToolbar');
         if (toolbar) {
@@ -488,10 +586,9 @@
         }, 2200);
     }
 
-    // Attach keyboard hotkeys
+    // Attach safe keyboard shortcuts (Ctrl+Shift+E or Ctrl+Shift+L)
     window.addEventListener('keydown', function (e) {
-        // Alt + L or Alt + E toggles layout edit mode
-        if (e.altKey && (e.key === 'l' || e.key === 'L' || e.key === 'e' || e.key === 'E')) {
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'e' || e.key === 'E' || e.key === 'l' || e.key === 'L')) {
             e.preventDefault();
             if (isEditMode) {
                 exitEditMode();
@@ -499,9 +596,38 @@
                 enterEditMode();
             }
         }
-        // Esc exits edit mode
+        // Escape exits edit mode
         if (e.key === 'Escape' && isEditMode) {
             exitEditMode();
+        }
+    });
+
+    // Handle window resize gracefully by clamping positions within the new viewport
+    window.addEventListener('resize', () => {
+        const positions = getSavedPositions();
+        if (!positions || Object.keys(positions).length === 0) return;
+
+        let changed = false;
+        EDITABLE_ELEMENTS.forEach(item => {
+            const pos = positions[item.id];
+            if (!pos) return;
+
+            const elemWidth = item.defaultWidth || 200;
+            const maxLeft = Math.max(10, window.innerWidth - elemWidth - 10);
+            const maxTop = Math.max(10, window.innerHeight - 60);
+
+            if (pos.left > maxLeft) {
+                pos.left = maxLeft;
+                changed = true;
+            }
+            if (pos.top > maxTop) {
+                pos.top = maxTop;
+                changed = true;
+            }
+        });
+
+        if (changed) {
+            savePositions(positions);
         }
     });
 

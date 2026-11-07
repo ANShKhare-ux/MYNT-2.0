@@ -7916,6 +7916,11 @@ body.layout-edit-mode [data-editable-element] {
 		transform 0.2s var(--fluid-spring) !important;
 }
 
+body.layout-edit-mode [data-editable-element] * {
+	pointer-events: none !important;
+	user-select: none !important;
+}
+
 body.layout-edit-mode [data-editable-element]:hover {
 	outline-color: var(--accentLightTint-blue) !important;
 	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.16), 0 0 0 2px var(--darkColor-blue) !important;
@@ -7929,6 +7934,21 @@ body.layout-edit-mode [data-editable-element].is-dragging {
 	transform: scale(1.03) !important;
 	box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28) !important;
 	outline: 2px solid var(--darkColor-blue) !important;
+}
+
+/* Center alignment guideline when magnetically snapped */
+.layout-center-guide {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 50%;
+	width: 2px;
+	background: var(--darkColor-blue);
+	opacity: 0.65;
+	z-index: 999998;
+	pointer-events: none;
+	display: none;
+	box-shadow: 0 0 8px var(--darkColor-blue);
 }
 
 /* Badge handle for editable elements */

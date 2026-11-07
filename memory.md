@@ -94,7 +94,8 @@ Core goals:
 - **Element Position Editor & Layout Customization (`scripts/layout-editor.js`)**:
   - Allows users to freely drag and reposition all dashboard elements: Clock (`#analogClock`, `#digitalClock`), Date & Greeting (`.ttteexxtt`), Weather (`#hideWeather`), Search Bar (`#searchbar`), Quotes (`#motivationalQuotesCont`), Shortcuts Dock (`.shortcutsContainer`), ToDo button (`#todoListCont`), Bookmarks button (`#bookmarkButton`), Google Apps icon (`#googleAppsCont`), AI Tools dock (`#aiToolsCont`), and Menu button (`#menuButton`).
   - Search suggestions (`#resultBox`) and search engines (`#search-with-container`) stay in perfect lockstep with the search bar.
-  - Interactive Layout Edit Mode with floating frosted glass toolbar (`🧲 Snap`, `↺ Reset`, `✓ Done`), magnetic center snapping (18px threshold), viewport boundary enforcement, and keyboard shortcuts (`Alt + L`, `Alt + E`, `Esc`). Supports `Alt + Drag` on any element for instant repositioning without opening the toolbar.
+  - Interactive Layout Edit Mode with floating frosted glass toolbar (`🧲 Snap`, `↺ Reset`, `✓ Done`), magnetic center snapping (20px threshold), visual center guideline (`.layout-center-guide`), viewport boundary enforcement, and safe keyboard shortcuts (`Ctrl + Shift + E` / `Ctrl + Shift + L`, `Esc`). Supports holding `Shift` or `Alt` while dragging on any element for instant repositioning without opening the toolbar.
+  - In Edit Mode, child links and inputs automatically switch to `pointer-events: none`, allowing every pixel of the widget surface to act as an effortless drag handle.
   - Zero-FOUC synchronous preloading via `scripts/preload.js` injecting `<style id="custom-layout-positions-style">` in `<head>` from `localStorage.mynt_element_positions`. Full compatibility with `scripts/backup-restore.js`.
 - **Backup & Restore (`scripts/backup-restore.js`)**:
   - Full state export to a timestamped JSON file (`localStorage` preferences and `IndexedDB` wallpapers).

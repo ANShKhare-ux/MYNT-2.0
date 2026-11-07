@@ -253,14 +253,15 @@ Users can maintain both an uploaded image wallpaper and an uploaded video wallpa
 ### 4.9 Element Position Editor & Layout Customization Subsystem
 Users can freely customize and drag the positions of all dashboard elements and widgets (`scripts/layout-editor.js`):
 - **Universal Element Coverage**: Supports independent position editing for all 11 core dashboard elements:
-  - **Flow-positioned Widgets**: Clock (`#analogClock`, `#digitalClock`), Date & Greeting (`.ttteexxtt`), Weather (`#hideWeather`), Search Bar (`#searchbar`), Quotes (`#motivationalQuotesCont`), Shortcuts Dock (`.shortcutsContainer`). Search suggestions (`#resultBox`) and search engines (`#search-with-container`) move synchronously with the search bar.
+  - **Center Dashboard Widgets**: Clock (`#analogClock`, `#digitalClock`), Date & Greeting (`.ttteexxtt`), Weather (`#hideWeather`), Search Bar (`#searchbar`), Quotes (`#motivationalQuotesCont`), Shortcuts Dock (`.shortcutsContainer`). Search suggestions (`#resultBox`) and search engines (`#search-with-container`) move synchronously with the search bar.
   - **Fixed Corner Actions**: ToDo List icon (`#todoListCont`), Bookmarks icon (`#bookmarkButton`), Google Apps icon (`#googleAppsCont`), AI Tools dock (`#aiToolsCont`), Menu/Settings button (`#menuButton`).
 - **Zero-FOUC Synchronous Preloading**: Custom positions are persisted in `localStorage` under `mynt_element_positions`. During `<head>` execution, `scripts/preload.js` synchronously parses the stored positions and injects `<style id="custom-layout-positions-style">`, rendering widgets in their saved locations on first paint with 0.0ms layout shift.
 - **Interactive Edit Mode & Magnetic Snapping**:
-  - Activated via Settings (`#openLayoutEditorBtn`), keyboard shortcut (`Alt + L` / `Alt + E`), or by `Alt + Drag` on any widget.
+  - Activated via Settings (`#openLayoutEditorBtn`), safe keyboard shortcut (`Ctrl + Shift + E` / `Ctrl + Shift + L`), or by holding `Shift` or `Alt` while dragging any widget directly.
   - Features a floating glassmorphic toolbar with Snap toggle (`🧲`), Reset (`↺`), and Done (`✓`).
-  - While dragging, widgets elevate with soft shadows and magnetic snapping to center axes when within 18px threshold.
-  - Bounds enforcement ensures widgets remain at least 10–20px inside the viewport boundaries.
+  - Child interactive elements automatically switch to `pointer-events: none` during Edit Mode, turning the entire surface of widgets (inputs, buttons, clock faces) into seamless drag handles without triggering unwanted clicks or focus states.
+  - While dragging, widgets elevate with soft shadows and magnetic snapping to center axes when within 20px threshold, displaying a visible vertical center guideline (`.layout-center-guide`).
+  - Bounds enforcement ensures widgets remain at least 10px inside viewport boundaries across screen resizing.
 - **One-Click Reset & Backup Integration**: Resetting cleanly clears `mynt_element_positions` and animates all widgets back to their factory layout using `--fluid-spring`. Full position maps are automatically included in user backup JSON files and restored via `scripts/backup-restore.js`.
 
 ---
