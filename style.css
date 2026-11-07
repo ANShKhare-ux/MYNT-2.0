@@ -4867,29 +4867,23 @@ option:checked {
 	border-radius: 100px;
 	overflow: hidden;
 	cursor: pointer;
+	margin-top: var(--gap);
 	transition:
+		width 0.4s var(--fluid-ease-out),
 		transform 0.25s var(--fluid-spring),
 		background-color 0.25s var(--fluid-ease-out),
 		color 0.25s var(--fluid-ease-out);
 }
 
 #menuCloseButton:hover {
-	transform: scale(1.05);
+	width: 100%;
+	background-color: var(--whitishColor-blue);
+	transform: scale(1.02);
 }
 
 #menuCloseButton:active {
 	transform: scale(0.94);
 	transition: transform 0.08s var(--fluid-press);
-}
-	/* Hide the overflow when content expands */
-	transition: all 0.4s ease;
-	cursor: pointer;
-	margin-top: var(--gap);
-}
-
-#menuCloseButton:hover {
-	width: 100%;
-	background-color: var(--whitishColor-blue);
 }
 
 #menuCloseButton::after {
