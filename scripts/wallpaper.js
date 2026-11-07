@@ -54,6 +54,17 @@ function updateVideoControlsUI(isPlaying) {
     }
 }
 
+// Update switch media button tooltip based on current active media
+function updateSwitchButtonUI(currentMode) {
+    const switchBtn = document.getElementById("switchMediaTrigger");
+    if (!switchBtn) return;
+    if (currentMode === "video") {
+        switchBtn.setAttribute("title", "Switch to photo wallpaper");
+    } else {
+        switchBtn.setAttribute("title", "Switch to video wallpaper");
+    }
+}
+
 // Fallback listener: if browser blocks initial unmuted autoplay, start immediately on first user touch/click/key
 function registerGestureRecovery(video) {
     if (gestureRecoveryRegistered || !video) return;
@@ -207,6 +218,7 @@ function setBackground(blob, isNewUpload = false) {
     }
 
     toggleBackgroundType(true);
+    updateSwitchButtonUI(isVideo ? "video" : "image");
     if (previousUrl) {
         URL.revokeObjectURL(previousUrl);
     }
@@ -238,6 +250,16 @@ async function saveImageToIndexedDB(mediaBlob, isRandom) {
         store.put(new Date().toISOString(), timestampKey);
         store.put(isRandom ? "random" : "upload", imageTypeKey);
         store.put(isVideo ? "video" : "image", mediaTypeKey);
+
+        if (!isRandom) {
+            if (isVideo) {
+                store.put(mediaBlob, "uploadedVideo");
+                store.put("video", "activeUploadedMedia");
+            } else {
+                store.put(mediaBlob, "uploadedImage");
+                store.put("image", "activeUploadedMedia");
+            }
+        }
 
         transaction.oncomplete = () => resolve();
         transaction.onerror = (event) => reject("Transaction error: " + event.target.errorCode);
@@ -272,6 +294,9 @@ async function clearImageFromIndexedDB() {
         const transaction = db.transaction(storeName, "readwrite");
         const store = transaction.objectStore(storeName);
         store.delete("backgroundImage");
+        store.delete("uploadedImage");
+        store.delete("uploadedVideo");
+        store.delete("activeUploadedMedia");
         store.delete(timestampKey);
         store.delete(imageTypeKey);
         store.delete(mediaTypeKey);
@@ -387,6 +412,87 @@ function checkAndUpdateImage() {
         });
 }
 
+// Switch between uploaded image and uploaded video
+async function switchBetweenMedia() {
+    try {
+        const db = await openDatabase();
+        const [activeUploadedMedia, uploadedImage, uploadedVideo, currentBg] = await Promise.all([
+            getFromStore(db, "activeUploadedMedia"),
+            getFromStore(db, "uploadedImage"),
+            getFromStore(db, "uploadedVideo"),
+            getFromStore(db, "backgroundImage")
+        ]);
+
+        let imgBlob = uploadedImage;
+        let vidBlob = uploadedVideo;
+
+        // Backward compatibility migration: backfill if media was uploaded prior to separation
+        if (!imgBlob && currentBg && !checkIsVideo(currentBg)) {
+            imgBlob = currentBg;
+            const tx = db.transaction(storeName, "readwrite");
+            tx.objectStore(storeName).put(imgBlob, "uploadedImage");
+            await new Promise(r => tx.oncomplete = r);
+        }
+        if (!vidBlob && currentBg && checkIsVideo(currentBg)) {
+            vidBlob = currentBg;
+            const tx = db.transaction(storeName, "readwrite");
+            tx.objectStore(storeName).put(vidBlob, "uploadedVideo");
+            await new Promise(r => tx.oncomplete = r);
+        }
+
+        const isCurrentlyVideo = isVideoActive || activeUploadedMedia === "video";
+        const targetMode = isCurrentlyVideo ? "image" : "video";
+
+        if (targetMode === "image") {
+            if (!imgBlob) {
+                if (typeof confirmPrompt === "function") {
+                    const upload = await confirmPrompt("No uploaded photo found. Would you like to upload a photo now?");
+                    if (upload && imageUploadInput) imageUploadInput.click();
+                }
+                return;
+            }
+            const tx = db.transaction(storeName, "readwrite");
+            const store = tx.objectStore(storeName);
+            store.put(imgBlob, "backgroundImage");
+            store.put("image", "activeUploadedMedia");
+            store.put("image", mediaTypeKey);
+            store.put("upload", imageTypeKey);
+            store.put(new Date().toISOString(), timestampKey);
+            await new Promise((resolve, reject) => {
+                tx.oncomplete = resolve;
+                tx.onerror = (e) => reject(e.target.errorCode);
+            });
+
+            setBackground(imgBlob, false);
+            updateSwitchButtonUI("image");
+        } else {
+            if (!vidBlob) {
+                if (typeof confirmPrompt === "function") {
+                    const upload = await confirmPrompt("No uploaded video found. Would you like to upload a video now?");
+                    if (upload && videoUploadInput) videoUploadInput.click();
+                }
+                return;
+            }
+            const tx = db.transaction(storeName, "readwrite");
+            const store = tx.objectStore(storeName);
+            store.put(vidBlob, "backgroundImage");
+            store.put("video", "activeUploadedMedia");
+            store.put("video", mediaTypeKey);
+            store.put("upload", imageTypeKey);
+            store.put(new Date().toISOString(), timestampKey);
+            await new Promise((resolve, reject) => {
+                tx.oncomplete = resolve;
+                tx.onerror = (e) => reject(e.target.errorCode);
+            });
+
+            setBackground(vidBlob, false);
+            updateSwitchButtonUI("video");
+        }
+    } catch (error) {
+        console.error("Error switching media background:", error);
+    }
+}
+
 // Event listeners for upload triggers
 const uploadTrigger = document.getElementById("uploadTrigger");
 if (uploadTrigger && imageUploadInput) {
@@ -396,6 +502,12 @@ if (uploadTrigger && imageUploadInput) {
 const uploadVideoTrigger = document.getElementById("uploadVideoTrigger");
 if (uploadVideoTrigger && videoUploadInput) {
     uploadVideoTrigger.addEventListener("click", () => videoUploadInput.click());
+}
+
+// Event listener for switching between image and video
+const switchMediaTrigger = document.getElementById("switchMediaTrigger");
+if (switchMediaTrigger) {
+    switchMediaTrigger.addEventListener("click", switchBetweenMedia);
 }
 
 // Event listener for video play/pause toggle button
@@ -440,6 +552,10 @@ if (clearImageBtn) {
                     removeVideoBackground();
                     document.body.style.removeProperty("--bg-image");
                     toggleBackgroundType(false);
+                    const switchMediaBtn = document.getElementById("switchMediaTrigger");
+                    if (switchMediaBtn) {
+                        switchMediaBtn.setAttribute("title", "Switch between photo and video wallpaper");
+                    }
                 } catch (error) {
                     console.error(error);
                 }

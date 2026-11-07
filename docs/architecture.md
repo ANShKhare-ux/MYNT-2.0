@@ -133,7 +133,7 @@ graph LR
     end
 
     subgraph Stored in IndexedDB
-        Wallpapers[Store: backgroundImages<br/>Blob: backgroundImage<br/>Meta: lastUpdateTime, imageType]
+        Wallpapers[Store: backgroundImages<br/>Active Blob: backgroundImage<br/>Photo Blob: uploadedImage<br/>Video Blob: uploadedVideo<br/>Meta: lastUpdateTime, imageType, mediaType, activeUploadedMedia]
     end
 
     ThemeSettings --> LS
@@ -213,6 +213,17 @@ The wallpaper engine (`scripts/wallpaper.js`) supports both static images and lo
 - **RAM Protection & Garbage Collection**: Ensures zero memory leaks on 8GB systems by revoking previous Blob URLs (`URL.revokeObjectURL`), clearing video sources (`video.removeAttribute('src')`), and flushing decoder buffers (`video.load()`) when switching or clearing wallpapers.
 - **Reduced Motion & Play/Pause Control**: Automatically pauses video playback when `prefers-reduced-motion: reduce` is active and provides a dedicated `#videoPlayPauseTrigger` toggle in the settings drawer to freeze playback on the current frame as a static wallpaper.
 - **Dark Mode Inversion Exclusion**: Specifically excluded from `body[data-bg="wallpaper"]` CSS inversion filters (`> *:not(.menuBar, #bookmarksContainer, #bgVideo)`), ensuring natural color rendition and avoiding redundant per-frame GPU rasterization passes.
+
+### 4.7 Dual-Media Switching Architecture
+Users can maintain both an uploaded image wallpaper and an uploaded video wallpaper simultaneously:
+- **Independent Blob Slots**: `IndexedDB` (`ImageDB` -> `backgroundImages`) maintains discrete keys:
+  - `"backgroundImage"`: The currently active wallpaper (for full backward compatibility with backup/restore and boot routines).
+  - `"uploadedImage"`: Stored static photo Blob.
+  - `"uploadedVideo"`: Stored video wallpaper Blob.
+  - `"activeUploadedMedia"`: Tracks active state (`"image"` or `"video"`).
+- **Dedicated Switch Button (`#switchMediaTrigger`)**: Positioned alongside the upload triggers in the Appearance settings card.
+- **Dynamic Tooltips & Contextual Fallback**: Hovering over the button reveals the upcoming target (`"Switch to photo wallpaper"` or `"Switch to video wallpaper"`). If clicked when the counterpart media has not yet been uploaded, an informative prompt invites the user to select a file directly.
+- **Zero Re-upload Friction**: Instant, local swapping without re-reading from disk or re-selecting files.
 
 ---
 

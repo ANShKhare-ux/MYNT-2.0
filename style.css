@@ -4468,6 +4468,7 @@ option:checked {
 
 .randomButton,
 .videoButton,
+.switchMediaButton,
 .videoPlayPauseButton {
 	display: flex;
 	align-items: center;
@@ -4505,6 +4506,7 @@ option:checked {
 .uploadButton:hover,
 .randomButton:hover,
 .videoButton:hover,
+.switchMediaButton:hover,
 .videoPlayPauseButton:hover {
 	background-color: var(--darkColor-blue);
 	color: var(--whitishColor-blue);
@@ -4514,6 +4516,7 @@ option:checked {
 .uploadButton:active,
 .randomButton:active,
 .videoButton:active,
+.switchMediaButton:active,
 .videoPlayPauseButton:active {
 	background-color: var(--darkerColor-blue);
 	transform: translateY(0);
@@ -5465,6 +5468,7 @@ body[data-bg="wallpaper"] .dropdown-content {
 .black-theme .uploadButton,
 .black-theme .randomButton,
 .black-theme .videoButton,
+.black-theme .switchMediaButton,
 .black-theme .videoPlayPauseButton {
 	background-color: var(--darkColor-blue);
 	color: var(--whitishColor-dark);
@@ -5491,6 +5495,7 @@ body[data-bg="wallpaper"] .dropdown-content {
 .black-theme .uploadButton:hover,
 .black-theme .randomButton:hover,
 .black-theme .videoButton:hover,
+.black-theme .switchMediaButton:hover,
 .black-theme .videoPlayPauseButton:hover,
 .black-theme #todoAdd:hover {
 	background-color: var(--bg-color-dark);
@@ -5499,6 +5504,7 @@ body[data-bg="wallpaper"] .dropdown-content {
 .black-theme .uploadButton:active,
 .black-theme .randomButton:active,
 .black-theme .videoButton:active,
+.black-theme .switchMediaButton:active,
 .black-theme .videoPlayPauseButton:active,
 .black-theme .backupRestoreBtn:active,
 .black-theme .resetbtn:active {

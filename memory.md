@@ -52,6 +52,7 @@ Core goals:
   - Daily to-do list with pin feature and automatic new-day cleanup.
 - **Wallpaper & Video Background Engine (`scripts/wallpaper.js`)**:
   - Local image and video upload stored as Blobs in IndexedDB (`ImageDB`).
+  - **Dual-Media Storage & Instant Switching**: Separately stores `"uploadedImage"` and `"uploadedVideo"` in IndexedDB while maintaining `"backgroundImage"` as the active media. Allows users to switch seamlessly between their uploaded photo and uploaded video anytime via the dedicated `#switchMediaTrigger` button in the Appearance card, with contextual prompts to upload if one is missing, and dynamic tooltips indicating the switch target.
   - **Hardware-Accelerated Video Backgrounds**: Supports MP4, WebM, and OGG video wallpapers. Fixed-position compositor layer (`transform: translateZ(0); will-change: transform; backface-visibility: hidden; pointer-events: none;`) leveraging Intel HD Graphics Quick Sync hardware decoding with near-zero CPU usage.
   - **Muted Autoplay Pipeline with Gesture Recovery**: Strict conformance with Chromium Autoplay Policy (`muted`, `defaultMuted`, `playsinline`, `autoplay`, `video.load()`), dual event readiness hooks (`canplay`, `loadeddata`), loop continuity recovery (`onended`), and transparent first-interaction gesture fallback ensuring instant, unbreakable autoplay.
   - **Strict Resource & Battery Optimizations**:
@@ -165,7 +166,8 @@ All testing and validation commands use the host's native Node.js runtime:
 
 | Command | Purpose |
 |---|---|
-| `node --test` | Runs the full automated test suite (48 tests across 7 test suites). |
+| `node --test` | Runs the full automated test suite (60 tests across 8 test suites). |
+| `node --test tests/video-wallpaper.test.js` | Validates video wallpaper elements, autoplay, hardware acceleration, memory cleanup, and dual-media switching. |
 | `node --test tests/ai-search-mode.test.js` | Validates Google AI Mode pill button, udm=50 search synthesis, engine filtering, and styles. |
 | `node --test tests/glassmorphism.test.js` | Validates glassmorphism tokens, component filters, and accessibility. |
 | `node --test tests/manifest.test.js` | Validates Manifest V3 schema, permissions, and file existence. |

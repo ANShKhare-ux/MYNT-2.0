@@ -135,4 +135,34 @@ test('Video Wallpaper Feature and Hardware Performance Optimization', async (t) 
             'Must implement gesture recovery fallback on first interaction if browser blocks initial autoplay'
         );
     });
+
+    await t.test('index.html and style.css define dual-media switch button', () => {
+        assert.ok(indexHtml.includes('id="switchMediaTrigger"'), 'index.html must include #switchMediaTrigger button');
+        assert.ok(indexHtml.includes('class="switchMediaButton"'), 'index.html must use switchMediaButton class');
+        assert.ok(styleCss.includes('.switchMediaButton'), 'style.css must style .switchMediaButton');
+        assert.ok(styleCss.includes('.black-theme .switchMediaButton'), 'style.css must theme .switchMediaButton for dark mode');
+    });
+
+    await t.test('scripts/wallpaper.js implements dual-media switching and persistence (uploadedImage & uploadedVideo)', () => {
+        assert.ok(
+            wallpaperJs.includes('function switchBetweenMedia'),
+            'scripts/wallpaper.js must define switchBetweenMedia function'
+        );
+        assert.ok(
+            wallpaperJs.includes('"uploadedImage"') && wallpaperJs.includes('"uploadedVideo"'),
+            'scripts/wallpaper.js must manage separate storage slots for uploadedImage and uploadedVideo'
+        );
+        assert.ok(
+            wallpaperJs.includes('"activeUploadedMedia"'),
+            'scripts/wallpaper.js must track activeUploadedMedia state'
+        );
+        assert.ok(
+            wallpaperJs.includes('switchMediaTrigger.addEventListener("click", switchBetweenMedia)'),
+            'Must bind switchMediaTrigger click event to switchBetweenMedia'
+        );
+        assert.ok(
+            wallpaperJs.includes('function updateSwitchButtonUI'),
+            'Must define updateSwitchButtonUI for dynamic tooltip and mode indication'
+        );
+    });
 });
