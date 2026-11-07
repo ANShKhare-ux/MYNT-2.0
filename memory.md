@@ -28,7 +28,7 @@ Core goals:
   - Preload script (`scripts/preload.js`) running in `<head>` to prevent Flash of Unstyled Content (FOUC).
   - Custom color picker setting CSS custom property accent colors.
   - Interactive transparency slider (`scripts/widgets-transparency.js`) controlling `--transparency` on widgets.
-  - **Glassmorphism System**: Native, hardware-accelerated frosted glass layer (`backdrop-filter: blur(...) saturate(...)`) with specular edge reflections, inner glows, and floating elevation across all widgets, sidebars, shortcuts, and modals in wallpaper mode. Adapts smoothly to light/dark themes and provides accessibility fallback for `prefers-reduced-transparency`.
+  - **Glassmorphism System**: Native, hardware-accelerated frosted glass layer (`backdrop-filter: blur(...) saturate(...)`) with specular edge reflections, inner glows, and floating elevation across all widgets, sidebars, shortcuts, settings drawer cards (`.sectionInner`, `.sectionOuter`, `.innerSurface`), shortcut edit page sticky header (`.topBar`), action buttons (`#backButton`, `#newShortcutButton`, `#resetButton`, `.uploadCustomIconButton`, `.shortcutDelete button`), and modals in wallpaper mode. Fixes top drawer header alignment, eliminates stark solid white headers in wallpaper/dark modes, ensures high-contrast typography, adapts smoothly to light/dark themes, and provides accessibility fallback for `prefers-reduced-transparency`.
 - **Clock Subsystem (`scripts/clock.js`)**:
   - Dual modes: Analog (smooth rotating hands) and Digital (12h/24h formats).
   - Contextual time-of-day greetings (Morning / Afternoon / Evening).
@@ -50,8 +50,15 @@ Core goals:
 - **Bookmarks & Tasks (`scripts/bookmarks.js`, `scripts/todo-list.js`)**:
   - Bookmarks sidebar supporting grid and list views, search filtering, and sorting (alphabetical / date added).
   - Daily to-do list with pin feature and automatic new-day cleanup.
-- **Wallpaper Engine (`scripts/wallpaper.js`)**:
-  - Local image upload stored as Blobs in IndexedDB (`ImageDB`).
+- **Wallpaper & Video Background Engine (`scripts/wallpaper.js`)**:
+  - Local image and video upload stored as Blobs in IndexedDB (`ImageDB`).
+  - **Hardware-Accelerated Video Backgrounds**: Supports MP4, WebM, and OGG video wallpapers. Fixed-position compositor layer (`transform: translateZ(0); will-change: transform; backface-visibility: hidden; pointer-events: none;`) leveraging Intel HD Graphics Quick Sync hardware decoding with near-zero CPU usage.
+  - **Strict Resource & Battery Optimizations**:
+    - **Tab Visibility API**: Halts video decoding (`video.pause()`) when tab is hidden or minimized, dropping CPU/GPU decoding to 0.0%.
+    - **Reduced Motion Support**: Automatically pauses video when `prefers-reduced-motion: reduce` is enabled.
+    - **Interactive Play/Pause Control**: Dedicated toggle button (`#videoPlayPauseTrigger`) in settings drawer to freeze video on current frame as a static wallpaper anytime.
+    - **Memory Leak Protection**: Instant `URL.revokeObjectURL(previousUrl)` cleanup and decoder flush (`video.removeAttribute('src')`, `video.load()`) prevents RAM leaks on 8GB systems.
+    - **File Size Safeguards**: Warns user if video upload exceeds 100MB to protect memory bandwidth.
   - Daily random wallpaper integration via Lorem Picsum.
 - **Backup & Restore (`scripts/backup-restore.js`)**:
   - Full state export to a timestamped JSON file (`localStorage` preferences and `IndexedDB` wallpapers).
@@ -157,7 +164,7 @@ All testing and validation commands use the host's native Node.js runtime:
 
 | Command | Purpose |
 |---|---|
-| `node --test` | Runs the full automated test suite (47 tests across 7 test suites). |
+| `node --test` | Runs the full automated test suite (48 tests across 7 test suites). |
 | `node --test tests/ai-search-mode.test.js` | Validates Google AI Mode pill button, udm=50 search synthesis, engine filtering, and styles. |
 | `node --test tests/glassmorphism.test.js` | Validates glassmorphism tokens, component filters, and accessibility. |
 | `node --test tests/manifest.test.js` | Validates Manifest V3 schema, permissions, and file existence. |

@@ -234,6 +234,27 @@ body {
 	margin: 0;
 }
 
+/* Background Video Container & Performance Optimizations */
+.bgVideo {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	object-fit: cover;
+	z-index: -1;
+	pointer-events: none;
+	/* Hardware-accelerated composite layer for Intel HD Graphics 630 */
+	transform: translateZ(0);
+	will-change: transform;
+	backface-visibility: hidden;
+}
+
+body[data-has-video="true"] {
+	background-color: transparent !important;
+	background-image: none !important;
+}
+
 /* Early-paint dark mode: applied by preload.js before deferred scripts run.
    Uses data attributes on <html> set synchronously in <head>. */
 html[data-preferred-theme="dark"]:not(:has(#darkTheme:checked)),
@@ -284,19 +305,11 @@ html:has(
 body[data-bg="wallpaper"]:has(.menuBar .themeSegment[data-active="dark"]):not(
 		:has(#darkTheme:checked)
 	)
-	> *:not(.menuBar, #bookmarksContainer),
-body[data-bg="wallpaper"]:has(.menuBar .themeSegment[data-active="dark"]):not(
-		:has(#darkTheme:checked)
-	)
-	:is(.menuCont, .bookmark-sidebar),
+	> *:not(.menuBar, #bookmarksContainer, #bgVideo),
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(
 		.menuBar .themeSegment[data-active="system"]
 	):not(:has(#darkTheme:checked))
-	> *:not(.menuBar, #bookmarksContainer),
-body[data-bg="wallpaper"][sysTheme="systemDark"]:has(
-		.menuBar .themeSegment[data-active="system"]
-	):not(:has(#darkTheme:checked))
-	:is(.menuCont, .bookmark-sidebar) {
+	> *:not(.menuBar, #bookmarksContainer, #bgVideo) {
 	filter: invert(1) hue-rotate(180deg);
 	-webkit-filter: invert(1) hue-rotate(180deg);
 
@@ -3713,6 +3726,30 @@ input:checked + .toggle:before {
 .black-theme body[data-bg="wallpaper"] .opacityBarControl {
 	border-top: 1px solid #ffffff1a;
 }
+
+.black-theme .menuCont .topDiv,
+html[data-preferred-theme="dark"] .menuCont .topDiv,
+body[sysTheme="systemDark"] .menuCont .topDiv {
+	background-color: #1a1a1c;
+}
+
+.black-theme .menuCont .topDiv::after,
+html[data-preferred-theme="dark"] .menuCont .topDiv::after,
+body[sysTheme="systemDark"] .menuCont .topDiv::after {
+	background-color: #242426;
+}
+
+.black-theme .menuBar .menuCont .topRounder svg path,
+html[data-preferred-theme="dark"] .menuBar .menuCont .topRounder svg path,
+body[sysTheme="systemDark"] .menuBar .menuCont .topRounder svg path {
+	fill: #1a1a1c;
+}
+
+.black-theme .menuCont .topDiv h1,
+html[data-preferred-theme="dark"] .menuCont .topDiv h1,
+body[sysTheme="systemDark"] .menuCont .topDiv h1 {
+	color: #e8eaed;
+}
 /* ----------- End of section ------------ */
 
 .resetbtn {
@@ -3741,44 +3778,108 @@ input:checked + .toggle:before {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	height: 50px;
+	height: 52px;
 	position: sticky;
-	inset: 0;
+	top: 0;
 	z-index: 100;
+	padding: 6px 0;
+	margin-bottom: 6px;
+	box-sizing: border-box;
 	background-color: var(--accentLightTint-blue);
+	transition:
+		background-color 0.25s ease,
+		border-color 0.25s ease;
 }
 
 #backButton {
-	fill: var(--textColorDark-blue);
-	border: none;
-	background: none;
+	width: 38px;
+	height: 38px;
+	border-radius: 50%;
+	border: 1px solid transparent;
+	background: transparent;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	cursor: pointer;
+	fill: var(--textColorDark-blue);
+	box-sizing: border-box;
+	transition:
+		background-color 0.2s ease,
+		border-color 0.2s ease,
+		transform 0.15s ease,
+		fill 0.2s ease;
+}
+
+#backButton svg {
+	width: 22px;
+	height: 22px;
+	pointer-events: none;
+}
+
+#backButton:hover {
+	background-color: rgba(0, 0, 0, 0.08);
+	transform: scale(1.05);
+}
+
+#backButton:active {
+	transform: scale(0.95);
+}
+
+:dir(rtl) #backButton svg {
+	transform: scaleX(-1);
+}
+
+:dir(rtl) #backButton:hover svg {
+	transform: scaleX(-1) scale(1.05);
 }
 
 .rightButtons {
 	display: flex;
 	gap: 8px;
+	align-items: center;
 }
 
 #resetButton,
 #newShortcutButton {
 	fill: var(--textColorDark-blue);
-	border: none;
-	background: color-mix(in srgb, var(--bg-color-blue) 80%, transparent);
-	height: 40px;
-	width: 40px;
-	padding: 8px;
-	border-radius: 7px;
+	border: 1px solid rgba(0, 0, 0, 0.08);
+	background: color-mix(in srgb, var(--whitishColor-blue) 85%, transparent);
+	height: 38px;
+	width: 38px;
+	padding: 7px;
+	border-radius: 12px;
 	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
 	transition:
-		background-color 0.3s ease,
-		fill 0.3s ease;
+		background-color 0.2s ease,
+		border-color 0.2s ease,
+		fill 0.2s ease,
+		transform 0.15s ease,
+		box-shadow 0.2s ease;
+}
+
+#resetButton svg,
+#newShortcutButton svg {
+	width: 22px;
+	height: 22px;
+	pointer-events: none;
+	transition: transform 0.3s ease;
 }
 
 #resetButton:hover,
 #newShortcutButton:hover {
 	fill: white;
 	background-color: var(--darkColor-blue);
+	transform: translateY(-1px);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+#resetButton:active,
+#newShortcutButton:active {
+	transform: translateY(0);
 }
 
 #newShortcutButton svg {
@@ -3996,13 +4097,26 @@ input:checked + .toggle:before {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 42px;
-	height: 42px;
-	background: rgba(255, 255, 255, 0.4);
-	border: none;
-	border-radius: 7px;
+	width: 38px;
+	height: 38px;
+	background: color-mix(in srgb, var(--whitishColor-blue) 85%, transparent);
+	border: 1px solid rgba(0, 0, 0, 0.08);
+	border-radius: 12px;
 	cursor: pointer;
-	transition: 0.3s all;
+	box-sizing: border-box;
+	transition:
+		background-color 0.2s ease,
+		border-color 0.2s ease,
+		fill 0.2s ease,
+		transform 0.15s ease,
+		box-shadow 0.2s ease;
+}
+
+.shortcutDelete button svg,
+.uploadCustomIconButton svg {
+	width: 20px;
+	height: 20px;
+	pointer-events: none;
 }
 
 /* Shared hover state for action buttons */
@@ -4010,6 +4124,13 @@ input:checked + .toggle:before {
 .shortcutDelete button:not(.inactive):hover {
 	fill: white;
 	background: var(--darkColor-blue);
+	transform: translateY(-1px);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.uploadCustomIconButton:not(.inactive):active,
+.shortcutDelete button:not(.inactive):active {
+	transform: translateY(0);
 }
 
 /* Color-specific hover for upload button */
@@ -4345,7 +4466,9 @@ option:checked {
 		color 0.3s;
 }
 
-.randomButton {
+.randomButton,
+.videoButton,
+.videoPlayPauseButton {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -4357,7 +4480,8 @@ option:checked {
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 	transition:
 		background-color 0.3s,
-		color 0.3s;
+		color 0.3s,
+		transform 0.15s ease;
 	padding: 10px;
 }
 
@@ -4373,32 +4497,42 @@ option:checked {
 	cursor: pointer;
 	transition:
 		background-color 0.3s,
-		color 0.3s;
+		color 0.3s,
+		transform 0.15s ease;
 }
 
 /* Hover Effects */
 .uploadButton:hover,
-.randomButton:hover {
+.randomButton:hover,
+.videoButton:hover,
+.videoPlayPauseButton:hover {
 	background-color: var(--darkColor-blue);
 	color: var(--whitishColor-blue);
+	transform: translateY(-1px);
 }
 
 .uploadButton:active,
-.randomButton:active {
+.randomButton:active,
+.videoButton:active,
+.videoPlayPauseButton:active {
 	background-color: var(--darkerColor-blue);
+	transform: translateY(0);
 }
 
 .clearButton:hover {
 	color: var(--darkColor-blue);
 	background-color: var(--whitishColor-blue);
+	transform: translateY(-1px);
 }
 
 .clearButton:active {
 	color: var(--darkerColor-blue);
+	transform: translateY(0);
 }
 
 /* File input remains hidden */
-#imageUpload {
+#imageUpload,
+#videoUpload {
 	display: none;
 }
 
@@ -5329,7 +5463,9 @@ body[data-bg="wallpaper"] .dropdown-content {
 }
 
 .black-theme .uploadButton,
-.black-theme .randomButton {
+.black-theme .randomButton,
+.black-theme .videoButton,
+.black-theme .videoPlayPauseButton {
 	background-color: var(--darkColor-blue);
 	color: var(--whitishColor-dark);
 }
@@ -5354,12 +5490,16 @@ body[data-bg="wallpaper"] .dropdown-content {
 .black-theme .backupRestoreBtn:hover,
 .black-theme .uploadButton:hover,
 .black-theme .randomButton:hover,
+.black-theme .videoButton:hover,
+.black-theme .videoPlayPauseButton:hover,
 .black-theme #todoAdd:hover {
 	background-color: var(--bg-color-dark);
 }
 
 .black-theme .uploadButton:active,
 .black-theme .randomButton:active,
+.black-theme .videoButton:active,
+.black-theme .videoPlayPauseButton:active,
 .black-theme .backupRestoreBtn:active,
 .black-theme .resetbtn:active {
 	background-color: #0e0e0e;
@@ -5537,26 +5677,108 @@ body[data-bg="wallpaper"] .dropdown-content {
 	background-color: var(--bg-color-dark);
 }
 
-.black-theme .shortcutSettingsEntry {
+.black-theme .topBar,
+html[data-preferred-theme="dark"] .topBar,
+body[sysTheme="systemDark"] .topBar {
+	background-color: #1a1a1c;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.black-theme .pageTitle,
+html[data-preferred-theme="dark"] .pageTitle,
+body[sysTheme="systemDark"] .pageTitle {
+	color: #e8eaed;
+}
+
+.black-theme #editShortcutsListInfo,
+html[data-preferred-theme="dark"] #editShortcutsListInfo,
+body[sysTheme="systemDark"] #editShortcutsListInfo {
+	color: rgba(232, 234, 237, 0.75);
+}
+
+.black-theme .shortcutSettingsEntry,
+html[data-preferred-theme="dark"] .shortcutSettingsEntry,
+body[sysTheme="systemDark"] .shortcutSettingsEntry {
 	background-color: var(--bg-color-dark);
+}
+
+.black-theme .shortcutSettingsEntry input,
+html[data-preferred-theme="dark"] .shortcutSettingsEntry input,
+body[sysTheme="systemDark"] .shortcutSettingsEntry input {
+	color: #e8eaed;
+}
+
+.black-theme .shortcutSettingsEntry input::placeholder,
+html[data-preferred-theme="dark"] .shortcutSettingsEntry input::placeholder,
+body[sysTheme="systemDark"] .shortcutSettingsEntry input::placeholder {
+	color: rgba(232, 234, 237, 0.5);
+}
+
+.black-theme .shortcutInputRow svg,
+html[data-preferred-theme="dark"] .shortcutInputRow svg,
+body[sysTheme="systemDark"] .shortcutInputRow svg {
+	color: rgba(232, 234, 237, 0.65);
+}
+
+.black-theme .grip-container,
+html[data-preferred-theme="dark"] .grip-container,
+body[sysTheme="systemDark"] .grip-container {
+	color: rgba(232, 234, 237, 0.6);
+}
+
+.black-theme #backButton,
+html[data-preferred-theme="dark"] #backButton,
+body[sysTheme="systemDark"] #backButton {
+	fill: #e8eaed;
+}
+
+.black-theme #backButton:hover,
+html[data-preferred-theme="dark"] #backButton:hover,
+body[sysTheme="systemDark"] #backButton:hover {
+	background-color: rgba(255, 255, 255, 0.12);
+	fill: #ffffff;
 }
 
 .black-theme #resetButton,
 .black-theme #newShortcutButton,
-.black-theme .shortcutDelete button,
-.black-theme .uploadCustomIconButton {
-	background: #232221;
+html[data-preferred-theme="dark"] #resetButton,
+html[data-preferred-theme="dark"] #newShortcutButton,
+body[sysTheme="systemDark"] #resetButton,
+body[sysTheme="systemDark"] #newShortcutButton {
+	background: #28282c;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	fill: #e8eaed;
 }
 
 .black-theme #resetButton:hover,
-.black-theme #newShortcutButton:hover {
-	fill: #e4e4e4;
-	background: #282828;
+.black-theme #newShortcutButton:hover,
+html[data-preferred-theme="dark"] #resetButton:hover,
+html[data-preferred-theme="dark"] #newShortcutButton:hover,
+body[sysTheme="systemDark"] #resetButton:hover,
+body[sysTheme="systemDark"] #newShortcutButton:hover {
+	fill: #ffffff;
+	background: #38383e;
+}
+
+.black-theme .shortcutDelete button,
+.black-theme .uploadCustomIconButton,
+html[data-preferred-theme="dark"] .shortcutDelete button,
+html[data-preferred-theme="dark"] .uploadCustomIconButton,
+body[sysTheme="systemDark"] .shortcutDelete button,
+body[sysTheme="systemDark"] .uploadCustomIconButton {
+	background: #28282c;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	fill: #e8eaed;
 }
 
 .black-theme .uploadCustomIconButton:hover,
-.black-theme .shortcutDelete button:hover {
-	background: #404040;
+.black-theme .shortcutDelete button:hover,
+html[data-preferred-theme="dark"] .uploadCustomIconButton:hover,
+html[data-preferred-theme="dark"] .shortcutDelete button:hover,
+body[sysTheme="systemDark"] .uploadCustomIconButton:hover,
+body[sysTheme="systemDark"] .shortcutDelete button:hover {
+	background: #38383e;
+	fill: #ffffff;
 }
 
 .black-theme .prompt-modal-ok {
@@ -6074,7 +6296,7 @@ body[data-bg="wallpaper"] #editBookmarkModal {
 	box-shadow: var(--glass-shadow-lg), var(--glass-specular);
 }
 
-/* --- Slide-Out Settings Drawer --- */
+/* --- Slide-Out Settings Drawer Glassmorphism --- */
 body[data-bg="wallpaper"] .menuBar .menuCont {
 	background-color: color-mix(
 		in srgb,
@@ -6085,6 +6307,196 @@ body[data-bg="wallpaper"] .menuBar .menuCont {
 	-webkit-backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate));
 	border-inline-start: 1px solid var(--glass-border-color);
 	box-shadow: var(--glass-shadow-lg);
+}
+
+/* Fix drawer header and remove broken white arch / outer rounder */
+body[data-bg="wallpaper"] .menuBar .menuCont .topRounder {
+	display: none !important;
+}
+
+body[data-bg="wallpaper"] .menuCont .topDiv {
+	background-color: transparent;
+	border-bottom: 1px solid var(--glass-border-subtle);
+	height: 90px;
+	position: relative;
+}
+
+body[data-bg="wallpaper"] .menuCont .topDiv::after {
+	display: none !important;
+}
+
+body[data-bg="wallpaper"] .menuCont .topDiv h1 {
+	position: absolute;
+	inset: 0;
+	margin: auto;
+	transform: none;
+	width: fit-content;
+	height: fit-content;
+	color: var(--textColorDark-blue);
+	font-size: 1.5rem;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+}
+
+body[data-bg="wallpaper"] .menuCont .optCont {
+	height: calc(100% - 90px);
+	padding-top: 14px;
+}
+
+/* Glassmorphic Tiles (GitHub & Feedback) */
+body[data-bg="wallpaper"] .tilesCont .tiles {
+	background-color: color-mix(
+		in srgb,
+		var(--darkColor-blue) calc(var(--transparency) * 2.2),
+		rgba(0, 0, 0, 0.22)
+	);
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-subtle);
+	box-shadow: var(--glass-shadow-sm);
+	transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+body[data-bg="wallpaper"] .tilesCont .tiles:hover {
+	transform: translateY(-1px);
+	background-color: color-mix(
+		in srgb,
+		var(--darkColor-blue) calc(var(--transparency) * 2.8),
+		rgba(0, 0, 0, 0.32)
+	);
+	border-color: var(--glass-border-base);
+	box-shadow: var(--glass-shadow);
+}
+
+/* Glassmorphic Section Cards (Outer Container) */
+body[data-bg="wallpaper"] .sectionOuter {
+	background-color: color-mix(
+		in srgb,
+		var(--whitishColor-blue) calc(var(--transparency) * 1.2),
+		transparent
+	);
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-subtle);
+	box-shadow: var(--glass-shadow-sm);
+}
+
+body[data-bg="wallpaper"] .sectionOuter:hover {
+	background-color: color-mix(
+		in srgb,
+		var(--whitishColor-blue) calc(var(--transparency) * 1.5),
+		transparent
+	);
+	border-color: var(--glass-border-base);
+}
+
+/* Glassmorphic Inner Solid Cards (Transforming White Solid Cards to Frosted Glass) */
+body[data-bg="wallpaper"] .sectionInner,
+body[data-bg="wallpaper"] .appearanceSection .innerSurface {
+	background-color: color-mix(
+		in srgb,
+		white calc(var(--transparency) * 1.5),
+		transparent
+	);
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-subtle);
+	box-shadow: var(--glass-specular), 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+body[data-bg="wallpaper"] .sectionInner .ttcont:not(:last-child) {
+	border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Glassmorphism for Shortcut Settings (Page 2) */
+body[data-bg="wallpaper"] .topBar {
+	background-color: color-mix(
+		in srgb,
+		var(--accentLightTint-blue) calc(var(--transparency) + 5%),
+		transparent
+	);
+	backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate));
+	border-bottom: 1px solid var(--glass-border-subtle);
+}
+
+body[data-bg="wallpaper"] #backButton {
+	background-color: color-mix(
+		in srgb,
+		var(--whitishColor-blue) calc(var(--transparency) * 1.5),
+		transparent
+	);
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-subtle);
+	box-shadow: var(--glass-shadow-sm);
+	fill: var(--textColorDark-blue);
+}
+
+body[data-bg="wallpaper"] #backButton:hover {
+	background-color: var(--darkColor-blue);
+	fill: #ffffff;
+	border-color: transparent;
+	transform: scale(1.05);
+}
+
+body[data-bg="wallpaper"] #resetButton,
+body[data-bg="wallpaper"] #newShortcutButton {
+	background-color: color-mix(
+		in srgb,
+		var(--whitishColor-blue) calc(var(--transparency) * 1.5),
+		transparent
+	);
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-subtle);
+	box-shadow: var(--glass-shadow-sm);
+	fill: var(--textColorDark-blue);
+}
+
+body[data-bg="wallpaper"] #resetButton:hover,
+body[data-bg="wallpaper"] #newShortcutButton:hover {
+	background-color: var(--darkColor-blue);
+	fill: #ffffff;
+	border-color: transparent;
+}
+
+body[data-bg="wallpaper"] .shortcutDelete button,
+body[data-bg="wallpaper"] .uploadCustomIconButton {
+	background-color: color-mix(
+		in srgb,
+		var(--whitishColor-blue) calc(var(--transparency) * 1.5),
+		transparent
+	);
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-subtle);
+	box-shadow: var(--glass-shadow-sm);
+	fill: var(--textColorDark-blue);
+}
+
+body[data-bg="wallpaper"] .shortcutDelete button:hover,
+body[data-bg="wallpaper"] .uploadCustomIconButton:hover {
+	background-color: var(--darkColor-blue);
+	fill: #ffffff;
+	border-color: transparent;
+}
+
+body[data-bg="wallpaper"] .shortcutSettingsEntry {
+	background-color: color-mix(
+		in srgb,
+		var(--whitishColor-blue) calc(var(--transparency) * 1.5),
+		transparent
+	);
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-subtle);
+	box-shadow: var(--glass-shadow-sm);
+}
+
+/* Bookmark sidebar cleanup in wallpaper mode */
+body[data-bg="wallpaper"] .bookmark-sidebar .topOutRoundCorner {
+	display: none !important;
 }
 
 /* --- Dark Theme Harmonization --- */
@@ -6101,6 +6513,233 @@ body[data-bg="wallpaper"].black-theme .todo-container .addTaskCont,
 html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .todo-container .addTaskCont,
 body[data-bg="wallpaper"][sysTheme="systemDark"] .todo-container .addTaskCont {
 	background-color: color-mix(in srgb, #2a2a2a 70%, transparent);
+}
+
+/* Dark Theme Adaptations for Settings Drawer & Cards */
+.black-theme body[data-bg="wallpaper"] .menuBar .menuCont,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .menuBar .menuCont,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .menuBar .menuCont,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .menuBar .menuCont {
+	background-color: rgba(22, 22, 26, calc(0.68 + (var(--transparency) - 0.5) * 0.25));
+	border-inline-start: 1px solid rgba(255, 255, 255, 0.14);
+	box-shadow: -8px 0 32px rgba(0, 0, 0, 0.45);
+}
+
+.black-theme body[data-bg="wallpaper"] .menuCont .topDiv h1,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .menuCont .topDiv h1,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .menuCont .topDiv h1,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .menuCont .topDiv h1 {
+	color: #e8eaed;
+}
+
+.black-theme body[data-bg="wallpaper"] .sectionOuter,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .sectionOuter,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .sectionOuter,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .sectionOuter {
+	background-color: rgba(255, 255, 255, 0.05);
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.black-theme body[data-bg="wallpaper"] .sectionOuter:hover,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .sectionOuter:hover,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .sectionOuter:hover,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .sectionOuter:hover {
+	background-color: rgba(255, 255, 255, 0.08);
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+.black-theme body[data-bg="wallpaper"] .sectionInner,
+.black-theme body[data-bg="wallpaper"] .appearanceSection .innerSurface,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .sectionInner,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .appearanceSection .innerSurface,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .sectionInner,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .appearanceSection .innerSurface,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .sectionInner,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .appearanceSection .innerSurface {
+	background-color: rgba(255, 255, 255, 0.08);
+	border: 1px solid rgba(255, 255, 255, 0.14);
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.black-theme body[data-bg="wallpaper"] .sectionInner .ttcont:not(:last-child),
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .sectionInner .ttcont:not(:last-child),
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .sectionInner .ttcont:not(:last-child),
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .sectionInner .ttcont:not(:last-child) {
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.black-theme body[data-bg="wallpaper"] .sectionTitle,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .sectionTitle,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .sectionTitle,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .sectionTitle {
+	color: #e8eaed;
+}
+
+.black-theme body[data-bg="wallpaper"] .sectionChevron,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .sectionChevron,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .sectionChevron,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .sectionChevron {
+	border-color: #e8eaed;
+}
+
+.black-theme body[data-bg="wallpaper"] .sectionInner .bigText,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .sectionInner .bigText,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .sectionInner .bigText,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .sectionInner .bigText {
+	color: #e8eaed;
+}
+
+.black-theme body[data-bg="wallpaper"] .sectionInner .infoText,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .sectionInner .infoText,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .sectionInner .infoText,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .sectionInner .infoText {
+	color: rgba(232, 234, 237, 0.75);
+}
+
+.black-theme body[data-bg="wallpaper"] .tilesCont .tiles,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .tilesCont .tiles,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .tilesCont .tiles,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .tilesCont .tiles {
+	background-color: rgba(255, 255, 255, 0.12);
+	border-color: rgba(255, 255, 255, 0.18);
+	color: #ffffff;
+}
+
+.black-theme body[data-bg="wallpaper"] .tilesCont .tiles:hover,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .tilesCont .tiles:hover,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .tilesCont .tiles:hover,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .tilesCont .tiles:hover {
+	background-color: rgba(255, 255, 255, 0.2);
+	border-color: rgba(255, 255, 255, 0.28);
+}
+
+.black-theme body[data-bg="wallpaper"] .topBar,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .topBar,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .topBar,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .topBar {
+	background-color: rgba(22, 22, 26, calc(0.75 + (var(--transparency) - 0.5) * 0.25));
+	border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.black-theme body[data-bg="wallpaper"] .pageTitle,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .pageTitle,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .pageTitle,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .pageTitle {
+	color: #e8eaed;
+}
+
+.black-theme body[data-bg="wallpaper"] #editShortcutsListInfo,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] #editShortcutsListInfo,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #editShortcutsListInfo,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #editShortcutsListInfo {
+	color: rgba(232, 234, 237, 0.75);
+}
+
+.black-theme body[data-bg="wallpaper"] #backButton,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] #backButton,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #backButton,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #backButton {
+	background-color: rgba(255, 255, 255, 0.1);
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	fill: #e8eaed;
+}
+
+.black-theme body[data-bg="wallpaper"] #backButton:hover,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] #backButton:hover,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #backButton:hover,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #backButton:hover {
+	background-color: rgba(255, 255, 255, 0.22);
+	fill: #ffffff;
+	border-color: rgba(255, 255, 255, 0.25);
+}
+
+.black-theme body[data-bg="wallpaper"] #resetButton,
+.black-theme body[data-bg="wallpaper"] #newShortcutButton,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] #resetButton,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] #newShortcutButton,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #resetButton,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #newShortcutButton,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #resetButton,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #newShortcutButton {
+	background-color: rgba(255, 255, 255, 0.1);
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	fill: #e8eaed;
+}
+
+.black-theme body[data-bg="wallpaper"] #resetButton:hover,
+.black-theme body[data-bg="wallpaper"] #newShortcutButton:hover,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] #resetButton:hover,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] #newShortcutButton:hover,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #resetButton:hover,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #newShortcutButton:hover,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #resetButton:hover,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #newShortcutButton:hover {
+	background-color: rgba(255, 255, 255, 0.22);
+	fill: #ffffff;
+	border-color: rgba(255, 255, 255, 0.25);
+}
+
+.black-theme body[data-bg="wallpaper"] .shortcutDelete button,
+.black-theme body[data-bg="wallpaper"] .uploadCustomIconButton,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .shortcutDelete button,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .uploadCustomIconButton,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .shortcutDelete button,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .uploadCustomIconButton,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .shortcutDelete button,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .uploadCustomIconButton {
+	background-color: rgba(255, 255, 255, 0.1);
+	border: 1px solid rgba(255, 255, 255, 0.14);
+	fill: #e8eaed;
+}
+
+.black-theme body[data-bg="wallpaper"] .shortcutDelete button:hover,
+.black-theme body[data-bg="wallpaper"] .uploadCustomIconButton:hover,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .shortcutDelete button:hover,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .uploadCustomIconButton:hover,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .shortcutDelete button:hover,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .uploadCustomIconButton:hover,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .shortcutDelete button:hover,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .uploadCustomIconButton:hover {
+	background-color: rgba(255, 255, 255, 0.22);
+	fill: #ffffff;
+	border-color: rgba(255, 255, 255, 0.25);
+}
+
+.black-theme body[data-bg="wallpaper"] .shortcutSettingsEntry,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .shortcutSettingsEntry,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .shortcutSettingsEntry,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .shortcutSettingsEntry {
+	background-color: rgba(255, 255, 255, 0.08);
+	border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.black-theme body[data-bg="wallpaper"] .shortcutSettingsEntry input,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .shortcutSettingsEntry input,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .shortcutSettingsEntry input,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .shortcutSettingsEntry input {
+	color: #e8eaed;
+}
+
+.black-theme body[data-bg="wallpaper"] .shortcutSettingsEntry input::placeholder,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .shortcutSettingsEntry input::placeholder,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .shortcutSettingsEntry input::placeholder,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .shortcutSettingsEntry input::placeholder {
+	color: rgba(232, 234, 237, 0.5);
+}
+
+.black-theme body[data-bg="wallpaper"] .shortcutInputRow svg,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .shortcutInputRow svg,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .shortcutInputRow svg,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .shortcutInputRow svg {
+	color: rgba(232, 234, 237, 0.65);
+}
+
+.black-theme body[data-bg="wallpaper"] .grip-container,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .grip-container,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .grip-container,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .grip-container {
+	color: rgba(232, 234, 237, 0.6);
 }
 
 /* --- Accessibility: Reduced Transparency Support --- */
@@ -6122,7 +6761,18 @@ body[data-bg="wallpaper"][sysTheme="systemDark"] .todo-container .addTaskCont {
 	body[data-bg="wallpaper"] #prompt-modal-container,
 	body[data-bg="wallpaper"] .ai-settings-modal,
 	body[data-bg="wallpaper"] #editBookmarkModal,
-	body[data-bg="wallpaper"] .menuBar .menuCont {
+	body[data-bg="wallpaper"] .menuBar .menuCont,
+	body[data-bg="wallpaper"] .sectionOuter,
+	body[data-bg="wallpaper"] .sectionInner,
+	body[data-bg="wallpaper"] .appearanceSection .innerSurface,
+	body[data-bg="wallpaper"] .tilesCont .tiles,
+	body[data-bg="wallpaper"] .topBar,
+	body[data-bg="wallpaper"] #backButton,
+	body[data-bg="wallpaper"] #resetButton,
+	body[data-bg="wallpaper"] #newShortcutButton,
+	body[data-bg="wallpaper"] .shortcutDelete button,
+	body[data-bg="wallpaper"] .uploadCustomIconButton,
+	body[data-bg="wallpaper"] .shortcutSettingsEntry {
 		backdrop-filter: none !important;
 		-webkit-backdrop-filter: none !important;
 	}

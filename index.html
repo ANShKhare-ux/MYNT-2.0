@@ -82,6 +82,9 @@
     <!-- --------------------- Loading Screen Starting --------------------- -->
     <img src="./images/Loading.png" id="LoadingScreen" fetchpriority="high" />
 
+    <!-- --------------------- Background Video Element --------------------- -->
+    <video id="bgVideo" class="bgVideo" autoplay loop muted playsinline disablepictureinpicture disableremoteplayback style="display: none;"></video>
+
     <!-- --------------------- ToDo List Setup Starting --------------------- -->
     <!-- ToDo Icon -->
     <div class="todoListCont" id="todoListCont">
@@ -1754,6 +1757,24 @@
                                             <span id="uploadWallpaperText">Upload Wallpaper</span>
                                         </button>
 
+                                        <!-- Upload Video Wallpaper Button -->
+                                        <button class="videoButton" id="uploadVideoTrigger" title="Upload Video Wallpaper">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
+                                                <path fill="currentColor"
+                                                    d="m18 16l4 2.5v-13L18 8zm-2-9a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z" />
+                                            </svg>
+                                        </button>
+
+                                        <!-- Video Play/Pause Toggle Button (shown when video wallpaper is active) -->
+                                        <button class="videoPlayPauseButton" id="videoPlayPauseTrigger" title="Pause / Play Video Background" style="display: none;">
+                                            <svg id="videoPauseIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
+                                                <path fill="currentColor" d="M6 19h4V5H6zm8-14v14h4V5z"/>
+                                            </svg>
+                                            <svg id="videoPlayIcon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" style="display: none;">
+                                                <path fill="currentColor" d="M8 5v14l11-7z"/>
+                                            </svg>
+                                        </button>
+
                                         <!-- Random Wallpaper Button -->
                                         <button class="randomButton" id="randomImageTrigger">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -1773,8 +1794,9 @@
                                             </svg>
                                         </button>
 
-                                        <!-- Hidden File Input -->
-                                        <input type="file" id="imageUpload" accept="image/*" />
+                                        <!-- Hidden File Inputs -->
+                                        <input type="file" id="imageUpload" accept="image/*,video/mp4,video/webm,video/ogg" />
+                                        <input type="file" id="videoUpload" accept="video/mp4,video/webm,video/ogg" style="display: none;" />
                                     </div>
                                     <!-- ----End of Custom Wallpaper uploading thingsss------------- -->
 

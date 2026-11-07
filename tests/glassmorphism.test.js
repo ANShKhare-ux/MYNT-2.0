@@ -53,6 +53,71 @@ test('Glassmorphism System Design and Implementation', async (t) => {
         assert.ok(cssContent.includes('-webkit-backdrop-filter: blur(var(--glass-blur))'), 'Must include -webkit-backdrop-filter prefix');
     });
 
+    await t.test('settings drawer cards apply glassmorphism and header layout is cleaned', () => {
+        // Settings drawer and cards glassmorphism selectors
+        assert.ok(
+            cssContent.includes('body[data-bg="wallpaper"] .sectionInner'),
+            'style.css must apply glassmorphism to .sectionInner cards'
+        );
+        assert.ok(
+            cssContent.includes('body[data-bg="wallpaper"] .sectionOuter'),
+            'style.css must apply glassmorphism to .sectionOuter container'
+        );
+        assert.ok(
+            cssContent.includes('body[data-bg="wallpaper"] .tilesCont .tiles'),
+            'style.css must apply glassmorphism to GitHub and Feedback tiles'
+        );
+
+        // Header cleanup and broken arch removal
+        assert.ok(
+            cssContent.includes('body[data-bg="wallpaper"] .menuBar .menuCont .topRounder') &&
+            cssContent.includes('display: none !important'),
+            'Must eliminate outer topRounder SVG wedge in wallpaper mode'
+        );
+        assert.ok(
+            cssContent.includes('body[data-bg="wallpaper"] .menuCont .topDiv::after') &&
+            cssContent.includes('display: none !important'),
+            'Must eliminate broken topDiv::after arched cutout in wallpaper mode'
+        );
+        assert.ok(
+            cssContent.includes('body[data-bg="wallpaper"] .menuCont .topDiv') &&
+            cssContent.includes('background-color: transparent'),
+            'Must make menuCont topDiv transparent in wallpaper mode'
+        );
+    });
+
+    await t.test('shortcut edit page topBar and action buttons apply glassmorphism and theme contrast', () => {
+        // Sticky topBar glassmorphism in wallpaper mode
+        assert.ok(
+            cssContent.includes('body[data-bg="wallpaper"] .topBar'),
+            'style.css must apply glassmorphism to .topBar in wallpaper mode'
+        );
+        assert.ok(
+            cssContent.includes('body[data-bg="wallpaper"] #backButton'),
+            'style.css must style #backButton with frosted glass in wallpaper mode'
+        );
+        assert.ok(
+            cssContent.includes('body[data-bg="wallpaper"] #resetButton'),
+            'style.css must style #resetButton with frosted glass in wallpaper mode'
+        );
+        assert.ok(
+            cssContent.includes('body[data-bg="wallpaper"] #newShortcutButton'),
+            'style.css must style #newShortcutButton with frosted glass in wallpaper mode'
+        );
+
+        // Dark theme wallpaper overrides
+        assert.ok(
+            cssContent.includes('.black-theme body[data-bg="wallpaper"] .topBar') ||
+            cssContent.includes('body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .topBar'),
+            'Must provide dark theme glass styling for .topBar'
+        );
+        assert.ok(
+            cssContent.includes('.black-theme body[data-bg="wallpaper"] .pageTitle') ||
+            cssContent.includes('body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .pageTitle'),
+            'Must provide high-contrast text color for .pageTitle in dark mode'
+        );
+    });
+
     await t.test('dark theme adaptation defines contrast-adjusted glass borders and shadows', () => {
         assert.ok(
             cssContent.includes('--glass-border-dark'),

@@ -188,7 +188,8 @@ flowchart TD
 ### 4.4 Glassmorphism System
 MYNT features a native, hardware-accelerated Glassmorphism layer implemented via CSS custom properties and multi-layer backdrop filters. When a custom wallpaper or interface transparency is enabled (`body[data-bg="wallpaper"]`), widgets transform into frosted translucent glass surfaces:
 
-- **Multi-stop Blur & Saturation**: Uses `backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate))` (with `-webkit-` vendor prefixes) across searchbar, weather cards, to-do list, bookmarks, AI launcher, and modals.
+- **Multi-stop Blur & Saturation**: Uses `backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate))` (with `-webkit-` vendor prefixes) across searchbar, weather cards, to-do list, bookmarks, AI launcher, modals, settings drawer cards (`.sectionInner`, `.sectionOuter`, `.innerSurface`), shortcut edit sticky header (`.topBar`), and action buttons (`#backButton`, `#newShortcutButton`, `#resetButton`, `.uploadCustomIconButton`, `.shortcutDelete button`).
+- **Clean Drawer Header & Shortcut Editor Integration**: Eliminates broken opaque header cutouts and pseudo-element arches (`.topDiv::after`, `.topRounder`) as well as stark solid white bars in `#shortcutEditPage`, unifying the drawer with frosted glass surfaces and high-contrast typography.
 - **Specular Edge Reflections**: Thin, light-catching borders (`var(--glass-border-color)`) and inner top glows (`var(--glass-specular)`) simulate light refracting through glass edges.
 - **Floating Elevation**: Soft ambient drop shadows (`var(--glass-shadow-lg)`) elevate translucent cards above complex wallpaper imagery.
 - **Theme Harmonization**: Specular borders and glows automatically soften under Dark and System Dark modes (`var(--glass-border-dark)`, `var(--glass-specular-dark)`) to prevent stark white outlines.
@@ -202,6 +203,16 @@ The search bar (`scripts/search.js`, `scripts/search-suggestions.js`, `scripts/v
 - **Official Parameter Routing (`udm=50`)**: Submitting an AI search navigates to `https://www.google.com/search?q=${query}&udm=50` (or `https://www.google.com/search?udm=50` when empty) using Google's official User Display Mode parameter for AI Overviews.
 - **Contextual Visibility (`isGoogleSelected`)**: The AI Mode button dynamically appears when Google (`engine1`) or Default browser search (`engine0`) is selected, and automatically hides for third-party engines (DuckDuckGo, Bing, Brave, YouTube, Reddit, Quora).
 - **User Preference & Responsive Adaptation**: Honors user visibility preference via the Settings drawer toggle (`localStorage.aiModeIconVisible`). On small screens (`<= 500px`), the text label collapses to a compact icon button to maintain search bar geometry.
+
+### 4.6 Video Wallpaper Subsystem & Hardware Performance Optimizations
+The wallpaper engine (`scripts/wallpaper.js`) supports both static images and looping video backgrounds (MP4, WebM, OGG) stored locally in IndexedDB (`ImageDB`). It is specifically engineered to run smoothly on lower-spec hardware configurations (e.g. Intel HD Graphics 630, Intel Core i5-7400, 8GB RAM):
+
+- **Zero-CPU Hardware Decoding**: Uses native HTML5 `<video>` with `autoplay`, `loop`, `muted`, `playsinline`, `disablepictureinpicture`, and `disableremoteplayback`, enabling Intel Quick Sync fixed-function hardware video decoding on Intel HD Graphics 630.
+- **Dedicated Compositor Layer**: Positioned with `fixed`, `transform: translateZ(0)`, `will-change: transform`, `backface-visibility: hidden`, and `pointer-events: none` to isolate video rendering to a GPU compositor layer and eliminate hit-testing repaints.
+- **Tab Visibility Throttling (0% Background CPU/GPU)**: Leverages the Page Visibility API (`visibilitychange`). Whenever the user switches away from the New Tab page or minimizes the browser, `video.pause()` halts the hardware decoder immediately. Playback resumes automatically upon returning.
+- **RAM Protection & Garbage Collection**: Ensures zero memory leaks on 8GB systems by revoking previous Blob URLs (`URL.revokeObjectURL`), clearing video sources (`video.removeAttribute('src')`), and flushing decoder buffers (`video.load()`) when switching or clearing wallpapers.
+- **Reduced Motion & Play/Pause Control**: Automatically pauses video playback when `prefers-reduced-motion: reduce` is active and provides a dedicated `#videoPlayPauseTrigger` toggle in the settings drawer to freeze playback on the current frame as a static wallpaper.
+- **Dark Mode Inversion Exclusion**: Specifically excluded from `body[data-bg="wallpaper"]` CSS inversion filters (`> *:not(.menuBar, #bookmarksContainer, #bgVideo)`), ensuring natural color rendition and avoiding redundant per-frame GPU rasterization passes.
 
 ---
 
