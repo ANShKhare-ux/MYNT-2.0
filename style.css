@@ -7909,11 +7909,9 @@ body.layout-edit-mode [data-editable-element] {
 	outline-offset: 4px !important;
 	border-radius: var(--round) !important;
 	cursor: grab !important;
-	position: relative;
 	transition:
 		outline-color 0.2s var(--fluid-ease-out),
-		box-shadow 0.2s var(--fluid-ease-out),
-		transform 0.2s var(--fluid-spring) !important;
+		box-shadow 0.2s var(--fluid-ease-out) !important;
 }
 
 body.layout-edit-mode [data-editable-element] * {
@@ -7923,17 +7921,27 @@ body.layout-edit-mode [data-editable-element] * {
 
 body.layout-edit-mode [data-editable-element]:hover {
 	outline-color: var(--accentLightTint-blue) !important;
-	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.16), 0 0 0 2px var(--darkColor-blue) !important;
-	transform: scale(1.015);
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.16) !important;
 }
 
 body.layout-edit-mode [data-editable-element].is-dragging {
 	cursor: grabbing !important;
 	z-index: 99999 !important;
 	opacity: 0.94;
-	transform: scale(1.03) !important;
 	box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28) !important;
 	outline: 2px solid var(--darkColor-blue) !important;
+}
+
+body.layout-edit-mode #menuButton,
+body.layout-edit-mode #todoListCont,
+body.layout-edit-mode #bookmarkButton,
+body.layout-edit-mode #googleAppsCont {
+	border-radius: 50% !important;
+}
+
+body[data-bg="wallpaper"].layout-edit-mode [data-editable-element] {
+	outline: 2px dashed color-mix(in srgb, var(--accentLightTint-blue) 75%, white) !important;
+	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3) !important;
 }
 
 /* Center alignment guideline when magnetically snapped */
@@ -8069,9 +8077,9 @@ body.layout-edit-mode .layout-element-badge {
 /* Toast notification */
 .layout-editor-toast {
 	position: fixed;
-	bottom: 32px;
+	top: 75px;
 	left: 50%;
-	transform: translate(-50%, 40px) scale(0.9);
+	transform: translate(-50%, -20px) scale(0.95);
 	background: var(--darkColor-blue);
 	color: #ffffff;
 	padding: 10px 22px;
@@ -8090,6 +8098,13 @@ body.layout-edit-mode .layout-element-badge {
 .layout-editor-toast.show {
 	opacity: 1;
 	transform: translate(-50%, 0) scale(1);
+}
+
+body[data-bg="wallpaper"] .layout-editor-toast {
+	background: color-mix(in srgb, var(--darkColor-blue) 75%, rgba(0, 0, 0, 0.65));
+	border: 1px solid rgba(255, 255, 255, 0.25);
+	backdrop-filter: blur(16px);
+	-webkit-backdrop-filter: blur(16px);
 }
 
 /* Settings Drawer Personalization Layout Controls */

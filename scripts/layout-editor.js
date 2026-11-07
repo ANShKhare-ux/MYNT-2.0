@@ -9,6 +9,8 @@
 /**
  * Layout Editor: Allows users to freely drag and edit positions of all
  * dashboard elements (Clock, Weather, Searchbar, Quotes, Shortcuts, and Corner Actions).
+ * Uses CSS 2D translations (translate: dx dy) so widgets never distort containing blocks,
+ * never jump off-screen, and never conflict with :hover/:active transforms.
  * Positions are persisted in localStorage under 'mynt_element_positions' and restored
  * instantaneously without layout shifts.
  */
@@ -22,79 +24,58 @@
         {
             id: 'clock',
             name: 'Clock',
-            selector: '#analogClock, #digitalClock',
-            type: 'center',
-            defaultWidth: 300
+            selector: '#analogClock, #digitalClock'
         },
         {
             id: 'dateGreeting',
             name: 'Date & Greeting',
-            selector: '.ttteexxtt',
-            type: 'center',
-            defaultWidth: 260
+            selector: '.ttteexxtt'
         },
         {
             id: 'weather',
             name: 'Weather',
-            selector: '#hideWeather',
-            type: 'center',
-            defaultWidth: 540
+            selector: '#hideWeather'
         },
         {
             id: 'searchbar',
             name: 'Search Bar',
             selector: '#searchbar',
-            type: 'center',
-            defaultWidth: 640
+            syncSelectors: ['#resultBox', '#search-with-container']
         },
         {
             id: 'quotes',
             name: 'Quotes',
-            selector: '#motivationalQuotesCont',
-            type: 'center',
-            defaultWidth: 640
+            selector: '#motivationalQuotesCont'
         },
         {
             id: 'shortcuts',
             name: 'Shortcuts Dock',
-            selector: '.shortcutsContainer',
-            type: 'fixed',
-            defaultWidth: 460
+            selector: '#shortcuts-section .wrapper'
         },
         {
             id: 'todo',
             name: 'ToDo Icon',
-            selector: '#todoListCont',
-            type: 'fixed',
-            defaultWidth: 56
+            selector: '#todoListCont'
         },
         {
             id: 'bookmarks',
             name: 'Bookmarks Icon',
-            selector: '#bookmarkButton',
-            type: 'fixed',
-            defaultWidth: 56
+            selector: '#bookmarkButton'
         },
         {
             id: 'googleApps',
             name: 'Google Apps',
-            selector: '#googleAppsCont',
-            type: 'fixed',
-            defaultWidth: 56
+            selector: '#googleAppsCont'
         },
         {
             id: 'aiTools',
             name: 'AI Tools',
-            selector: '#aiToolsCont',
-            type: 'fixed',
-            defaultWidth: 140
+            selector: '#aiToolsCont'
         },
         {
             id: 'menuButton',
             name: 'Menu Button',
-            selector: '#menuButton',
-            type: 'fixed',
-            defaultWidth: 50
+            selector: '#menuButton'
         }
     ];
 
@@ -108,7 +89,20 @@
     function getSavedPositions() {
         try {
             const raw = localStorage.getItem(STORAGE_KEY);
-            return raw ? JSON.parse(raw) : {};
+            if (!raw) return {};
+            const parsed = JSON.parse(raw);
+            if (typeof parsed !== 'object' || parsed === null) return {};
+            const sanitized = {};
+            for (const key in parsed) {
+                const item = parsed[key];
+                if (item && typeof item === 'object') {
+                    sanitized[key] = {
+                        dx: typeof item.dx === 'number' ? Math.round(item.dx) : 0,
+                        dy: typeof item.dy === 'number' ? Math.round(item.dy) : 0
+                    };
+                }
+            }
+            return sanitized;
         } catch (e) {
             console.error('Error reading custom element positions:', e);
             return {};
@@ -116,7 +110,8 @@
     }
 
     /**
-     * Generates clean declarative CSS rules for all saved positions and updates #custom-layout-positions-style.
+     * Generates clean declarative CSS rules using the modern CSS `translate` property.
+     * This avoids containing block bugs, layout gaps, and hover transform overrides.
      */
     function applySavedPositions(positions) {
         let styleEl = document.getElementById(STYLE_ID);
@@ -128,7 +123,6 @@
 
         if (!positions || Object.keys(positions).length === 0) {
             styleEl.textContent = '';
-            // Remove data-custom-pos attributes
             document.querySelectorAll('[data-custom-pos]').forEach(el => {
                 el.removeAttribute('data-custom-pos');
             });
@@ -140,100 +134,28 @@
             const pos = positions[item.id];
             if (!pos) return;
 
-            // Mark DOM elements as customized
+            const dx = Math.round(pos.dx || 0);
+            const dy = Math.round(pos.dy || 0);
+
+            if (dx === 0 && dy === 0) return;
+
             const els = document.querySelectorAll(item.selector);
             els.forEach(el => el.setAttribute('data-custom-pos', 'true'));
 
-            const left = Math.round(typeof pos.left === 'number' ? pos.left : 0);
-            const top = Math.round(typeof pos.top === 'number' ? pos.top : 0);
+            css += `
+                ${item.selector} {
+                    translate: ${dx}px ${dy}px !important;
+                }
+            `;
 
-            if (item.id === 'searchbar') {
-                css += `
-                    ${item.selector} {
-                        position: fixed !important;
-                        left: ${left}px !important;
-                        top: ${top}px !important;
-                        width: min(640px, calc(100vw - 32px)) !important;
-                        margin: 0 !important;
-                        z-index: 40 !important;
-                    }
-                    #resultBox {
-                        position: fixed !important;
-                        left: ${left}px !important;
-                        top: ${top + 68}px !important;
-                        width: min(640px, calc(100vw - 32px)) !important;
-                        z-index: 45 !important;
-                    }
-                    #search-with-container {
-                        position: fixed !important;
-                        left: ${left}px !important;
-                        top: ${top + 68}px !important;
-                        z-index: 44 !important;
-                    }
-                `;
-            } else if (item.id === 'quotes') {
-                css += `
-                    ${item.selector} {
-                        position: fixed !important;
-                        left: ${left}px !important;
-                        top: ${top}px !important;
-                        width: min(640px, calc(100vw - 32px)) !important;
-                        margin: 0 !important;
-                        z-index: 20 !important;
-                    }
-                `;
-            } else if (item.id === 'shortcuts') {
-                css += `
-                    ${item.selector} {
-                        position: fixed !important;
-                        left: ${left}px !important;
-                        top: ${top}px !important;
-                        margin: 0 !important;
-                        z-index: 30 !important;
-                        pointer-events: auto !important;
-                    }
-                `;
-            } else if (item.id === 'weather') {
-                css += `
-                    ${item.selector} {
-                        position: fixed !important;
-                        left: ${left}px !important;
-                        top: ${top}px !important;
-                        margin: 0 !important;
-                        z-index: 20 !important;
-                    }
-                `;
-            } else if (item.id === 'clock') {
-                css += `
-                    ${item.selector} {
-                        position: fixed !important;
-                        left: ${left}px !important;
-                        top: ${top}px !important;
-                        margin: 0 !important;
-                        z-index: 20 !important;
-                    }
-                `;
-            } else if (item.id === 'dateGreeting') {
-                css += `
-                    ${item.selector} {
-                        position: fixed !important;
-                        left: ${left}px !important;
-                        top: ${top}px !important;
-                        margin: 0 !important;
-                        z-index: 20 !important;
-                        text-align: center !important;
-                    }
-                `;
-            } else {
-                css += `
-                    ${item.selector} {
-                        left: ${left}px !important;
-                        top: ${top}px !important;
-                        right: auto !important;
-                        bottom: auto !important;
-                        margin: 0 !important;
-                    }
-                `;
+            if (item.syncSelectors) {
+                item.syncSelectors.forEach(syncSel => {
+                    css += `
+                        ${syncSel} {
+                            translate: ${dx}px ${dy}px !important;
+                        }
+                    `;
+                });
             }
         });
 
@@ -253,40 +175,28 @@
     }
 
     /**
-     * Resets all positions back to default and cleans up styles.
+     * Resets all positions back to default and cleans up styles with smooth transition.
      */
     function resetPositions() {
         localStorage.removeItem(STORAGE_KEY);
         applySavedPositions({});
 
-        // Clear any inline styles that might remain
+        // Clear any inline translate properties
         EDITABLE_ELEMENTS.forEach(item => {
             const els = document.querySelectorAll(item.selector);
             els.forEach(el => {
-                el.style.left = '';
-                el.style.top = '';
-                el.style.right = '';
-                el.style.bottom = '';
-                el.style.position = '';
-                el.style.margin = '';
-                el.style.zIndex = '';
+                el.style.translate = '';
                 el.removeAttribute('data-custom-pos');
             });
+            if (item.syncSelectors) {
+                item.syncSelectors.forEach(syncSel => {
+                    const syncEls = document.querySelectorAll(syncSel);
+                    syncEls.forEach(syncEl => {
+                        syncEl.style.translate = '';
+                    });
+                });
+            }
         });
-
-        const resultBox = document.getElementById('resultBox');
-        if (resultBox) {
-            resultBox.style.left = '';
-            resultBox.style.top = '';
-            resultBox.style.position = '';
-        }
-
-        const searchWith = document.getElementById('search-with-container');
-        if (searchWith) {
-            searchWith.style.left = '';
-            searchWith.style.top = '';
-            searchWith.style.position = '';
-        }
 
         showToast('Layout restored to default');
     }
@@ -340,9 +250,12 @@
         const clientX = isTouch ? e.touches[0].clientX : e.clientX;
         const clientY = isTouch ? e.touches[0].clientY : e.clientY;
 
+        const positions = getSavedPositions();
+        const currentPos = positions[itemConfig.id] || { dx: 0, dy: 0 };
+        const initialDx = currentPos.dx || 0;
+        const initialDy = currentPos.dy || 0;
+
         const rect = element.getBoundingClientRect();
-        const offsetX = clientX - rect.left;
-        const offsetY = clientY - rect.top;
 
         element.classList.add('is-dragging');
         showCenterGuide(false);
@@ -350,10 +263,11 @@
         activeDrag = {
             element,
             config: itemConfig,
-            offsetX,
-            offsetY,
-            elemWidth: rect.width,
-            elemHeight: rect.height,
+            startX: clientX,
+            startY: clientY,
+            initialDx,
+            initialDy,
+            rect,
             isTouch
         };
 
@@ -362,20 +276,20 @@
             const curX = activeDrag.isTouch ? (ev.touches ? ev.touches[0].clientX : clientX) : ev.clientX;
             const curY = activeDrag.isTouch ? (ev.touches ? ev.touches[0].clientY : clientY) : ev.clientY;
 
-            let targetLeft = curX - activeDrag.offsetX;
-            let targetTop = curY - activeDrag.offsetY;
+            const deltaX = curX - activeDrag.startX;
+            const deltaY = curY - activeDrag.startY;
 
-            // Keep within viewport bounds
-            targetLeft = Math.max(10, Math.min(targetLeft, window.innerWidth - activeDrag.elemWidth - 10));
-            targetTop = Math.max(10, Math.min(targetTop, window.innerHeight - activeDrag.elemHeight - 10));
+            let targetDx = activeDrag.initialDx + deltaX;
+            let targetDy = activeDrag.initialDy + deltaY;
 
             // Magnetic snap to center vertical axis
             let isSnapped = false;
             if (snapEnabled) {
-                const widgetCenterX = targetLeft + activeDrag.elemWidth / 2;
+                const currentRect = activeDrag.element.getBoundingClientRect();
+                const widgetCenterX = currentRect.left + currentRect.width / 2;
                 const screenCenterX = window.innerWidth / 2;
-                if (Math.abs(widgetCenterX - screenCenterX) < 20) {
-                    targetLeft = Math.round(screenCenterX - activeDrag.elemWidth / 2);
+                if (Math.abs(widgetCenterX - screenCenterX) < 18) {
+                    targetDx += Math.round(screenCenterX - widgetCenterX);
                     isSnapped = true;
                 }
             }
@@ -385,36 +299,19 @@
             requestAnimationFrame(() => {
                 if (!activeDrag) return;
 
-                activeDrag.element.style.setProperty('position', 'fixed', 'important');
-                activeDrag.element.style.setProperty('left', `${targetLeft}px`, 'important');
-                activeDrag.element.style.setProperty('top', `${targetTop}px`, 'important');
-                activeDrag.element.style.setProperty('right', 'auto', 'important');
-                activeDrag.element.style.setProperty('bottom', 'auto', 'important');
-                activeDrag.element.style.setProperty('margin', '0', 'important');
-                activeDrag.element.style.setProperty('z-index', '99999', 'important');
+                activeDrag.element.style.setProperty('translate', `${targetDx}px ${targetDy}px`, 'important');
 
                 // Sync search dropdowns
-                if (activeDrag.config.id === 'searchbar') {
-                    const resultBox = document.getElementById('resultBox');
-                    if (resultBox) {
-                        resultBox.style.setProperty('position', 'fixed', 'important');
-                        resultBox.style.setProperty('left', `${targetLeft}px`, 'important');
-                        resultBox.style.setProperty('top', `${targetTop + 68}px`, 'important');
-                    }
-                    const searchWith = document.getElementById('search-with-container');
-                    if (searchWith) {
-                        searchWith.style.setProperty('position', 'fixed', 'important');
-                        searchWith.style.setProperty('left', `${targetLeft}px`, 'important');
-                        searchWith.style.setProperty('top', `${targetTop + 68}px`, 'important');
-                    }
+                if (activeDrag.config.syncSelectors) {
+                    activeDrag.config.syncSelectors.forEach(syncSel => {
+                        const syncEl = document.querySelector(syncSel);
+                        if (syncEl) {
+                            syncEl.style.setProperty('translate', `${targetDx}px ${targetDy}px`, 'important');
+                        }
+                    });
                 }
 
-                activeDrag.currentPos = {
-                    left: targetLeft,
-                    top: targetTop,
-                    xRatio: (targetLeft + activeDrag.elemWidth / 2) / window.innerWidth,
-                    yRatio: (targetTop + activeDrag.elemHeight / 2) / window.innerHeight
-                };
+                activeDrag.currentPos = { dx: targetDx, dy: targetDy };
             });
         };
 
@@ -430,8 +327,14 @@
                 savePositions(updatedPositions);
             }
 
-            // Clean up temporary inline drag styles so CSS manages them cleanly
-            activeDrag.element.style.zIndex = '';
+            // Remove inline style so style tag manages the state
+            activeDrag.element.style.translate = '';
+            if (activeDrag.config.syncSelectors) {
+                activeDrag.config.syncSelectors.forEach(syncSel => {
+                    const syncEl = document.querySelector(syncSel);
+                    if (syncEl) syncEl.style.translate = '';
+                });
+            }
 
             window.removeEventListener('mousemove', onPointerMove);
             window.removeEventListener('mouseup', onPointerUp);
@@ -480,7 +383,7 @@
                 </svg>
                 <span class="toolbar-title">Layout Editor</span>
             </div>
-            <div class="toolbar-hint">Drag any element anywhere on the screen</div>
+            <div class="toolbar-hint">Drag any element to reposition</div>
             <div class="toolbar-actions">
                 <button type="button" id="layoutSnapToggle" class="toolbar-btn ${snapEnabled ? 'active' : ''}" title="Toggle center snapping">
                     <span class="btn-icon">🧲</span>
@@ -533,18 +436,13 @@
         if (typeof window.closeMenuBar === 'function') {
             window.closeMenuBar();
         } else {
-            const menuBar = document.getElementById('menuBar');
-            if (menuBar && menuBar.style.display !== 'none' && menuBar.style.display !== '') {
-                const closeBtn = document.getElementById('menuCloseButton');
-                if (closeBtn) closeBtn.click();
-            }
+            const closeBtn = document.getElementById('menuCloseButton');
+            if (closeBtn) closeBtn.click();
         }
 
         const toolbar = renderToolbar();
         setupEditableElements();
         toolbar.style.display = 'flex';
-
-        showToast('Layout Editor active: drag any widget to reposition');
     }
 
     /**
@@ -566,7 +464,7 @@
     }
 
     /**
-     * Displays a clean transient toast notification.
+     * Displays a clean transient toast notification at the top of the screen (never covers dock).
      */
     function showToast(message) {
         let toast = document.getElementById('layoutEditorToast');
@@ -599,35 +497,6 @@
         // Escape exits edit mode
         if (e.key === 'Escape' && isEditMode) {
             exitEditMode();
-        }
-    });
-
-    // Handle window resize gracefully by clamping positions within the new viewport
-    window.addEventListener('resize', () => {
-        const positions = getSavedPositions();
-        if (!positions || Object.keys(positions).length === 0) return;
-
-        let changed = false;
-        EDITABLE_ELEMENTS.forEach(item => {
-            const pos = positions[item.id];
-            if (!pos) return;
-
-            const elemWidth = item.defaultWidth || 200;
-            const maxLeft = Math.max(10, window.innerWidth - elemWidth - 10);
-            const maxTop = Math.max(10, window.innerHeight - 60);
-
-            if (pos.left > maxLeft) {
-                pos.left = maxLeft;
-                changed = true;
-            }
-            if (pos.top > maxTop) {
-                pos.top = maxTop;
-                changed = true;
-            }
-        });
-
-        if (changed) {
-            savePositions(positions);
         }
     });
 

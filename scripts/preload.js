@@ -134,9 +134,9 @@
                 clock: '#analogClock, #digitalClock',
                 dateGreeting: '.ttteexxtt',
                 weather: '#hideWeather',
-                searchbar: '#searchbar',
+                searchbar: '#searchbar, #resultBox, #search-with-container',
                 quotes: '#motivationalQuotesCont',
-                shortcuts: '.shortcutsContainer',
+                shortcuts: '#shortcuts-section .wrapper',
                 todo: '#todoListCont',
                 bookmarks: '#bookmarkButton',
                 googleApps: '#googleAppsCont',
@@ -147,21 +147,10 @@
                 const sel = SELECTOR_MAP[key];
                 const pos = positions[key];
                 if (!sel || !pos) continue;
-                const left = Math.round(typeof pos.left === 'number' ? pos.left : 0);
-                const top = Math.round(typeof pos.top === 'number' ? pos.top : 0);
-
-                if (key === 'searchbar') {
-                    css += `${sel} { position: fixed !important; left: ${left}px !important; top: ${top}px !important; width: min(640px, calc(100vw - 32px)) !important; margin: 0 !important; z-index: 40 !important; } `;
-                    css += `#resultBox { position: fixed !important; left: ${left}px !important; top: ${top + 68}px !important; width: min(640px, calc(100vw - 32px)) !important; z-index: 45 !important; } `;
-                    css += `#search-with-container { position: fixed !important; left: ${left}px !important; top: ${top + 68}px !important; z-index: 44 !important; } `;
-                } else if (key === 'quotes') {
-                    css += `${sel} { position: fixed !important; left: ${left}px !important; top: ${top}px !important; width: min(640px, calc(100vw - 32px)) !important; margin: 0 !important; z-index: 20 !important; } `;
-                } else if (key === 'shortcuts') {
-                    css += `${sel} { position: fixed !important; left: ${left}px !important; top: ${top}px !important; margin: 0 !important; z-index: 30 !important; pointer-events: auto !important; } `;
-                } else if (key === 'weather' || key === 'clock' || key === 'dateGreeting') {
-                    css += `${sel} { position: fixed !important; left: ${left}px !important; top: ${top}px !important; margin: 0 !important; z-index: 20 !important; } `;
-                } else {
-                    css += `${sel} { left: ${left}px !important; top: ${top}px !important; right: auto !important; bottom: auto !important; margin: 0 !important; } `;
+                const dx = Math.round(pos.dx || 0);
+                const dy = Math.round(pos.dy || 0);
+                if (dx !== 0 || dy !== 0) {
+                    css += `${sel} { translate: ${dx}px ${dy}px !important; } `;
                 }
             }
             if (css) {
