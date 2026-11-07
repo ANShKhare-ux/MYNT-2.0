@@ -123,4 +123,46 @@
             root.classList.add('black-theme');
         }
     }
+
+    // --- Preload Custom Element Positions ---
+    try {
+        const rawPositions = localStorage.getItem('mynt_element_positions');
+        if (rawPositions) {
+            const positions = JSON.parse(rawPositions);
+            let css = '';
+            const SELECTOR_MAP = {
+                clock: '#analogClock, #digitalClock',
+                dateGreeting: '.ttteexxtt',
+                weather: '#hideWeather',
+                searchbar: '#searchbar',
+                quotes: '#motivationalQuotesCont',
+                shortcuts: '#shortcuts-section .shortcutsContainer',
+                todo: '#todoListCont',
+                bookmarks: '#bookmarkButton',
+                googleApps: '#googleAppsCont',
+                aiTools: '#aiToolsCont',
+                menuButton: '#menuButton'
+            };
+            const FIXED_SET = new Set(['todo', 'bookmarks', 'googleApps', 'aiTools', 'menuButton']);
+            for (const key in positions) {
+                const sel = SELECTOR_MAP[key];
+                const pos = positions[key];
+                if (!sel || !pos) continue;
+                if (FIXED_SET.has(key)) {
+                    css += `${sel} { left: ${pos.left}px !important; top: ${pos.top}px !important; right: auto !important; bottom: auto !important; } `;
+                } else {
+                    css += `${sel} { position: relative !important; left: ${pos.x}px !important; top: ${pos.y}px !important; } `;
+                    if (key === 'searchbar') {
+                        css += `#resultBox, #search-with-container { left: ${pos.x}px !important; top: ${pos.y}px !important; } `;
+                    }
+                }
+            }
+            if (css) {
+                const styleEl = document.createElement('style');
+                styleEl.id = 'custom-layout-positions-style';
+                styleEl.textContent = css;
+                document.head.appendChild(styleEl);
+            }
+        }
+    } catch (e) {}
 })();
