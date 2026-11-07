@@ -34,6 +34,20 @@ Core goals:
     - **Shortcut & Modal Action Buttons**: `#backButton`, `#newShortcutButton`, `#resetButton`, `.uploadCustomIconButton`, `.shortcutDelete button`, `.prompt-modal-button`, `.ai-reset-button`, `.ai-save-button`, and bookmark sorting/view buttons.
     - **Shortcuts, Color Palette & Dock Glassmorphism**: Shortcut icon badges (`.shortcutsContainer .shortcuts .shortcutLogoContainer`) and color palette cards (`.colorsContainer`, `#themeButton`, `.colorPlate`, `.colorPickerLabel`) render as translucent frosted glass surfaces with specular borders and floating elevation, replacing opaque solid white backgrounds across color cards. In both light and dark wallpaper modes, shortcut badges and `#menuButton` dynamically adhere to the active color theme (`var(--darkColor-blue)` and `var(--accentLightTint-blue)`), keeping icon glyphs crisp white (`#ffffff`) and eliminating hardcoded monochrome greys, alongside frosted glass dock backdrop (`.shortcutsContainer::before`) and concentric frosted `#menuButton`.
     - Fixes top drawer header alignment, eliminates stark solid white headers and buttons in wallpaper/dark modes, ensures high-contrast typography, adapts smoothly to light/dark themes, and provides accessibility fallback for `prefers-reduced-transparency`.
+  - **Fluid Motion & Physics-Based Micro-Interactions System**:
+    - Grounded in Apple Fluid Design (WWDC) and Material 3 Emphasized Motion physics, replacing static transitions with tactile curves:
+      - `--fluid-spring`: `cubic-bezier(0.34, 1.35, 0.64, 1)` for snappy spring overshoot.
+      - `--fluid-spring-bouncy`: `cubic-bezier(0.34, 1.56, 0.64, 1)` for playful bouncing states on color swatches and icon badges.
+      - `--fluid-ease-out`: `cubic-bezier(0.16, 1, 0.3, 1)` for ultra-smooth sheet, drawer, and modal deceleration.
+      - `--fluid-ease-in-out`: `cubic-bezier(0.65, 0, 0.35, 1)` for symmetrical state transitions.
+      - `--fluid-press`: `cubic-bezier(0.4, 0, 0.2, 1)` for instant (70–80ms) physical depression feedback upon pointer-down.
+    - **Staggered Dock Entrance**: `@keyframes shortcutStaggerIn` floats shortcuts into view sequentially on tab open.
+    - **Tactile Active Press Feedback**: Universal `:active` feedback across all action buttons, swatches, modals, and navigation controls eliminating perceived input latency.
+    - **Compositor-Only Drawer Transitions**: Replaces expensive `transition: all 0.5s/0.6s` with hardware-accelerated `transform 0.42s var(--fluid-ease-out)` and `opacity 0.35s var(--fluid-ease-out)` across `.menuBar`, `.menuCont`, and `.optCont`.
+    - **Spring Chevrons & Collapsible Cards**: Chevrons rotate with snappy spring overshoot (`transform 0.35s var(--fluid-spring)`), and cards unroll smoothly with `--fluid-ease-out`.
+    - **Dialog & Modal Spring-In**: Dialogs (`#prompt-modal-container`, `.ai-settings-modal`, `#editBookmarkModal`) spring into view via `@keyframes modalSpringIn` accompanied by smooth backdrop blur fade (`@keyframes modalOverlayFadeIn`).
+    - **Color Swatch Bounce**: Swatches depress on pointer-down and bounce into selection via `@keyframes swatchSelectBounce`.
+    - **Reduced Motion Fallback**: Full conformance with `@media (prefers-reduced-motion: reduce)` zeroing animation durations for vestibular accessibility.
 - **Clock Subsystem (`scripts/clock.js`)**:
   - Dual modes: Analog (smooth rotating hands) and Digital (12h/24h formats).
   - Contextual time-of-day greetings (Morning / Afternoon / Evening).

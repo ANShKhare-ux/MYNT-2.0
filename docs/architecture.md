@@ -196,7 +196,22 @@ MYNT features a native, hardware-accelerated Glassmorphism layer implemented via
 - **Theme Harmonization**: Specular borders and glows automatically soften under Dark and System Dark modes (`var(--glass-border-dark)`, `var(--glass-specular-dark)`) to prevent stark white outlines.
 - **Accessibility Fallback**: Honors `@media (prefers-reduced-transparency: reduce)` by disabling backdrop filters and rendering opaque backgrounds for enhanced contrast.
 
-### 4.5 Search Subsystem and Google AI Mode Integration
+### 4.5 Fluid Motion System & Micro-Interactions
+MYNT incorporates a physics-based fluid animation runtime inspired by **Apple Fluid Design** (WWDC) and **Material 3 Emphasized Motion**, designed to deliver an interface that feels continuous, responsive, and tactile without introducing external animation dependencies:
+
+- **Physics Motion Tokens**:
+  - `--fluid-spring`: `cubic-bezier(0.34, 1.35, 0.64, 1)` provides tactile spring overshoot on interactive elements.
+  - `--fluid-spring-bouncy`: `cubic-bezier(0.34, 1.56, 0.64, 1)` powers playful spring micro-interactions on color jewel swatches and icon badges.
+  - `--fluid-ease-out`: `cubic-bezier(0.16, 1, 0.3, 1)` delivers ultra-smooth Apple sheet/drawer deceleration.
+  - `--fluid-ease-in-out`: `cubic-bezier(0.65, 0, 0.35, 1)` ensures symmetrical transition paths for reversible UI states.
+  - `--fluid-press`: `cubic-bezier(0.4, 0, 0.2, 1)` achieves instant (70–80ms) physical depression feedback upon pointer-down.
+- **Shortcuts Staggered Entrance**: `@keyframes shortcutStaggerIn` orchestrates an incremental wave of shortcut discs floating up on new tab loads with natural spring settling.
+- **Zero-Latency Active Feedback**: Every interactive button, swatch, and drawer tile features a dedicated `:active` state (`transform: scale(0.92)` to `scale(0.95)`) that responds instantaneously on pointer-down.
+- **Hardware-Accelerated Compositor Transitions**: Sluggish `transition: all 0.5s` declarations are eliminated in favor of GPU-composited `transform` and `opacity` properties across the Settings drawer (`.menuBar`, `.menuCont`, `.optCont`, `.optCont .page`), preserving 60 FPS on Intel HD Graphics 630 systems.
+- **Modal Spring Physics**: Dialog modals (`#prompt-modal-container`, `.ai-settings-modal`, `#editBookmarkModal`) spring smoothly into viewport center via `@keyframes modalSpringIn` accompanied by `@keyframes modalOverlayFadeIn`.
+- **Vestibular Accessibility**: Strictly complies with `@media (prefers-reduced-motion: reduce)`, zeroing all animation durations and transitions for users with motion sensitivity.
+
+### 4.6 Search Subsystem and Google AI Mode Integration
 The search bar (`scripts/search.js`, `scripts/search-suggestions.js`, `scripts/voice-search.js`) provides unified multi-engine routing with first-class Google AI Mode support:
 
 - **Multi-Engine Switching**: 9 supported search engines with sn-indexed radio selection (`engine0` to `engine9`), dropdown swapping, and mouse-wheel/touch-swipe cycling.
@@ -205,7 +220,7 @@ The search bar (`scripts/search.js`, `scripts/search-suggestions.js`, `scripts/v
 - **Contextual Visibility (`isGoogleSelected`)**: The AI Mode button dynamically appears when Google (`engine1`) or Default browser search (`engine0`) is selected, and automatically hides for third-party engines (DuckDuckGo, Bing, Brave, YouTube, Reddit, Quora).
 - **User Preference & Responsive Adaptation**: Honors user visibility preference via the Settings drawer toggle (`localStorage.aiModeIconVisible`). On small screens (`<= 500px`), the text label collapses to a compact icon button to maintain search bar geometry.
 
-### 4.6 Video Wallpaper Subsystem & Hardware Performance Optimizations
+### 4.7 Video Wallpaper Subsystem & Hardware Performance Optimizations
 The wallpaper engine (`scripts/wallpaper.js`) supports both static images and looping video backgrounds (MP4, WebM, OGG) stored locally in IndexedDB (`ImageDB`). It is specifically engineered to run smoothly on lower-spec hardware configurations (e.g. Intel HD Graphics 630, Intel Core i5-7400, 8GB RAM):
 
 - **Zero-CPU Hardware Decoding**: Uses native HTML5 `<video>` with `autoplay`, `loop`, `muted`, `playsinline`, `disablepictureinpicture`, and `disableremoteplayback`, enabling Intel Quick Sync fixed-function hardware video decoding on Intel HD Graphics 630.
@@ -224,7 +239,7 @@ The wallpaper engine (`scripts/wallpaper.js`) supports both static images and lo
   - **User Preference & Original Theme Preservation**: Includes an Appearance settings toggle (`#dynamicVideoColorToggle`, stored in `localStorage.dynamicVideoColor`). Accurately restores the user's manual theme whenever the wallpaper is cleared, or when the toggle is turned off. Manual theme modifications in Settings update `savedThemeColor` in real time.
   - **Fluid 0.8s CSS Transitions**: Smooth, ambient color transitions across all widgets, buttons, and sidebars when `body[data-bg="wallpaper"]` or `body[data-has-video="true"]`.
 
-### 4.7 Dual-Media Switching Architecture
+### 4.8 Dual-Media Switching Architecture
 Users can maintain both an uploaded image wallpaper and an uploaded video wallpaper simultaneously:
 - **Independent Blob Slots**: `IndexedDB` (`ImageDB` -> `backgroundImages`) maintains discrete keys:
   - `"backgroundImage"`: The currently active wallpaper (for full backward compatibility with backup/restore and boot routines).

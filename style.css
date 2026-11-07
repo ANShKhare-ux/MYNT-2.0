@@ -142,6 +142,13 @@
 	/* exiting: Slow start, fast end (Pushes out quickly at the end) */
 	--md-motion-accelerate: cubic-bezier(0.4, 0, 1, 1);
 
+	/* Apple Fluid & Material 3 Physics-Based Motion Tokens */
+	--fluid-spring: cubic-bezier(0.34, 1.35, 0.64, 1);
+	--fluid-spring-bouncy: cubic-bezier(0.34, 1.56, 0.64, 1);
+	--fluid-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+	--fluid-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+	--fluid-press: cubic-bezier(0.4, 0, 0.2, 1);
+
 	/* Glassmorphism Design Tokens */
 	--glass-blur-sm: 8px;
 	--glass-blur: 16px;
@@ -412,9 +419,8 @@ body[data-bg="wallpaper"][sysTheme="systemDark"]:has(
 	z-index: -100;
 	transform: translateY(-70px);
 	transition:
-		opacity 0.5s ease,
-		transform 0.5s ease,
-		z-index 0.5s ease;
+		opacity 0.25s var(--fluid-ease-out),
+		transform 0.32s var(--fluid-spring);
 	pointer-events: none;
 	backdrop-filter: blur(4px);
 }
@@ -1149,6 +1155,26 @@ body #bookmarkButton.bookmark-button.rotate {
 	pointer-events: auto;
 }
 
+@keyframes modalSpringIn {
+	0% {
+		opacity: 0;
+		transform: translate(-50%, -46%) scale(0.92);
+	}
+	100% {
+		opacity: 1;
+		transform: translate(-50%, -50%) scale(1);
+	}
+}
+
+@keyframes modalOverlayFadeIn {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
 /* Modal Styling */
 #editBookmarkModal {
 	display: none;
@@ -1163,6 +1189,7 @@ body #bookmarkButton.bookmark-button.rotate {
 	border-radius: var(--round);
 	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 	padding: 20px;
+	animation: modalSpringIn 0.35s var(--fluid-spring);
 }
 
 #editBookmarkModal .modal-content {
@@ -1246,10 +1273,14 @@ body #bookmarkButton.bookmark-button.rotate {
 	font-size: 0.96rem;
 	border: none;
 	cursor: pointer;
-	transition: 0.2s;
 	border-radius: var(--round);
 	background: var(--darkColor-blue);
 	color: white;
+	transition:
+		transform 0.25s var(--fluid-spring),
+		background-color 0.25s var(--fluid-ease-out),
+		color 0.25s var(--fluid-ease-out),
+		box-shadow 0.25s var(--fluid-ease-out);
 }
 
 #saveBookmarkChanges:disabled {
@@ -1259,6 +1290,13 @@ body #bookmarkButton.bookmark-button.rotate {
 
 #editBookmarkModal button:hover {
 	background: var(--darkerColor-blue);
+	transform: translateY(-2px) scale(1.02);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+#editBookmarkModal button:active {
+	transform: scale(0.94);
+	transition: transform 0.08s var(--fluid-press);
 }
 /* ----------------- End of Bookmark System ----------------- */
 
@@ -2111,7 +2149,11 @@ html[lang="ta"] #temp {
 	background-color: var(--accentLightTint-blue);
 	position: relative;
 	outline: 2px solid #00000000;
-	transition: outline 0.3s;
+	transition:
+		transform 0.3s var(--fluid-spring),
+		box-shadow 0.3s var(--fluid-ease-out),
+		outline 0.2s ease,
+		border-color 0.2s ease;
 }
 
 body[data-bg="wallpaper"] .searchbar {
@@ -2122,8 +2164,11 @@ body[data-bg="wallpaper"] .searchbar {
 	);
 }
 
-.searchbar.active {
+.searchbar.active,
+.searchbar:focus-within {
 	outline: 2px solid var(--darkColor-blue);
+	transform: translateY(-2px) scale(1.006);
+	box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
 }
 
 .searchbar .searchIcon {
@@ -2267,25 +2312,30 @@ body[data-bg="wallpaper"] .micIcon {
 	position: relative;
 	outline: none;
 	transition:
-		background-color 0.2s var(--md-motion-ease),
-		border-color 0.2s var(--md-motion-ease),
-		color 0.2s var(--md-motion-ease),
-		transform 0.15s ease,
-		box-shadow 0.2s ease;
+		background-color 0.25s var(--fluid-ease-out),
+		border-color 0.25s var(--fluid-ease-out),
+		color 0.25s var(--fluid-ease-out),
+		transform 0.25s var(--fluid-spring),
+		box-shadow 0.25s var(--fluid-ease-out);
 }
 
 .aiModeIcon:hover {
-	transform: translateY(-1px);
+	transform: translateY(-2px) scale(1.02);
 	background-color: color-mix(
 		in srgb,
 		var(--whitishColor-blue) 85%,
 		var(--darkColor-blue)
 	);
-	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.aiModeIcon:hover svg {
+	transform: rotate(14deg) scale(1.12);
 }
 
 .aiModeIcon:active {
-	transform: scale(0.96);
+	transform: scale(0.94);
+	transition: transform 0.08s var(--fluid-press);
 }
 
 .aiModeIcon:focus-visible {
@@ -2298,6 +2348,7 @@ body[data-bg="wallpaper"] .micIcon {
 	height: 20px;
 	flex-shrink: 0;
 	display: block;
+	transition: transform 0.3s var(--fluid-spring);
 }
 
 .aiModeIcon svg path {
@@ -2722,16 +2773,44 @@ html[lang="ur"] .qtRounder2 {
 	opacity: 1;
 }
 
-.shortcutsContainer .shortcuts {
-	position: relative;
-	transition: transform 0.3s;
-	isolation: isolate;
+@keyframes shortcutStaggerIn {
+	0% {
+		opacity: 0;
+		transform: translateY(18px) scale(0.88);
+	}
+	100% {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
 }
 
+.shortcutsContainer .shortcuts {
+	position: relative;
+	isolation: isolate;
+	animation: shortcutStaggerIn 0.45s var(--fluid-spring) backwards;
+	transition: transform 0.28s var(--fluid-spring);
+}
+
+.shortcutsContainer .shortcuts:nth-child(1) { animation-delay: 0.02s; }
+.shortcutsContainer .shortcuts:nth-child(2) { animation-delay: 0.05s; }
+.shortcutsContainer .shortcuts:nth-child(3) { animation-delay: 0.08s; }
+.shortcutsContainer .shortcuts:nth-child(4) { animation-delay: 0.11s; }
+.shortcutsContainer .shortcuts:nth-child(5) { animation-delay: 0.14s; }
+.shortcutsContainer .shortcuts:nth-child(6) { animation-delay: 0.17s; }
+.shortcutsContainer .shortcuts:nth-child(7) { animation-delay: 0.20s; }
+.shortcutsContainer .shortcuts:nth-child(8) { animation-delay: 0.23s; }
+.shortcutsContainer .shortcuts:nth-child(9) { animation-delay: 0.26s; }
+.shortcutsContainer .shortcuts:nth-child(10) { animation-delay: 0.29s; }
+.shortcutsContainer .shortcuts:nth-child(n+11) { animation-delay: 0.32s; }
+
 .shortcutsContainer .shortcuts:hover {
-	transform: translateY(-10px) scale(1.03);
-	/* box-shadow: 0 5px 10px var(--accentLightTint-blue); */
+	transform: translateY(-8px) scale(1.08);
 	border-radius: 100px;
+}
+
+.shortcutsContainer .shortcuts:active {
+	transform: translateY(-2px) scale(0.94);
+	transition: transform 0.08s var(--fluid-press);
 }
 
 .shortcuts .shortcut-name {
@@ -2849,13 +2928,26 @@ body[data-bg="wallpaper"] .shortcuts .shortcut-name {
 	width: 100%;
 }
 
-.shortcutsContainer .shortcuts .shortcutLogoContainer img {
+.shortcutsContainer .shortcuts .shortcutLogoContainer img,
+.shortcutsContainer .shortcuts .shortcutLogoContainer svg {
 	height: 100%;
 	width: 100%;
 	border-radius: 50%;
 	object-fit: contain;
 	filter: none;
 	mix-blend-mode: normal;
+	transition: transform 0.28s var(--fluid-spring);
+}
+
+.shortcutsContainer .shortcuts:hover .shortcutLogoContainer img,
+.shortcutsContainer .shortcuts:hover .shortcutLogoContainer svg {
+	transform: scale(1.08);
+}
+
+.shortcutsContainer .shortcuts:active .shortcutLogoContainer img,
+.shortcutsContainer .shortcuts:active .shortcutLogoContainer svg {
+	transform: scale(0.95);
+	transition: transform 0.08s var(--fluid-press);
 }
 
 /* Adaptive Icons styling */
@@ -3076,6 +3168,7 @@ body[data-bg="wallpaper"] .aiToolsCont .toolsCont a {
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 	z-index: 1001;
 	width: 380px;
+	animation: modalSpringIn 0.35s var(--fluid-spring);
 }
 
 .ai-settings-modal .ai-modal-header {
@@ -3170,11 +3263,23 @@ body[data-bg="wallpaper"] .aiToolsCont .toolsCont a {
 	color: var(--whitishColor-blue);
 	border: none;
 	cursor: pointer;
+	transition:
+		transform 0.25s var(--fluid-spring),
+		background-color 0.25s var(--fluid-ease-out),
+		box-shadow 0.25s var(--fluid-ease-out);
 }
 
 .ai-settings-modal .ai-reset-button:hover,
 .ai-settings-modal .ai-save-button:hover {
 	background: var(--darkerColor-blue);
+	transform: translateY(-2px) scale(1.02);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14);
+}
+
+.ai-settings-modal .ai-reset-button:active,
+.ai-settings-modal .ai-save-button:active {
+	transform: scale(0.94);
+	transition: transform 0.08s var(--fluid-press);
 }
 
 #aiToolsForm .ai-tool-reorder {
@@ -3281,7 +3386,7 @@ body[data-bg="wallpaper"] .aiToolsCont .toolsCont a {
 	z-index: 999;
 	opacity: 0;
 	/*we are increasing opacity in js file*/
-	transition: all 0.5s;
+	transition: opacity 0.35s var(--fluid-ease-out);
 	overflow: hidden;
 }
 
@@ -3292,7 +3397,7 @@ body[data-bg="wallpaper"] .aiToolsCont .toolsCont a {
 	height: 100%;
 	width: 400px;
 	/* change on some languages for fix the buttons */
-	transition: all 0.5s;
+	transition: transform 0.42s var(--fluid-ease-out);
 	transform: translateX(100%);
 	background-color: var(--accentLightTint-blue);
 	border-end-start-radius: var(--round);
@@ -3341,7 +3446,9 @@ body[data-bg="wallpaper"] .aiToolsCont .toolsCont a {
 	height: calc(100% - 140px);
 	/*for this 👁️ look above at🚦🛺 🚜*/
 	/* background-color: oldlace; */
-	transition: all 0.6s;
+	transition:
+		transform 0.42s var(--fluid-ease-out),
+		opacity 0.35s var(--fluid-ease-out);
 	transform: translateX(100%);
 	opacity: 0;
 	overflow-y: scroll;
@@ -3353,7 +3460,9 @@ body[data-bg="wallpaper"] .aiToolsCont .toolsCont a {
 	padding: 0 var(--gap) var(--gap) var(--gap);
 	position: absolute;
 	scroll-behavior: smooth;
-	transition: all 0.6s;
+	transition:
+		transform 0.38s var(--fluid-ease-out),
+		opacity 0.3s var(--fluid-ease-out);
 }
 
 /* -----------Scrollbar for menu---------------- */
@@ -3695,7 +3804,7 @@ input:checked + .toggle:before {
 	border-right: 3px solid var(--textColorDark-blue);
 	border-bottom: 3px solid var(--textColorDark-blue);
 	transform: rotate(45deg) translate(-3px, -2px);
-	transition: transform 0.25s var(--md-motion-ease);
+	transition: transform 0.35s var(--fluid-spring);
 }
 
 /* Expanded state */
@@ -3715,10 +3824,10 @@ input:checked + .toggle:before {
 	max-height: 1000px; /* large enough */
 	opacity: 1;
 	transition:
-		max-height 0.4s var(--md-motion-ease),
-		opacity 0.2s var(--md-motion-ease),
-		margin-top 0.23s var(--md-motion-ease),
-		padding 0.23s var(--md-motion-ease);
+		max-height 0.4s var(--fluid-ease-out),
+		opacity 0.25s var(--fluid-ease-out),
+		margin-top 0.25s var(--fluid-ease-out),
+		padding 0.25s var(--fluid-ease-out);
 }
 
 /* Rows */
@@ -3744,10 +3853,10 @@ input:checked + .toggle:before {
 	padding-bottom: 0;
 
 	transition:
-		max-height 0.3s cubic-bezier(0.2, 0, 0, 1),
-		opacity 0.2s var(--md-motion-ease),
-		margin-top 0.23s var(--md-motion-ease),
-		padding 0.23s var(--md-motion-ease);
+		max-height 0.35s var(--fluid-ease-out),
+		opacity 0.2s var(--fluid-ease-out),
+		margin-top 0.22s var(--fluid-ease-out),
+		padding 0.22s var(--fluid-ease-out);
 }
 
 .appearanceSection .sectionInner {
@@ -3830,16 +3939,24 @@ body[sysTheme="systemDark"] .menuCont .topDiv h1 {
 	font-size: 1rem;
 	border-radius: 100px;
 	cursor: pointer;
-	transition: background-color 0.3s ease;
+	transition:
+		transform 0.25s var(--fluid-spring),
+		background-color 0.25s var(--fluid-ease-out),
+		color 0.25s var(--fluid-ease-out),
+		box-shadow 0.25s var(--fluid-ease-out);
 }
 
 .resetbtn:hover {
 	background-color: var(--darkerColor-blue);
+	transform: translateY(-2px) scale(1.01);
+	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
 }
 
 .resetbtn:active {
 	background-color: var(--bg-color-blue);
 	color: var(--darkerColor-blue);
+	transform: scale(0.95);
+	transition: transform 0.08s var(--fluid-press);
 }
 
 .topBar {
@@ -3872,10 +3989,10 @@ body[sysTheme="systemDark"] .menuCont .topDiv h1 {
 	fill: var(--textColorDark-blue);
 	box-sizing: border-box;
 	transition:
-		background-color 0.2s ease,
-		border-color 0.2s ease,
-		transform 0.15s ease,
-		fill 0.2s ease;
+		background-color 0.25s var(--fluid-ease-out),
+		border-color 0.25s var(--fluid-ease-out),
+		transform 0.25s var(--fluid-spring),
+		fill 0.25s var(--fluid-ease-out);
 }
 
 #backButton svg {
@@ -3886,11 +4003,12 @@ body[sysTheme="systemDark"] .menuCont .topDiv h1 {
 
 #backButton:hover {
 	background-color: rgba(0, 0, 0, 0.08);
-	transform: scale(1.05);
+	transform: scale(1.1);
 }
 
 #backButton:active {
-	transform: scale(0.95);
+	transform: scale(0.92);
+	transition: transform 0.08s var(--fluid-press);
 }
 
 :dir(rtl) #backButton svg {
@@ -3898,7 +4016,7 @@ body[sysTheme="systemDark"] .menuCont .topDiv h1 {
 }
 
 :dir(rtl) #backButton:hover svg {
-	transform: scaleX(-1) scale(1.05);
+	transform: scaleX(-1) scale(1.1);
 }
 
 .rightButtons {
@@ -3922,11 +4040,11 @@ body[sysTheme="systemDark"] .menuCont .topDiv h1 {
 	justify-content: center;
 	box-sizing: border-box;
 	transition:
-		background-color 0.2s ease,
-		border-color 0.2s ease,
-		fill 0.2s ease,
-		transform 0.15s ease,
-		box-shadow 0.2s ease;
+		background-color 0.25s var(--fluid-ease-out),
+		border-color 0.25s var(--fluid-ease-out),
+		fill 0.25s var(--fluid-ease-out),
+		transform 0.25s var(--fluid-spring),
+		box-shadow 0.25s var(--fluid-ease-out);
 }
 
 #resetButton svg,
@@ -3934,20 +4052,21 @@ body[sysTheme="systemDark"] .menuCont .topDiv h1 {
 	width: 22px;
 	height: 22px;
 	pointer-events: none;
-	transition: transform 0.3s ease;
+	transition: transform 0.3s var(--fluid-spring);
 }
 
 #resetButton:hover,
 #newShortcutButton:hover {
 	fill: white;
 	background-color: var(--darkColor-blue);
-	transform: translateY(-1px);
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+	transform: translateY(-2px) scale(1.05);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
 }
 
 #resetButton:active,
 #newShortcutButton:active {
-	transform: translateY(0);
+	transform: scale(0.92);
+	transition: transform 0.08s var(--fluid-press);
 }
 
 #newShortcutButton svg {
@@ -4325,7 +4444,7 @@ option:checked {
 	width: calc((100% - 8px) / 3);
 	background: #ffffffe6;
 	border-radius: 30px;
-	transition: transform 0.32s var(--md-motion-decelerate);
+	transition: transform 0.38s var(--fluid-spring);
 	z-index: 0;
 }
 
@@ -4530,8 +4649,10 @@ option:checked {
 	cursor: pointer;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 	transition:
-		background-color 0.3s,
-		color 0.3s;
+		transform 0.25s var(--fluid-spring),
+		background-color 0.25s var(--fluid-ease-out),
+		color 0.25s var(--fluid-ease-out),
+		box-shadow 0.25s var(--fluid-ease-out);
 }
 
 .randomButton,
@@ -4547,9 +4668,10 @@ option:checked {
 	cursor: pointer;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 	transition:
-		background-color 0.3s,
-		color 0.3s,
-		transform 0.15s ease;
+		transform 0.25s var(--fluid-spring),
+		background-color 0.25s var(--fluid-ease-out),
+		color 0.25s var(--fluid-ease-out),
+		box-shadow 0.25s var(--fluid-ease-out);
 	padding: 10px;
 }
 
@@ -4564,9 +4686,10 @@ option:checked {
 	border-radius: 26px;
 	cursor: pointer;
 	transition:
-		background-color 0.3s,
-		color 0.3s,
-		transform 0.15s ease;
+		transform 0.25s var(--fluid-spring),
+		background-color 0.25s var(--fluid-ease-out),
+		color 0.25s var(--fluid-ease-out),
+		box-shadow 0.25s var(--fluid-ease-out);
 }
 
 /* Hover Effects */
@@ -4576,7 +4699,8 @@ option:checked {
 .switchMediaButton:hover {
 	background-color: var(--darkColor-blue);
 	color: var(--whitishColor-blue);
-	transform: translateY(-1px);
+	transform: translateY(-2px) scale(1.02);
+	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
 }
 
 .uploadButton:active,
@@ -4584,18 +4708,21 @@ option:checked {
 .videoButton:active,
 .switchMediaButton:active {
 	background-color: var(--darkerColor-blue);
-	transform: translateY(0);
+	transform: scale(0.94);
+	transition: transform 0.08s var(--fluid-press);
 }
 
 .clearButton:hover {
 	color: var(--darkColor-blue);
 	background-color: var(--whitishColor-blue);
-	transform: translateY(-1px);
+	transform: translateY(-2px) scale(1.02);
+	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
 }
 
 .clearButton:active {
 	color: var(--darkerColor-blue);
-	transform: translateY(0);
+	transform: scale(0.94);
+	transition: transform 0.08s var(--fluid-press);
 }
 
 /* File input remains hidden */
@@ -4625,17 +4752,25 @@ option:checked {
 	background-color: var(--bg-color-blue);
 	color: var(--darkerColor-blue);
 	border-radius: 20px;
-	transition: background-color 0.3s ease;
+	transition:
+		transform 0.25s var(--fluid-spring),
+		background-color 0.25s var(--fluid-ease-out),
+		color 0.25s var(--fluid-ease-out),
+		box-shadow 0.25s var(--fluid-ease-out);
 }
 
 .backupRestoreBtn:hover {
 	background-color: var(--darkColor-blue);
 	color: #fffffff5;
+	transform: translateY(-2px) scale(1.02);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .backupRestoreBtn:active {
 	background-color: var(--darkerColor-blue);
 	color: #fffffff5;
+	transform: scale(0.94);
+	transition: transform 0.08s var(--fluid-press);
 }
 
 /* <!-- ----Color Picker || ColorPicker---- --> */
@@ -4656,11 +4791,22 @@ option:checked {
 	line-height: 35px;
 	cursor: pointer;
 	border: 2px solid transparent;
-	transition: background-color 0.3s ease;
+	transition:
+		transform 0.25s var(--fluid-spring),
+		background-color 0.25s var(--fluid-ease-out),
+		border-color 0.25s var(--fluid-ease-out),
+		box-shadow 0.25s var(--fluid-ease-out);
 }
 
 .colorPickerLabel:hover {
 	background: var(--bg-color-blue);
+	transform: translateY(-2px) scale(1.02);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.colorPickerLabel:active {
+	transform: scale(0.94);
+	transition: transform 0.08s var(--fluid-press);
 }
 /* <!-- ----End of Color Picker || ColorPicker---- --> */
 
@@ -4680,6 +4826,25 @@ option:checked {
 		inset 0 0 0 9.7px var(--accentLightTint-blue),
 		inset 0 0 0 40px var(--darkColor-blue);
 	cursor: pointer;
+	transition:
+		transform 0.35s var(--fluid-spring),
+		box-shadow 0.3s var(--fluid-ease-out),
+		background-color 0.3s ease,
+		border-color 0.3s ease;
+}
+
+#menuButton:hover {
+	transform: scale(1.12) rotate(45deg);
+	box-shadow:
+		inset 0 0 0 4px var(--darkColor-blue),
+		inset 0 0 0 9.7px var(--accentLightTint-blue),
+		inset 0 0 0 40px var(--darkColor-blue),
+		0 8px 24px rgba(0, 0, 0, 0.22);
+}
+
+#menuButton:active {
+	transform: scale(0.92) rotate(45deg);
+	transition: transform 0.08s var(--fluid-press);
 }
 
 /* ---------------------- */
@@ -4701,6 +4866,21 @@ option:checked {
 	padding-inline-end: 0;
 	border-radius: 100px;
 	overflow: hidden;
+	cursor: pointer;
+	transition:
+		transform 0.25s var(--fluid-spring),
+		background-color 0.25s var(--fluid-ease-out),
+		color 0.25s var(--fluid-ease-out);
+}
+
+#menuCloseButton:hover {
+	transform: scale(1.05);
+}
+
+#menuCloseButton:active {
+	transform: scale(0.94);
+	transition: transform 0.08s var(--fluid-press);
+}
 	/* Hide the overflow when content expands */
 	transition: all 0.4s ease;
 	cursor: pointer;
@@ -5898,6 +6078,7 @@ body[sysTheme="systemDark"] .shortcutDelete button:hover {
 	border-radius: var(--round);
 	filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.3));
 	padding: 30px 35px;
+	animation: modalSpringIn 0.35s var(--fluid-spring);
 }
 
 /* Background blur overlay */
@@ -5909,6 +6090,7 @@ body[sysTheme="systemDark"] .shortcutDelete button:hover {
 	height: 100%;
 	background: rgba(0, 0, 0, 0.3);
 	z-index: 1000;
+	animation: modalOverlayFadeIn 0.25s var(--fluid-ease-out);
 }
 
 #prompt-modal-blur {
@@ -5948,9 +6130,23 @@ body[sysTheme="systemDark"] .shortcutDelete button:hover {
 	border: none;
 	outline: none;
 	cursor: pointer;
-	transition: 0.3s ease-in-out;
 	border-radius: var(--round);
 	text-align: center;
+	transition:
+		transform 0.25s var(--fluid-spring),
+		background-color 0.25s var(--fluid-ease-out),
+		color 0.25s var(--fluid-ease-out),
+		box-shadow 0.25s var(--fluid-ease-out);
+}
+
+.prompt-modal-button:hover {
+	transform: translateY(-2px) scale(1.03);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.prompt-modal-button:active {
+	transform: scale(0.94);
+	transition: transform 0.08s var(--fluid-press);
 }
 
 /* OK/Yes Button */
@@ -6569,13 +6765,23 @@ body[data-bg="wallpaper"] #backButton {
 	border: 1px solid var(--glass-border-subtle);
 	box-shadow: var(--glass-shadow-sm);
 	fill: var(--textColorDark-blue);
+	transition:
+		transform 0.25s var(--fluid-spring),
+		background-color 0.25s var(--fluid-ease-out),
+		fill 0.25s var(--fluid-ease-out),
+		border-color 0.25s var(--fluid-ease-out);
 }
 
 body[data-bg="wallpaper"] #backButton:hover {
 	background-color: var(--darkColor-blue);
 	fill: #ffffff;
 	border-color: transparent;
-	transform: scale(1.05);
+	transform: scale(1.1);
+}
+
+body[data-bg="wallpaper"] #backButton:active {
+	transform: scale(0.92);
+	transition: transform 0.08s var(--fluid-press);
 }
 
 body[data-bg="wallpaper"] #resetButton,
@@ -6590,6 +6796,12 @@ body[data-bg="wallpaper"] #newShortcutButton {
 	border: 1px solid var(--glass-border-subtle);
 	box-shadow: var(--glass-shadow-sm);
 	fill: var(--textColorDark-blue);
+	transition:
+		transform 0.25s var(--fluid-spring),
+		background-color 0.25s var(--fluid-ease-out),
+		fill 0.25s var(--fluid-ease-out),
+		border-color 0.25s var(--fluid-ease-out),
+		box-shadow 0.25s var(--fluid-ease-out);
 }
 
 body[data-bg="wallpaper"] #resetButton:hover,
@@ -6597,6 +6809,14 @@ body[data-bg="wallpaper"] #newShortcutButton:hover {
 	background-color: var(--darkColor-blue);
 	fill: #ffffff;
 	border-color: transparent;
+	transform: translateY(-2px) scale(1.05);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+body[data-bg="wallpaper"] #resetButton:active,
+body[data-bg="wallpaper"] #newShortcutButton:active {
+	transform: scale(0.92);
+	transition: transform 0.08s var(--fluid-press);
 }
 
 body[data-bg="wallpaper"] .shortcutDelete button,
@@ -6611,6 +6831,11 @@ body[data-bg="wallpaper"] .uploadCustomIconButton {
 	border: 1px solid var(--glass-border-subtle);
 	box-shadow: var(--glass-shadow-sm);
 	fill: var(--textColorDark-blue);
+	transition:
+		transform 0.25s var(--fluid-spring),
+		background-color 0.25s var(--fluid-ease-out),
+		fill 0.25s var(--fluid-ease-out),
+		border-color 0.25s var(--fluid-ease-out);
 }
 
 body[data-bg="wallpaper"] .shortcutDelete button:hover,
@@ -6618,6 +6843,13 @@ body[data-bg="wallpaper"] .uploadCustomIconButton:hover {
 	background-color: var(--darkColor-blue);
 	fill: #ffffff;
 	border-color: transparent;
+	transform: translateY(-2px) scale(1.05);
+}
+
+body[data-bg="wallpaper"] .shortcutDelete button:active,
+body[data-bg="wallpaper"] .uploadCustomIconButton:active {
+	transform: scale(0.92);
+	transition: transform 0.08s var(--fluid-press);
 }
 
 body[data-bg="wallpaper"] .shortcutSettingsEntry {
@@ -6653,7 +6885,12 @@ body[data-bg="wallpaper"] .switchMediaButton {
 	border: 1px solid var(--glass-border-subtle);
 	box-shadow: var(--glass-specular), var(--glass-shadow-sm);
 	color: var(--darkColor-blue);
-	transition: background-color 0.25s ease, transform 0.15s ease, border-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
+	transition:
+		transform 0.25s var(--fluid-spring),
+		background-color 0.25s var(--fluid-ease-out),
+		border-color 0.25s var(--fluid-ease-out),
+		box-shadow 0.25s var(--fluid-ease-out),
+		color 0.25s var(--fluid-ease-out);
 }
 
 body[data-bg="wallpaper"] .uploadButton:hover,
@@ -6663,7 +6900,7 @@ body[data-bg="wallpaper"] .switchMediaButton:hover {
 	background-color: var(--darkColor-blue);
 	color: var(--whitishColor-blue);
 	border-color: var(--glass-border-base);
-	transform: translateY(-1px);
+	transform: translateY(-2px) scale(1.02);
 	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16), var(--glass-specular);
 }
 
@@ -6671,7 +6908,8 @@ body[data-bg="wallpaper"] .uploadButton:active,
 body[data-bg="wallpaper"] .randomButton:active,
 body[data-bg="wallpaper"] .videoButton:active,
 body[data-bg="wallpaper"] .switchMediaButton:active {
-	transform: translateY(0);
+	transform: scale(0.94);
+	transition: transform 0.08s var(--fluid-press);
 }
 
 /* Clear Background Button */
@@ -6686,7 +6924,12 @@ body[data-bg="wallpaper"] .clearButton {
 	border: 1px solid var(--glass-border-subtle);
 	box-shadow: var(--glass-specular), var(--glass-shadow-sm);
 	color: var(--whitishColor-blue);
-	transition: background-color 0.25s ease, transform 0.15s ease, border-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
+	transition:
+		transform 0.25s var(--fluid-spring),
+		background-color 0.25s var(--fluid-ease-out),
+		border-color 0.25s var(--fluid-ease-out),
+		box-shadow 0.25s var(--fluid-ease-out),
+		color 0.25s var(--fluid-ease-out);
 }
 
 body[data-bg="wallpaper"] .clearButton:hover {
@@ -6697,12 +6940,13 @@ body[data-bg="wallpaper"] .clearButton:hover {
 	);
 	color: #ffffff;
 	border-color: var(--glass-border-base);
-	transform: translateY(-1px);
+	transform: translateY(-2px) scale(1.02);
 	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22), var(--glass-specular);
 }
 
 body[data-bg="wallpaper"] .clearButton:active {
-	transform: translateY(0);
+	transform: scale(0.94);
+	transition: transform 0.08s var(--fluid-press);
 }
 
 /* Theme Segment Controls & Indicator */
@@ -6738,12 +6982,16 @@ body[data-bg="wallpaper"] .languageIcon {
 	-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
 	border: 1px solid var(--glass-border-color);
 	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.14), var(--glass-specular);
-	transition: transform 0.25s var(--md-motion-ease), box-shadow 0.25s var(--md-motion-ease), background-color 0.3s ease;
+	transition:
+		transform 0.25s var(--fluid-spring),
+		box-shadow 0.25s var(--fluid-ease-out),
+		background-color 0.3s ease,
+		border-color 0.25s ease;
 }
 
 body[data-bg="wallpaper"] .themingStuff .btn:hover,
 body[data-bg="wallpaper"] .languageIcon:hover {
-	transform: scale(1.06);
+	transform: scale(1.08);
 	background-color: color-mix(
 		in srgb,
 		var(--accentLightTint-blue) 48%,
@@ -6753,6 +7001,11 @@ body[data-bg="wallpaper"] .languageIcon:hover {
 	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2), var(--glass-specular);
 }
 
+body[data-bg="wallpaper"] .themingStuff .btn:active,
+body[data-bg="wallpaper"] .languageIcon:active {
+	transform: scale(0.92);
+	transition: transform 0.08s var(--fluid-press);
+}
 body[data-bg="wallpaper"] .colorsContainer {
 	background-color: color-mix(
 		in srgb,
@@ -6766,25 +7019,46 @@ body[data-bg="wallpaper"] .colorsContainer {
 	transition: background-color 0.8s ease, border-color 0.8s ease, box-shadow 0.8s ease;
 }
 
+@keyframes swatchSelectBounce {
+	0% {
+		transform: scale(0.9);
+	}
+	50% {
+		transform: scale(1.18);
+	}
+	100% {
+		transform: scale(1.08);
+	}
+}
+
 /* Individual Color Swatches Glassmorphism in Wallpaper Mode */
 body[data-bg="wallpaper"] .colorsContainer input[type="radio"] {
 	border: 1.5px solid rgba(255, 255, 255, 0.45);
 	box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6), inset 0 -1px 3px rgba(0, 0, 0, 0.25), 0 3px 8px rgba(0, 0, 0, 0.16);
 	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
 	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	transition: transform 0.2s var(--md-motion-ease), box-shadow 0.2s var(--md-motion-ease), border-color 0.2s ease;
+	transition:
+		transform 0.25s var(--fluid-spring-bouncy),
+		box-shadow 0.25s var(--fluid-ease-out),
+		border-color 0.2s ease;
 }
 
 body[data-bg="wallpaper"] .colorsContainer input[type="radio"]:hover {
-	transform: translateY(-2px) scale(1.1);
+	transform: translateY(-2px) scale(1.15);
 	border-color: #ffffff;
 	box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.8), inset 0 -1px 3px rgba(0, 0, 0, 0.3), 0 6px 14px rgba(0, 0, 0, 0.22);
+}
+
+body[data-bg="wallpaper"] .colorsContainer input[type="radio"]:active {
+	transform: scale(0.88);
+	transition: transform 0.08s var(--fluid-press);
 }
 
 body[data-bg="wallpaper"] .colorsContainer input[type="radio"]:checked {
 	transform: scale(1.08);
 	border-color: #ffffff;
 	box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.9), 0 0 0 2.5px rgba(255, 255, 255, 0.75), 0 4px 14px rgba(0, 0, 0, 0.25);
+	animation: swatchSelectBounce 0.35s var(--fluid-spring);
 }
 
 body[data-bg="wallpaper"] .colorPickerLabel {
@@ -6798,11 +7072,16 @@ body[data-bg="wallpaper"] .colorPickerLabel {
 	border: 1px solid var(--glass-border-color);
 	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1), var(--glass-specular);
 	color: var(--textColorDark-blue);
-	transition: transform 0.2s var(--md-motion-ease), box-shadow 0.2s var(--md-motion-ease), background-color 0.3s ease, border-color 0.2s ease, color 0.3s ease;
+	transition:
+		transform 0.25s var(--fluid-spring),
+		box-shadow 0.25s var(--fluid-ease-out),
+		background-color 0.3s ease,
+		border-color 0.2s ease,
+		color 0.3s ease;
 }
 
 body[data-bg="wallpaper"] .colorPickerLabel:hover {
-	transform: translateY(-1px) scale(1.03);
+	transform: translateY(-2px) scale(1.02);
 	background-color: color-mix(
 		in srgb,
 		var(--darkColor-blue) 75%,
@@ -6811,6 +7090,11 @@ body[data-bg="wallpaper"] .colorPickerLabel:hover {
 	color: #ffffff;
 	border-color: rgba(255, 255, 255, 0.6);
 	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18), var(--glass-specular);
+}
+
+body[data-bg="wallpaper"] .colorPickerLabel:active {
+	transform: scale(0.94);
+	transition: transform 0.08s var(--fluid-press);
 }
 
 /* Opacity Slider Pill */
@@ -6838,11 +7122,21 @@ body[data-bg="wallpaper"] #enterBtn {
 	border: 1px solid var(--glass-border-subtle);
 	box-shadow: var(--glass-specular), var(--glass-shadow-sm);
 	color: #ffffff;
+	transition:
+		transform 0.25s var(--fluid-spring),
+		background-color 0.25s var(--fluid-ease-out),
+		box-shadow 0.25s var(--fluid-ease-out);
 }
 
 body[data-bg="wallpaper"] #enterBtn:hover {
 	background-color: var(--darkColor-blue);
+	transform: translateY(-2px) scale(1.02);
 	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+}
+
+body[data-bg="wallpaper"] #enterBtn:active {
+	transform: scale(0.94);
+	transition: transform 0.08s var(--fluid-press);
 }
 
 body[data-bg="wallpaper"] #todoAdd {
@@ -6856,12 +7150,21 @@ body[data-bg="wallpaper"] #todoAdd {
 	border: 1px solid var(--glass-border-subtle);
 	box-shadow: var(--glass-specular), var(--glass-shadow-sm);
 	color: #ffffff;
+	transition:
+		transform 0.25s var(--fluid-spring),
+		background-color 0.25s var(--fluid-ease-out),
+		box-shadow 0.25s var(--fluid-ease-out);
 }
 
 body[data-bg="wallpaper"] #todoAdd:hover {
 	background-color: var(--darkColor-blue);
-	transform: translateY(-1px);
+	transform: translateY(-2px) scale(1.04);
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+body[data-bg="wallpaper"] #todoAdd:active {
+	transform: scale(0.92);
+	transition: transform 0.08s var(--fluid-press);
 }
 
 /* Save, Backup, Restore, and Reset Buttons */
@@ -6879,7 +7182,12 @@ body[data-bg="wallpaper"] #dontShowTips {
 	border: 1px solid var(--glass-border-subtle);
 	box-shadow: var(--glass-specular), var(--glass-shadow-sm);
 	color: var(--textColorDark-blue);
-	transition: background-color 0.25s ease, transform 0.15s ease, border-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
+	transition:
+		transform 0.25s var(--fluid-spring),
+		background-color 0.25s var(--fluid-ease-out),
+		border-color 0.25s var(--fluid-ease-out),
+		box-shadow 0.25s var(--fluid-ease-out),
+		color 0.25s var(--fluid-ease-out);
 }
 
 body[data-bg="wallpaper"] .savebtn:hover,
@@ -6889,8 +7197,16 @@ body[data-bg="wallpaper"] #dontShowTips:hover {
 	background-color: var(--darkColor-blue);
 	color: #ffffff;
 	border-color: var(--glass-border-base);
-	transform: translateY(-1px);
+	transform: translateY(-2px) scale(1.02);
 	box-shadow: var(--glass-shadow);
+}
+
+body[data-bg="wallpaper"] .savebtn:active,
+body[data-bg="wallpaper"] .backupRestoreBtn:active,
+body[data-bg="wallpaper"] .resetbtn:active,
+body[data-bg="wallpaper"] #dontShowTips:active {
+	transform: scale(0.94);
+	transition: transform 0.08s var(--fluid-press);
 }
 
 /* Modal and Dialog Action Buttons */
@@ -6906,7 +7222,12 @@ body[data-bg="wallpaper"] .ai-save-button {
 	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
 	border: 1px solid var(--glass-border-subtle);
 	box-shadow: var(--glass-specular), var(--glass-shadow-sm);
-	transition: background-color 0.25s ease, transform 0.15s ease, border-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
+	transition:
+		transform 0.25s var(--fluid-spring),
+		background-color 0.25s var(--fluid-ease-out),
+		border-color 0.25s var(--fluid-ease-out),
+		box-shadow 0.25s var(--fluid-ease-out),
+		color 0.25s var(--fluid-ease-out);
 }
 
 body[data-bg="wallpaper"] .prompt-modal-button:hover,
@@ -6915,8 +7236,15 @@ body[data-bg="wallpaper"] .ai-save-button:hover {
 	background-color: var(--darkColor-blue);
 	color: #ffffff;
 	border-color: var(--glass-border-base);
-	transform: translateY(-1px);
+	transform: translateY(-2px) scale(1.02);
 	box-shadow: var(--glass-shadow);
+}
+
+body[data-bg="wallpaper"] .prompt-modal-button:active,
+body[data-bg="wallpaper"] .ai-reset-button:active,
+body[data-bg="wallpaper"] .ai-save-button:active {
+	transform: scale(0.94);
+	transition: transform 0.08s var(--fluid-press);
 }
 
 /* Bookmarks Sidebar Sort & View-As Buttons */
@@ -6933,7 +7261,10 @@ body[data-bg="wallpaper"] #cancelBookmarkEdit {
 	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
 	border: 1px solid var(--glass-border-subtle);
 	box-shadow: var(--glass-shadow-sm);
-	transition: background-color 0.25s ease, transform 0.15s ease, border-color 0.25s ease;
+	transition:
+		transform 0.25s var(--fluid-spring),
+		background-color 0.25s var(--fluid-ease-out),
+		border-color 0.25s var(--fluid-ease-out);
 }
 
 body[data-bg="wallpaper"] .bookmark-sort-button:hover,
@@ -6943,6 +7274,15 @@ body[data-bg="wallpaper"] #cancelBookmarkEdit:hover {
 	background-color: var(--darkColor-blue);
 	color: #ffffff;
 	border-color: var(--glass-border-base);
+	transform: translateY(-2px) scale(1.02);
+}
+
+body[data-bg="wallpaper"] .bookmark-sort-button:active,
+body[data-bg="wallpaper"] .bookmark-view-as-button:active,
+body[data-bg="wallpaper"] #saveBookmarkChanges:active,
+body[data-bg="wallpaper"] #cancelBookmarkEdit:active {
+	transform: scale(0.94);
+	transition: transform 0.08s var(--fluid-press);
 }
 
 /* Bookmark sidebar cleanup in wallpaper mode */
@@ -7464,6 +7804,7 @@ body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="
 html[data-preferred-theme="dark"] body[data-has-video="true"] #menuButton:hover,
 body[data-has-video="true"]:has(.themeSegment[data-active="dark"]) #menuButton:hover,
 body[data-has-video="true"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #menuButton:hover {
+	transform: scale(1.12) rotate(45deg);
 	background-color: color-mix(in srgb, var(--darkColor-blue) 55%, rgba(0, 0, 0, 0.35)) !important;
 	border-color: rgba(255, 255, 255, 0.5) !important;
 	box-shadow:
@@ -7472,6 +7813,18 @@ body[data-has-video="true"][sysTheme="systemDark"]:has(.themeSegment[data-active
 		inset 0 0 0 25px var(--darkColor-blue),
 		0 8px 24px rgba(0, 0, 0, 0.45),
 		0 0 22px color-mix(in srgb, var(--darkColor-blue) 50%, transparent) !important;
+}
+
+.black-theme body[data-bg="wallpaper"] #menuButton:active,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] #menuButton:active,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #menuButton:active,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #menuButton:active,
+.black-theme body[data-has-video="true"] #menuButton:active,
+html[data-preferred-theme="dark"] body[data-has-video="true"] #menuButton:active,
+body[data-has-video="true"]:has(.themeSegment[data-active="dark"]) #menuButton:active,
+body[data-has-video="true"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #menuButton:active {
+	transform: scale(0.92) rotate(45deg);
+	transition: transform 0.08s var(--fluid-press);
 }
 
 /* --- Accessibility: Reduced Transparency Support --- */
@@ -7533,6 +7886,18 @@ body[data-has-video="true"][sysTheme="systemDark"]:has(.themeSegment[data-active
 	body[data-bg="wallpaper"] #cancelBookmarkEdit {
 		backdrop-filter: none !important;
 		-webkit-backdrop-filter: none !important;
+	}
+}
+
+/* --- Accessibility: Reduced Motion Support --- */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.001ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.001ms !important;
+		scroll-behavior: auto !important;
 	}
 }
 
