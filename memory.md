@@ -47,6 +47,7 @@ Core goals:
     - **Spring Chevrons & Collapsible Cards**: Chevrons rotate with snappy spring overshoot (`transform 0.35s var(--fluid-spring)`), and cards unroll smoothly with `--fluid-ease-out`.
     - **Dialog & Modal Spring-In**: Dialogs (`#prompt-modal-container`, `.ai-settings-modal`, `#editBookmarkModal`) spring into view via `@keyframes modalSpringIn` accompanied by smooth backdrop blur fade (`@keyframes modalOverlayFadeIn`).
     - **Color Swatch Bounce**: Swatches depress on pointer-down and bounce into selection via `@keyframes swatchSelectBounce`.
+    - **Menu Close Button Polish**: Fixed dangling properties and unmatched closing brace at lines 4885–4888, unifying `#menuCloseButton:hover` with smooth width expansion (`0.4s var(--fluid-ease-out)`), spring hover (`scale(1.02)`), tactile press (`scale(0.94)`), and restoring `margin-top: var(--gap)`.
     - **Reduced Motion Fallback**: Full conformance with `@media (prefers-reduced-motion: reduce)` zeroing animation durations for vestibular accessibility.
 - **Clock Subsystem (`scripts/clock.js`)**:
   - Dual modes: Analog (smooth rotating hands) and Digital (12h/24h formats).
