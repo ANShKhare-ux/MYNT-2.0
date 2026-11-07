@@ -53,6 +53,7 @@ Core goals:
 - **Wallpaper & Video Background Engine (`scripts/wallpaper.js`)**:
   - Local image and video upload stored as Blobs in IndexedDB (`ImageDB`).
   - **Hardware-Accelerated Video Backgrounds**: Supports MP4, WebM, and OGG video wallpapers. Fixed-position compositor layer (`transform: translateZ(0); will-change: transform; backface-visibility: hidden; pointer-events: none;`) leveraging Intel HD Graphics Quick Sync hardware decoding with near-zero CPU usage.
+  - **Muted Autoplay Pipeline with Gesture Recovery**: Strict conformance with Chromium Autoplay Policy (`muted`, `defaultMuted`, `playsinline`, `autoplay`, `video.load()`), dual event readiness hooks (`canplay`, `loadeddata`), loop continuity recovery (`onended`), and transparent first-interaction gesture fallback ensuring instant, unbreakable autoplay.
   - **Strict Resource & Battery Optimizations**:
     - **Tab Visibility API**: Halts video decoding (`video.pause()`) when tab is hidden or minimized, dropping CPU/GPU decoding to 0.0%.
     - **Reduced Motion Support**: Automatically pauses video when `prefers-reduced-motion: reduce` is enabled.

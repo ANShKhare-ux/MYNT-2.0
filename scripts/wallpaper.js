@@ -17,6 +17,7 @@ const mediaTypeKey = "mediaType"; // Key to store media format ("image" or "vide
 let currentBgUrl = null;
 let bgVideo = null;
 let isVideoActive = false;
+let gestureRecoveryRegistered = false;
 
 // Determine if a Blob/File is a video
 function checkIsVideo(blob) {
@@ -53,14 +54,87 @@ function updateVideoControlsUI(isPlaying) {
     }
 }
 
+// Fallback listener: if browser blocks initial unmuted autoplay, start immediately on first user touch/click/key
+function registerGestureRecovery(video) {
+    if (gestureRecoveryRegistered || !video) return;
+    gestureRecoveryRegistered = true;
+
+    const onInteraction = () => {
+        if (isVideoActive && video && video.paused) {
+            const isUserPaused = localStorage.getItem("bgVideoPaused") === "true";
+            const isReducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            if (!isUserPaused && !isReducedMotion) {
+                video.muted = true;
+                video.play().then(() => {
+                    updateVideoControlsUI(true);
+                }).catch(() => {});
+            }
+        }
+        window.removeEventListener("pointerdown", onInteraction, true);
+        window.removeEventListener("keydown", onInteraction, true);
+        window.removeEventListener("touchstart", onInteraction, true);
+        window.removeEventListener("click", onInteraction, true);
+        gestureRecoveryRegistered = false;
+    };
+
+    window.addEventListener("pointerdown", onInteraction, { capture: true, once: true });
+    window.addEventListener("keydown", onInteraction, { capture: true, once: true });
+    window.addEventListener("touchstart", onInteraction, { capture: true, once: true });
+    window.addEventListener("click", onInteraction, { capture: true, once: true });
+}
+
+// Autoplay trigger pipeline conforming to Chromium Autoplay Policies
+function attemptAutoplay(video) {
+    if (!video) return;
+
+    // Lock in Chromium-mandated muted attributes
+    video.muted = true;
+    video.defaultMuted = true;
+    video.volume = 0;
+    video.setAttribute("muted", "");
+    video.setAttribute("playsinline", "");
+    video.setAttribute("autoplay", "");
+
+    const playVideo = () => {
+        const isUserPaused = localStorage.getItem("bgVideoPaused") === "true";
+        if (isUserPaused) return;
+
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+            playPromise
+                .then(() => {
+                    updateVideoControlsUI(true);
+                })
+                .catch(err => {
+                    console.warn("Autoplay deferred or prevented by browser policy:", err);
+                    updateVideoControlsUI(false);
+                    registerGestureRecovery(video);
+                });
+        }
+    };
+
+    // Attempt immediate playback
+    playVideo();
+
+    // Media readiness fallbacks: play the moment first frames are decoded
+    video.addEventListener("canplay", playVideo, { once: true });
+    video.addEventListener("loadeddata", playVideo, { once: true });
+}
+
 // Play and configure video background with hardware acceleration
-function setVideoBackground(url) {
+function setVideoBackground(url, isNewUpload = false) {
     const video = getBgVideoElement();
     if (!video) return;
 
     isVideoActive = true;
     document.body.setAttribute("data-has-video", "true");
 
+    // When newly uploaded, reset paused state so the video immediately autoplays
+    if (isNewUpload) {
+        localStorage.setItem("bgVideoPaused", "false");
+    }
+
+    // Set source and lock in attributes for hardware decoding and autoplay
     video.src = url;
     video.muted = true;
     video.defaultMuted = true;
@@ -68,7 +142,13 @@ function setVideoBackground(url) {
     video.autoplay = true;
     video.loop = true;
     video.playsInline = true;
+    video.setAttribute("muted", "");
+    video.setAttribute("playsinline", "");
+    video.setAttribute("autoplay", "");
+    video.setAttribute("loop", "");
     video.style.display = "block";
+
+    video.load();
 
     const isUserPaused = localStorage.getItem("bgVideoPaused") === "true";
     const isReducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -77,12 +157,14 @@ function setVideoBackground(url) {
         video.pause();
         updateVideoControlsUI(false);
     } else {
-        video.play().catch(err => {
-            console.warn("Video background playback interrupted:", err);
-            updateVideoControlsUI(false);
-        });
-        updateVideoControlsUI(true);
+        attemptAutoplay(video);
     }
+
+    // Continuous loop recovery
+    video.onended = () => {
+        video.currentTime = 0;
+        video.play().catch(() => {});
+    };
 
     const videoPlayPauseTrigger = document.getElementById("videoPlayPauseTrigger");
     if (videoPlayPauseTrigger) {
@@ -110,7 +192,7 @@ function removeVideoBackground() {
 }
 
 // Set background media (image or video) using a Blob
-function setBackground(blob) {
+function setBackground(blob, isNewUpload = false) {
     const isVideo = checkIsVideo(blob);
     const previousUrl = currentBgUrl;
     const newUrl = URL.createObjectURL(blob);
@@ -118,7 +200,7 @@ function setBackground(blob) {
 
     if (isVideo) {
         document.body.style.removeProperty("--bg-image");
-        setVideoBackground(newUrl);
+        setVideoBackground(newUrl, isNewUpload);
     } else {
         removeVideoBackground();
         document.body.style.setProperty("--bg-image", `url(${newUrl})`);
@@ -203,6 +285,11 @@ async function clearImageFromIndexedDB() {
 async function handleMediaUpload(file) {
     if (!file) return;
 
+    const isVideo = checkIsVideo(file);
+    if (isVideo) {
+        localStorage.setItem("bgVideoPaused", "false");
+    }
+
     // RAM/Performance safeguard: Warn if file exceeds 100MB
     const MAX_RECOMMENDED_SIZE = 100 * 1024 * 1024; // 100MB
     if (file.size > MAX_RECOMMENDED_SIZE) {
@@ -216,7 +303,7 @@ async function handleMediaUpload(file) {
 
     try {
         await saveImageToIndexedDB(file, false);
-        setBackground(file);
+        setBackground(file, true);
     } catch (error) {
         console.error("Failed to save and apply wallpaper media:", error);
     }
@@ -258,7 +345,7 @@ async function applyRandomImage(showConfirmation = true) {
         const response = await fetch(RANDOM_IMAGE_URL);
         const blob = await response.blob();
         await saveImageToIndexedDB(blob, true);
-        setBackground(blob);
+        setBackground(blob, false);
     } catch (error) {
         console.error("Error fetching random image:", error);
     }
@@ -283,14 +370,14 @@ function checkAndUpdateImage() {
             }
 
             if (imageType === "upload") {
-                setBackground(blob);
+                setBackground(blob, false);
                 return;
             }
 
             if (lastUpdate.toDateString() !== now.toDateString()) {
                 applyRandomImage(false);
             } else {
-                setBackground(blob);
+                setBackground(blob, false);
             }
         })
         .catch((error) => {
@@ -381,8 +468,7 @@ document.addEventListener("visibilitychange", () => {
         const isUserPaused = localStorage.getItem("bgVideoPaused") === "true";
         const isReducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         if (!isUserPaused && !isReducedMotion) {
-            video.play().catch(() => {});
-            updateVideoControlsUI(true);
+            attemptAutoplay(video);
         }
     }
 });
@@ -402,8 +488,7 @@ if (typeof window !== "undefined" && window.matchMedia) {
             } else {
                 const isUserPaused = localStorage.getItem("bgVideoPaused") === "true";
                 if (!isUserPaused) {
-                    video.play().catch(() => {});
-                    updateVideoControlsUI(true);
+                    attemptAutoplay(video);
                 }
             }
         });

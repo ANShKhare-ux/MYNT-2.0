@@ -112,4 +112,27 @@ test('Video Wallpaper Feature and Hardware Performance Optimization', async (t) 
             'Must exclude #bgVideo from dark invert filter to protect natural colors and GPU performance'
         );
     });
+
+    await t.test('scripts/wallpaper.js enforces Chromium-compliant muted autoplay pipeline with gesture recovery', () => {
+        assert.ok(
+            wallpaperJs.includes('function attemptAutoplay'),
+            'Must implement attemptAutoplay pipeline function'
+        );
+        assert.ok(
+            wallpaperJs.includes('video.setAttribute("muted", "")'),
+            'Must explicitly set muted attribute for Chromium autoplay policy'
+        );
+        assert.ok(
+            wallpaperJs.includes('video.load()'),
+            'Must call video.load() when source is attached to kick off decoder loading'
+        );
+        assert.ok(
+            wallpaperJs.includes('canplay') && wallpaperJs.includes('loadeddata'),
+            'Must hook canplay and loadeddata readiness events to trigger playback once buffered'
+        );
+        assert.ok(
+            wallpaperJs.includes('registerGestureRecovery'),
+            'Must implement gesture recovery fallback on first interaction if browser blocks initial autoplay'
+        );
+    });
 });
