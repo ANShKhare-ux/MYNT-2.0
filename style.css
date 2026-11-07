@@ -255,6 +255,74 @@ body[data-has-video="true"] {
 	background-image: none !important;
 }
 
+/* Dynamic Wallpaper & Video Theme Control (shown whenever a wallpaper is active) */
+.dynamicVideoColorControl {
+	display: none;
+	margin-top: 14px;
+	padding-top: 12px;
+	border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+body[data-bg="wallpaper"] .dynamicVideoColorControl,
+body[data-has-video="true"] .dynamicVideoColorControl {
+	display: block;
+}
+
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .dynamicVideoColorControl,
+.black-theme body[data-bg="wallpaper"] .dynamicVideoColorControl,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .dynamicVideoColorControl,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .dynamicVideoColorControl {
+	border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Fluid ambient color transitions during wallpaper changes and video playback */
+body[data-bg="wallpaper"] .searchbar,
+body[data-bg="wallpaper"] .rightDiv .topDiv .lrectangle,
+body[data-bg="wallpaper"] .todo-container,
+body[data-bg="wallpaper"] .bookmark-sidebar,
+body[data-bg="wallpaper"] .menuBar .menuCont,
+body[data-bg="wallpaper"] .sectionInner,
+body[data-bg="wallpaper"] .sectionOuter,
+body[data-bg="wallpaper"] .uploadButton,
+body[data-bg="wallpaper"] .randomButton,
+body[data-bg="wallpaper"] .videoButton,
+body[data-bg="wallpaper"] .switchMediaButton,
+body[data-bg="wallpaper"] .clearButton,
+body[data-bg="wallpaper"] .themeSegment,
+body[data-bg="wallpaper"] .themeIndicator,
+body[data-bg="wallpaper"] .colorPickerLabel,
+body[data-bg="wallpaper"] #enterBtn,
+body[data-bg="wallpaper"] #todoAdd,
+body[data-bg="wallpaper"] .dot-icon,
+body[data-bg="wallpaper"] .bookmark-button,
+body[data-bg="wallpaper"] .tilesCont .tiles,
+body[data-bg="wallpaper"] .shortcutsContainer .shortcuts .shortcutLogoContainer,
+body[data-bg="wallpaper"] #menuButton,
+body[data-has-video="true"] .searchbar,
+body[data-has-video="true"] .rightDiv .topDiv .lrectangle,
+body[data-has-video="true"] .todo-container,
+body[data-has-video="true"] .bookmark-sidebar,
+body[data-has-video="true"] .menuBar .menuCont,
+body[data-has-video="true"] .sectionInner,
+body[data-has-video="true"] .sectionOuter,
+body[data-has-video="true"] .uploadButton,
+body[data-has-video="true"] .randomButton,
+body[data-has-video="true"] .videoButton,
+body[data-has-video="true"] .switchMediaButton,
+body[data-has-video="true"] .clearButton,
+body[data-has-video="true"] .themeSegment,
+body[data-has-video="true"] .themeIndicator,
+body[data-has-video="true"] .colorPickerLabel,
+body[data-has-video="true"] #enterBtn,
+body[data-has-video="true"] #todoAdd,
+body[data-has-video="true"] .dot-icon,
+body[data-has-video="true"] .bookmark-button,
+body[data-has-video="true"] .tilesCont .tiles,
+body[data-has-video="true"] .shortcutsContainer .shortcuts .shortcutLogoContainer,
+body[data-has-video="true"] #menuButton {
+	transition: background-color 0.8s ease, border-color 0.8s ease, color 0.8s ease, box-shadow 0.8s ease;
+}
+
 /* Early-paint dark mode: applied by preload.js before deferred scripts run.
    Uses data attributes on <html> set synchronously in <head>. */
 html[data-preferred-theme="dark"]:not(:has(#darkTheme:checked)),
@@ -6201,16 +6269,69 @@ body[data-bg="wallpaper"] .dropdown-content {
 }
 
 /* --- Shortcuts Glassmorphic Floating Badges --- */
-body[data-bg="wallpaper"] .shortcutsContainer .shortcuts .shortcutLogoContainer {
-	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	border: 1px solid var(--glass-border-color);
-	box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.16), var(--glass-specular);
-	transition: transform 0.25s var(--md-motion-ease), box-shadow 0.25s var(--md-motion-ease);
+body[data-bg="wallpaper"] .shortcutsContainer .shortcuts a:has(img),
+body[data-bg="wallpaper"] .shortcutsContainer .shortcuts a:has(svg) {
+	background: transparent !important;
+	background-color: transparent !important;
 }
 
-body[data-bg="wallpaper"] .shortcutsContainer .shortcuts .shortcutLogoContainer:hover {
-	box-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.22), var(--glass-specular);
+body[data-bg="wallpaper"] .shortcutsContainer .shortcuts .shortcutLogoContainer {
+	background-color: color-mix(in srgb, var(--accentLightTint-blue) 38%, rgba(255, 255, 255, 0.22)) !important;
+	backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-color);
+	box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.18), var(--glass-specular);
+	transition: transform 0.25s var(--md-motion-ease), box-shadow 0.25s var(--md-motion-ease), background-color 0.3s ease, border-color 0.3s ease;
+}
+
+body[data-bg="wallpaper"] .shortcutsContainer .shortcuts:hover .shortcutLogoContainer {
+	transform: translateY(-8px) scale(1.06);
+	background-color: color-mix(in srgb, var(--accentLightTint-blue) 52%, rgba(255, 255, 255, 0.35)) !important;
+	border-color: rgba(255, 255, 255, 0.45);
+	box-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.26), var(--glass-specular);
+}
+
+/* Translucent SVG preset background in wallpaper mode */
+body[data-bg="wallpaper"] #shortcuts-section .accentColor,
+body[data-bg="wallpaper"] #shortcuts-section .shortcutDarkColor {
+	fill: color-mix(in srgb, var(--darkColor-blue) 48%, rgba(255, 255, 255, 0.15));
+}
+
+/* --- Shortcuts Dock Glassmorphism in Wallpaper Mode --- */
+body[data-bg="wallpaper"] .shortcutsContainer.showBackground::before,
+body[data-bg="wallpaper"] .shortcutsContainer::before {
+	background-color: color-mix(in srgb, var(--accentLightTint-blue) 30%, rgba(255, 255, 255, 0.2)) !important;
+	backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-color);
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.16), var(--glass-specular);
+}
+
+/* --- Menu Floating Action Button (Glassmorphism in Wallpaper Mode) --- */
+body[data-bg="wallpaper"] #menuButton {
+	background-color: color-mix(in srgb, var(--accentLightTint-blue) 35%, rgba(255, 255, 255, 0.2)) !important;
+	backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-color) !important;
+	box-shadow:
+		inset 0 0 0 3.5px color-mix(in srgb, var(--darkColor-blue) 55%, transparent),
+		inset 0 0 0 7.5px color-mix(in srgb, var(--accentLightTint-blue) 35%, transparent),
+		inset 0 0 0 25px color-mix(in srgb, var(--darkColor-blue) 55%, transparent),
+		0 4px 16px rgba(0, 0, 0, 0.2),
+		var(--glass-specular) !important;
+	transition: transform 0.25s var(--md-motion-ease), box-shadow 0.25s var(--md-motion-ease), background-color 0.3s ease;
+}
+
+body[data-bg="wallpaper"] #menuButton:hover {
+	transform: scale(1.08);
+	background-color: color-mix(in srgb, var(--accentLightTint-blue) 50%, rgba(255, 255, 255, 0.35)) !important;
+	border-color: rgba(255, 255, 255, 0.45) !important;
+	box-shadow:
+		inset 0 0 0 3.5px color-mix(in srgb, var(--darkColor-blue) 75%, transparent),
+		inset 0 0 0 7.5px color-mix(in srgb, var(--accentLightTint-blue) 50%, transparent),
+		inset 0 0 0 25px color-mix(in srgb, var(--darkColor-blue) 75%, transparent),
+		0 8px 24px rgba(0, 0, 0, 0.28),
+		var(--glass-specular) !important;
 }
 
 /* --- Floating Quick Action Buttons --- */
@@ -6593,48 +6714,86 @@ body[data-bg="wallpaper"] .themingStuff .btn,
 body[data-bg="wallpaper"] .languageIcon {
 	background-color: color-mix(
 		in srgb,
-		var(--whitishColor-blue) calc(var(--transparency) * 1.5),
-		rgba(255, 255, 255, 0.45)
-	);
-	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	border: 1px solid var(--glass-border-subtle);
-	box-shadow: var(--glass-specular), var(--glass-shadow-sm);
+		var(--accentLightTint-blue) 35%,
+		rgba(255, 255, 255, 0.22)
+	) !important;
+	backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-color);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.14), var(--glass-specular);
+	transition: transform 0.25s var(--md-motion-ease), box-shadow 0.25s var(--md-motion-ease), background-color 0.3s ease;
+}
+
+body[data-bg="wallpaper"] .themingStuff .btn:hover,
+body[data-bg="wallpaper"] .languageIcon:hover {
+	transform: scale(1.06);
+	background-color: color-mix(
+		in srgb,
+		var(--accentLightTint-blue) 48%,
+		rgba(255, 255, 255, 0.32)
+	) !important;
+	border-color: rgba(255, 255, 255, 0.45);
+	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2), var(--glass-specular);
 }
 
 body[data-bg="wallpaper"] .colorsContainer {
 	background-color: color-mix(
 		in srgb,
-		white calc(var(--transparency) * 1.4),
-		rgba(255, 255, 255, 0.45)
-	);
+		var(--accentLightTint-blue) 28%,
+		rgba(255, 255, 255, 0.2)
+	) !important;
+	backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+	-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+	border: 1px solid var(--glass-border-color);
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14), var(--glass-specular);
+	transition: background-color 0.8s ease, border-color 0.8s ease, box-shadow 0.8s ease;
+}
+
+/* Individual Color Swatches Glassmorphism in Wallpaper Mode */
+body[data-bg="wallpaper"] .colorsContainer input[type="radio"] {
+	border: 1.5px solid rgba(255, 255, 255, 0.45);
+	box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6), inset 0 -1px 3px rgba(0, 0, 0, 0.25), 0 3px 8px rgba(0, 0, 0, 0.16);
 	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
 	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	border: 1px solid var(--glass-border-subtle);
-	box-shadow: var(--glass-specular), 0 4px 16px rgba(0, 0, 0, 0.06);
+	transition: transform 0.2s var(--md-motion-ease), box-shadow 0.2s var(--md-motion-ease), border-color 0.2s ease;
+}
+
+body[data-bg="wallpaper"] .colorsContainer input[type="radio"]:hover {
+	transform: translateY(-2px) scale(1.1);
+	border-color: #ffffff;
+	box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.8), inset 0 -1px 3px rgba(0, 0, 0, 0.3), 0 6px 14px rgba(0, 0, 0, 0.22);
+}
+
+body[data-bg="wallpaper"] .colorsContainer input[type="radio"]:checked {
+	transform: scale(1.08);
+	border-color: #ffffff;
+	box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.9), 0 0 0 2.5px rgba(255, 255, 255, 0.75), 0 4px 14px rgba(0, 0, 0, 0.25);
 }
 
 body[data-bg="wallpaper"] .colorPickerLabel {
 	background-color: color-mix(
 		in srgb,
-		var(--accentLightTint-blue) 65%,
-		transparent
-	);
+		var(--accentLightTint-blue) 45%,
+		rgba(255, 255, 255, 0.2)
+	) !important;
 	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
 	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	border: 1px solid var(--glass-border-subtle);
-	box-shadow: var(--glass-shadow-sm);
+	border: 1px solid var(--glass-border-color);
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1), var(--glass-specular);
 	color: var(--textColorDark-blue);
+	transition: transform 0.2s var(--md-motion-ease), box-shadow 0.2s var(--md-motion-ease), background-color 0.3s ease, border-color 0.2s ease, color 0.3s ease;
 }
 
 body[data-bg="wallpaper"] .colorPickerLabel:hover {
+	transform: translateY(-1px) scale(1.03);
 	background-color: color-mix(
 		in srgb,
-		var(--darkColor-blue) 85%,
-		transparent
-	);
+		var(--darkColor-blue) 75%,
+		rgba(255, 255, 255, 0.3)
+	) !important;
 	color: #ffffff;
-	border-color: var(--glass-border-base);
+	border-color: rgba(255, 255, 255, 0.6);
+	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18), var(--glass-specular);
 }
 
 /* Opacity Slider Pill */
@@ -7146,8 +7305,25 @@ body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="
 html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .colorsContainer,
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .colorsContainer,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .colorsContainer {
-	background-color: rgba(255, 255, 255, 0.06);
-	border: 1px solid rgba(255, 255, 255, 0.14);
+	background-color: color-mix(in srgb, var(--darkColor-dark, #1c1c1e) 48%, rgba(0, 0, 0, 0.4)) !important;
+	border: 1px solid var(--glass-border-dark);
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), var(--glass-specular-dark);
+}
+
+.black-theme body[data-bg="wallpaper"] .colorsContainer input[type="radio"],
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .colorsContainer input[type="radio"],
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .colorsContainer input[type="radio"],
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .colorsContainer input[type="radio"] {
+	border-color: rgba(255, 255, 255, 0.25);
+	box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.35), inset 0 -1px 3px rgba(0, 0, 0, 0.45), 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.black-theme body[data-bg="wallpaper"] .colorsContainer input[type="radio"]:checked,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .colorsContainer input[type="radio"]:checked,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .colorsContainer input[type="radio"]:checked,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .colorsContainer input[type="radio"]:checked {
+	border-color: rgba(255, 255, 255, 0.85);
+	box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.5), 0 0 0 2.5px rgba(255, 255, 255, 0.55), 0 4px 14px rgba(0, 0, 0, 0.45);
 }
 
 .black-theme body[data-bg="wallpaper"] .themeSegment,
@@ -7166,6 +7342,73 @@ body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="
 	border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+.black-theme body[data-bg="wallpaper"] .shortcutsContainer .shortcuts .shortcutLogoContainer,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .shortcutsContainer .shortcuts .shortcutLogoContainer,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .shortcutsContainer .shortcuts .shortcutLogoContainer,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .shortcutsContainer .shortcuts .shortcutLogoContainer {
+	background-color: color-mix(in srgb, var(--darkColor-dark, #1c1c1e) 48%, rgba(0, 0, 0, 0.35)) !important;
+	border-color: var(--glass-border-dark);
+	box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.35), var(--glass-specular-dark);
+}
+
+.black-theme body[data-bg="wallpaper"] .shortcutsContainer .shortcuts:hover .shortcutLogoContainer,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .shortcutsContainer .shortcuts:hover .shortcutLogoContainer,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .shortcutsContainer .shortcuts:hover .shortcutLogoContainer,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .shortcutsContainer .shortcuts:hover .shortcutLogoContainer {
+	background-color: color-mix(in srgb, var(--darkColor-dark, #1c1c1e) 62%, rgba(0, 0, 0, 0.45)) !important;
+	border-color: rgba(255, 255, 255, 0.25);
+	box-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.45), var(--glass-specular-dark);
+}
+
+.black-theme body[data-bg="wallpaper"] #shortcuts-section .accentColor,
+.black-theme body[data-bg="wallpaper"] #shortcuts-section .shortcutDarkColor,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] #shortcuts-section .accentColor,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] #shortcuts-section .shortcutDarkColor,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #shortcuts-section .accentColor,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #shortcuts-section .shortcutDarkColor,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #shortcuts-section .accentColor,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #shortcuts-section .shortcutDarkColor {
+	fill: color-mix(in srgb, var(--darkColor-dark, #2b2b2b) 52%, rgba(0, 0, 0, 0.35)) !important;
+}
+
+.black-theme body[data-bg="wallpaper"] .shortcutsContainer.showBackground::before,
+.black-theme body[data-bg="wallpaper"] .shortcutsContainer::before,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .shortcutsContainer::before,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .shortcutsContainer::before,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .shortcutsContainer::before {
+	background-color: color-mix(in srgb, var(--darkColor-dark, #1c1c1c) 45%, rgba(0, 0, 0, 0.4)) !important;
+	border-color: var(--glass-border-dark);
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), var(--glass-specular-dark);
+}
+
+.black-theme body[data-bg="wallpaper"] #menuButton,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] #menuButton,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #menuButton,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #menuButton {
+	background-color: color-mix(in srgb, var(--darkColor-dark, #242424) 45%, rgba(0, 0, 0, 0.35)) !important;
+	border-color: var(--glass-border-dark) !important;
+	box-shadow:
+		inset 0 0 0 3.5px rgba(255, 255, 255, 0.35),
+		inset 0 0 0 7.5px rgba(0, 0, 0, 0.3),
+		inset 0 0 0 25px rgba(255, 255, 255, 0.25),
+		0 4px 16px rgba(0, 0, 0, 0.35),
+		var(--glass-specular-dark) !important;
+}
+
+.black-theme body[data-bg="wallpaper"] #menuButton:hover,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] #menuButton:hover,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #menuButton:hover,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #menuButton:hover {
+	background-color: color-mix(in srgb, var(--darkColor-dark, #242424) 60%, rgba(0, 0, 0, 0.45)) !important;
+	border-color: rgba(255, 255, 255, 0.3) !important;
+	box-shadow:
+		inset 0 0 0 3.5px rgba(255, 255, 255, 0.45),
+		inset 0 0 0 7.5px rgba(0, 0, 0, 0.35),
+		inset 0 0 0 25px rgba(255, 255, 255, 0.35),
+		0 8px 24px rgba(0, 0, 0, 0.45),
+		var(--glass-specular-dark) !important;
+}
+
 /* --- Accessibility: Reduced Transparency Support --- */
 @media (prefers-reduced-transparency: reduce) {
 	.glass-panel,
@@ -7175,6 +7418,8 @@ body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="
 	body[data-bg="wallpaper"] .resultBox.show,
 	body[data-bg="wallpaper"] .dropdown-content,
 	body[data-bg="wallpaper"] .shortcutsContainer .shortcuts .shortcutLogoContainer,
+	body[data-bg="wallpaper"] .shortcutsContainer::before,
+	body[data-bg="wallpaper"] #menuButton,
 	body[data-bg="wallpaper"] .dot-icon,
 	body[data-bg="wallpaper"] .bookmark-button,
 	body[data-bg="wallpaper"] .todo-container,
@@ -7207,6 +7452,7 @@ body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="
 	body[data-bg="wallpaper"] .themingStuff .btn,
 	body[data-bg="wallpaper"] .languageIcon,
 	body[data-bg="wallpaper"] .colorsContainer,
+	body[data-bg="wallpaper"] .colorsContainer input[type="radio"],
 	body[data-bg="wallpaper"] .colorPickerLabel,
 	body[data-bg="wallpaper"] .opacitySlider,
 	body[data-bg="wallpaper"] #enterBtn,

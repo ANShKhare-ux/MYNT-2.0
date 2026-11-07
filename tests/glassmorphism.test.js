@@ -166,7 +166,8 @@ test('Glassmorphism System Design and Implementation', async (t) => {
             'body[data-bg="wallpaper"] .resetbtn',
             'body[data-bg="wallpaper"] #dontShowTips',
             'body[data-bg="wallpaper"] .prompt-modal-button',
-            'body[data-bg="wallpaper"] .bookmark-sort-button'
+            'body[data-bg="wallpaper"] .bookmark-sort-button',
+            'body[data-bg="wallpaper"] #menuButton'
         ];
 
         for (const selector of requiredButtonSelectors) {
@@ -184,6 +185,23 @@ test('Glassmorphism System Design and Implementation', async (t) => {
         assert.ok(
             cssContent.includes('.black-theme body[data-bg="wallpaper"] .clearButton'),
             'Must provide dark mode glass styling for .clearButton'
+        );
+        assert.ok(
+            cssContent.includes('body[data-bg="wallpaper"] #menuButton'),
+            'Must provide glassmorphism for #menuButton floating action button in wallpaper mode'
+        );
+        assert.ok(
+            cssContent.includes('.black-theme body[data-bg="wallpaper"] #menuButton') ||
+            cssContent.includes('body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #menuButton'),
+            'Must provide dark mode glass styling for #menuButton'
+        );
+        assert.ok(
+            cssContent.includes('body[data-bg="wallpaper"] .colorsContainer input[type="radio"]'),
+            'Must provide glassmorphism and specular depth for individual color swatches in wallpaper mode'
+        );
+        assert.ok(
+            cssContent.includes('.black-theme body[data-bg="wallpaper"] .colorsContainer input[type="radio"]'),
+            'Must provide dark mode glass styling for color swatches'
         );
     });
 });

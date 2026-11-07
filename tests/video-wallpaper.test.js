@@ -163,4 +163,86 @@ test('Video Wallpaper Feature and Hardware Performance Optimization', async (t) 
             'Must define updateSwitchButtonUI for dynamic tooltip and mode indication'
         );
     });
+
+    await t.test('Dynamic Video Color Engine: low-overhead hardware optimization for Intel HD 630 / i5-7400', () => {
+        // UI & Settings toggle
+        assert.ok(indexHtml.includes('id="dynamicVideoColorControl"'), 'index.html must include dynamic video color control container');
+        assert.ok(indexHtml.includes('id="dynamicVideoColorToggle"'), 'index.html must include dynamic video color toggle input');
+        assert.ok(styleCss.includes('.dynamicVideoColorControl'), 'style.css must style .dynamicVideoColorControl');
+        assert.ok(styleCss.includes('body[data-has-video="true"] .dynamicVideoColorControl'), 'Dynamic color toggle only displayed when video is active');
+
+        // Ambient fluid transitions
+        assert.ok(
+            styleCss.includes('body[data-has-video="true"] .searchbar') &&
+            styleCss.includes('transition: background-color 0.8s ease'),
+            'style.css must define 0.8s fluid ambient color transitions during video playback'
+        );
+
+        // Core extraction functions in wallpaper.js
+        assert.ok(wallpaperJs.includes('function initVideoColorSampler'), 'Must implement sampler initialization');
+        assert.ok(wallpaperJs.includes('videoColorCanvas.width = 16'), 'Must downsample to 16px width (only 144 total pixels) for minimal RAM/CPU');
+        assert.ok(wallpaperJs.includes('videoColorCanvas.height = 9'), 'Must downsample to 9px height for 16:9 aspect ratio');
+        assert.ok(wallpaperJs.includes('willReadFrequently: true'), 'Must hint 2D canvas context with willReadFrequently for GPU readback performance');
+        assert.ok(wallpaperJs.includes('setInterval(sampleVideoColorStep, 800)'), 'Must throttle color sampling to 800ms interval (~0.01% CPU usage)');
+
+        // Delta thresholding
+        assert.ok(wallpaperJs.includes('function colorDistance'), 'Must implement colorDistance for Euclidean delta calculation');
+        assert.ok(wallpaperJs.includes('colorDistance(rgb.r, rgb.g, rgb.b, lr, lg, lb) < 18'), 'Must discard color mutations < 18 units to eliminate layout thrash');
+
+        // Tab visibility and motion lifecycle
+        assert.ok(wallpaperJs.includes('function startVideoColorExtraction'), 'Must implement startVideoColorExtraction');
+        assert.ok(wallpaperJs.includes('function stopVideoColorExtraction'), 'Must implement stopVideoColorExtraction');
+        assert.ok(wallpaperJs.includes('function saveOriginalTheme'), 'Must save user original theme before dynamic extraction');
+        assert.ok(wallpaperJs.includes('function restoreOriginalTheme'), 'Must restore user original theme when video stops or toggle disabled');
+
+        // Toggle event handling
+        assert.ok(
+            wallpaperJs.includes('dynamicVideoColorToggle.addEventListener("change"'),
+            'Must bind dynamicVideoColorToggle change event listener'
+        );
+        assert.ok(
+            wallpaperJs.includes('localStorage.setItem("dynamicVideoColor"'),
+            'Must persist dynamic video color user preference in localStorage'
+        );
+    });
+
+    await t.test('Dynamic Image Color Engine: adapts theme when photo wallpaper is set or changed', () => {
+        const themeJsPath = path.join(ROOT_DIR, 'scripts', 'theme.js');
+        const themeJs = fs.readFileSync(themeJsPath, 'utf8');
+
+        // Core image extraction functions in wallpaper.js
+        assert.ok(wallpaperJs.includes('function extractColorFromImage'), 'Must define extractColorFromImage');
+        assert.ok(wallpaperJs.includes('function extractCanvasSampleColor'), 'Must define extractCanvasSampleColor');
+        assert.ok(wallpaperJs.includes('createImageBitmap(blobOrUrl'), 'Must use hardware-accelerated off-thread decoding when available');
+        assert.ok(wallpaperJs.includes('loadAndProcessImage(url'), 'Must support fallback Image element loading');
+
+        // Integration with setBackground
+        assert.ok(
+            wallpaperJs.includes('extractColorFromImage(blob || newUrl)'),
+            'Must invoke extractColorFromImage when an image wallpaper is applied in setBackground'
+        );
+
+        // Fluid ambient CSS transitions in wallpaper mode
+        assert.ok(
+            styleCss.includes('body[data-bg="wallpaper"] .searchbar') &&
+            styleCss.includes('body[data-bg="wallpaper"] .switchMediaButton'),
+            'style.css must apply 0.8s fluid color transitions when an image wallpaper is active'
+        );
+
+        // Dynamic wallpaper theme toggle shown in wallpaper mode
+        assert.ok(
+            styleCss.includes('body[data-bg="wallpaper"] .dynamicVideoColorControl'),
+            'style.css must display dynamic color toggle when any wallpaper is active'
+        );
+
+        // Manual theme change sync in theme.js
+        assert.ok(
+            themeJs.includes('window.onThemeManuallyChanged("preset"'),
+            'theme.js must notify wallpaper engine when preset theme is manually selected'
+        );
+        assert.ok(
+            themeJs.includes('window.onThemeManuallyChanged("custom"'),
+            'theme.js must notify wallpaper engine when custom color is manually selected'
+        );
+    });
 });

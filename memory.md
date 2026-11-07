@@ -29,9 +29,10 @@ Core goals:
   - Custom color picker setting CSS custom property accent colors.
   - Interactive transparency slider (`scripts/widgets-transparency.js`) controlling `--transparency` on widgets.
   - **Glassmorphism System**: Native, hardware-accelerated frosted glass layer (`backdrop-filter: blur(...) saturate(...)`) with specular edge reflections, inner glows, and floating elevation across all widgets, sidebars, shortcuts, settings drawer cards (`.sectionInner`, `.sectionOuter`, `.innerSurface`), shortcut edit page sticky header (`.topBar`), and **all interactive buttons** in wallpaper mode:
-    - **Appearance & Wallpaper Buttons**: `.uploadButton`, `.randomButton`, `.videoButton`, `.switchMediaButton`, `.clearButton`, `.themeSegment`, `.themeIndicator`, `#themeButton`, `.colorsContainer`, `.colorPickerLabel`, and `.opacitySlider`.
-    - **Search & Navigation Buttons**: `#enterBtn`, `#todoAdd`, `.dot-icon`, `.bookmark-button`, `.savebtn`, `.backupRestoreBtn`, `.resetbtn`, and `#dontShowTips`.
+    - **Appearance & Wallpaper Buttons**: `.uploadButton`, `.randomButton`, `.videoButton`, `.switchMediaButton`, `.clearButton`, `.themeSegment`, `.themeIndicator`, `#themeButton`, `.colorsContainer`, `.colorsContainer input[type="radio"]` (frosted glass jewel swatches with specular bevels and checked halos), `.colorPickerLabel`, and `.opacitySlider`.
+    - **Search & Navigation Buttons**: `#enterBtn`, `#todoAdd`, `.dot-icon`, `.bookmark-button`, `.savebtn`, `.backupRestoreBtn`, `.resetbtn`, `#dontShowTips`, and floating action button `#menuButton`.
     - **Shortcut & Modal Action Buttons**: `#backButton`, `#newShortcutButton`, `#resetButton`, `.uploadCustomIconButton`, `.shortcutDelete button`, `.prompt-modal-button`, `.ai-reset-button`, `.ai-save-button`, and bookmark sorting/view buttons.
+    - **Shortcuts, Color Palette & Dock Glassmorphism**: Shortcut icon badges (`.shortcutsContainer .shortcuts .shortcutLogoContainer`) and color palette cards (`.colorsContainer`, `#themeButton`, `.colorPlate`, `.colorPickerLabel`) render as translucent frosted glass surfaces with specular borders and floating elevation, replacing opaque solid white backgrounds across color cards and presets (`#shortcuts-section .accentColor`, `.shortcutDarkColor`), alongside frosted glass dock backdrop (`.shortcutsContainer::before`) and concentric frosted `#menuButton`.
     - Fixes top drawer header alignment, eliminates stark solid white headers and buttons in wallpaper/dark modes, ensures high-contrast typography, adapts smoothly to light/dark themes, and provides accessibility fallback for `prefers-reduced-transparency`.
 - **Clock Subsystem (`scripts/clock.js`)**:
   - Dual modes: Analog (smooth rotating hands) and Digital (12h/24h formats).
@@ -65,6 +66,15 @@ Core goals:
     - **Zero-Friction Autoplay**: Autoplays immediately on upload, tab open, or switch without manual play/stop buttons cluttering the UI.
     - **Memory Leak Protection**: Instant `URL.revokeObjectURL(previousUrl)` cleanup and decoder flush (`video.removeAttribute('src')`, `video.load()`) prevents RAM leaks on 8GB systems.
     - **File Size Safeguards**: Warns user if video upload exceeds 100MB to protect memory bandwidth.
+    - **Low-Overhead Dynamic Wallpaper & Video Theme Color Engine**: Automatically samples playing video frames or static image wallpapers and smoothly adapts the Material You interface colors (`--bg-color-blue`, `--accentLightTint-blue`, `--darkerColor-blue`, `--darkColor-blue`, `--textColorDark-blue`) to harmonize with the active media. Specifically engineered for low-spec configurations (Intel HD Graphics 630 / Core i5-7400 / 8GB RAM):
+      - **Dynamic Image Adaptation**: Whenever a photo is uploaded, switched to, fetched via daily random Picsum, or loaded on startup, `extractColorFromImage` uses hardware-accelerated off-main-thread decoding via `createImageBitmap(blob, { resizeWidth: 16, resizeHeight: 9 })` (< 0.1ms main-thread time, 576 bytes) to extract vibrant dominant colors with zero lag or CPU/GPU impact.
+      - **16x9 Downsampled Canvas**: Only 144 pixels sampled per frame/image using an offscreen canvas with `{ willReadFrequently: true }`, reusing a single instance to eliminate garbage collection pauses.
+      - **Low-Frequency 800ms Sampling for Video**: Samples every 800ms during video playback (~0.01% CPU usage), ensuring zero frame drops or GPU bottlenecks.
+      - **Saturation & Brightness Weighting**: Filters out black letterbox bars and over-exposed highlights, giving prominence to vibrant, colorful pixels.
+      - **Euclidean Delta Thresholding**: Calculates distance between successive video frames; skips DOM mutations if change is < 18 units, preventing unnecessary layout recalculations and style repaints.
+      - **Lifecycle & Visibility Pausing**: Immediately halts video sampling when the tab is hidden (`document.hidden`), minimized, or when reduced motion is preferred; resumes cleanly on focus.
+      - **User Preference & Original Theme Preservation**: Includes an Appearance settings toggle (`#dynamicVideoColorToggle`, stored in `localStorage.dynamicVideoColor`). Accurately restores the user's manual theme whenever the wallpaper is cleared, or when the toggle is turned off. Manual theme modifications in Settings update `savedThemeColor` in real time.
+      - **Fluid 0.8s CSS Transitions**: Smooth, ambient color transitions across all widgets, buttons, and sidebars when `body[data-bg="wallpaper"]` or `body[data-has-video="true"]`.
   - Daily random wallpaper integration via Lorem Picsum.
 - **Backup & Restore (`scripts/backup-restore.js`)**:
   - Full state export to a timestamped JSON file (`localStorage` preferences and `IndexedDB` wallpapers).

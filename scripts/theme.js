@@ -219,6 +219,9 @@ const handleThemeChange = function () {
         const colorValue = this.value;
         localStorage.setItem(themeStorageKey, colorValue);
         localStorage.removeItem(customThemeStorageKey); // Clear custom theme
+        if (typeof window.onThemeManuallyChanged === "function") {
+            window.onThemeManuallyChanged("preset", colorValue);
+        }
         applySelectedTheme(colorValue);
     }
 };
@@ -235,6 +238,9 @@ const handleColorPickerChange = function (event) {
     resetDarkTheme(); // Clear dark theme if active
     localStorage.setItem(customThemeStorageKey, selectedColor); // Save custom color
     localStorage.removeItem(themeStorageKey); // Clear predefined theme
+    if (typeof window.onThemeManuallyChanged === "function") {
+        window.onThemeManuallyChanged("custom", selectedColor);
+    }
     applyCustomTheme(selectedColor);
 
     // Uncheck all radio buttons
