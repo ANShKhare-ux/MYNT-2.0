@@ -22,6 +22,8 @@ const en = {
     "editShortcutsListInfo": "You can add new shortcuts by clicking the \"+\" icon or edit existing ones by clicking on the shortcut name or URL.\nTo reset a custom icon, simply clear the image URL.",
     "adaptiveIconText": "Adaptive Icons",
     "adaptiveIconInfoText": "Shortcut icons will adapt to theme",
+    "uiAnimationsText": "Fluid Animations",
+    "uiAnimationsInfo": "Physics-based spring motion, micro-interactions, and transitions",
     "bookmarksText": "Bookmarks",
     "bookmarksInfo": "Show bookmarks sidebar",
     "ai_tools_button": "AI Tools",

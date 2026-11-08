@@ -211,6 +211,8 @@ function applyLanguage(lang) {
         "backupText",
         "restoreText",
         "rangColor",
+        "uiAnimationsText",
+        "uiAnimationsInfo",
         "bookmarksText",
         "bookmarksInfo",
         "bookmarksHeading",

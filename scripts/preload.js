@@ -56,6 +56,20 @@
         root.setAttribute('data-system-dark', systemIsDark ? 'true' : 'false');
     }
 
+    // --- UI Motion & Fluid Animation Preference ---
+    // Default to 'enabled' so OS-level flags (e.g. Windows "Animate controls and elements inside windows")
+    // do not unintentionally strip animations from the new tab page.
+    try {
+        const motionPref = localStorage.getItem('mynt_ui_animations');
+        if (motionPref === 'disabled') {
+            root.setAttribute('data-motion', 'disabled');
+        } else {
+            root.setAttribute('data-motion', 'enabled');
+        }
+    } catch (e) {
+        root.setAttribute('data-motion', 'enabled');
+    }
+
     // --- Color theme application ---
     const storedTheme = localStorage.getItem('selectedTheme');
     const storedCustomColor = localStorage.getItem('customThemeColor');

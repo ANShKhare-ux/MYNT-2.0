@@ -100,6 +100,13 @@ Core goals:
   - In Edit Mode, child links and inputs automatically switch to `pointer-events: none; user-select: none;`, allowing every pixel of the widget surface to act as an effortless drag handle.
   - **Historical Data Sanitization**: Gracefully validates and sanitizes any historical or legacy non-delta data in `localStorage.mynt_element_positions`, preventing corrupt offsets or off-screen jumps.
   - Zero-FOUC synchronous preloading via `scripts/preload.js` injecting `<style id="custom-layout-positions-style">` in `<head>` from `localStorage.mynt_element_positions`. Full compatibility with `scripts/backup-restore.js`.
+- **Motion & GSAP Physics Engine & OS Reduced-Motion Decoupling (`scripts/motion.js`, `scripts/preload.js`, `style.css`)**:
+  - **Windows OS Flag Independence**: Eliminates the issue where Windows' Performance Options (`Animate controls and elements inside windows` unchecked) forced Chromium into `prefers-reduced-motion: reduce`, which previously wiped out animations across the extension. Synchronously preloads `data-motion="enabled"` on `<html>` unless explicitly disabled in-app (`localStorage.mynt_ui_animations === 'disabled'`), scoping `@media (prefers-reduced-motion: reduce)` to `html:not([data-motion="enabled"]) *`.
+  - **In-App Animations Control**: Added a dedicated "UI Animations" toggle (`#uiAnimationsCheckbox`) under Personalization in the Settings drawer, with full localization support (`uiAnimationsText`, `uiAnimationsInfo`).
+  - **Motion & GSAP Linear Spring Easing**: Added CSS `linear(...)` multi-stop spring curves (`--motion-spring`, `--motion-bounce`, `--motion-glide`, `--motion-elastic`, `--motion-overshoot`) modeled after GSAP and Framer Motion physics.
+  - **Choreographed Hero & Corner Entrances**: Staggered `@keyframes heroSpringIn` for hero widgets (Clock, Date, Weather, Search Bar, Quotes) and `@keyframes cornerItemIn` for corner utility buttons (`#todoListCont`, `#bookmarkButton`, `#googleAppsCont`, `#aiToolsCont`, `#menuButton`).
+  - **Drawer Section Cascades**: Added `@keyframes drawerSectionIn` providing a cascading, staggered reveal across all setting cards when opening the settings drawer.
+  - **Tactile Switches & Micro-Interactions**: Enhanced switch toggles (`.toggle:before`) with spring translation and active press elongation; added spring scale hover/press to corner action buttons and search suggestion items.
 - **Backup & Restore (`scripts/backup-restore.js`)**:
   - Full state export to a timestamped JSON file (`localStorage` preferences and `IndexedDB` wallpapers).
   - Validation and restoration engine.

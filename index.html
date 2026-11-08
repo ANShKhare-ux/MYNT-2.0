@@ -43,6 +43,7 @@
     <script defer src="scripts/voice-search.js"></script>
     <script defer src="scripts/backup-restore.js"></script>
     <script defer src="scripts/layout-editor.js"></script>
+    <script defer src="scripts/motion.js"></script>
 
     <!-- LANGUAGES SCRIPTS -->
     <script src="locales/pt.js"></script>
@@ -1324,6 +1325,17 @@
                                             <button type="button" id="openLayoutEditorBtn" class="layoutEditBtn">Customize</button>
                                             <button type="button" id="resetLayoutBtn" class="layoutResetBtn" title="Reset all positions to default">Reset</button>
                                         </div>
+                                    </div>
+
+                                    <div class="ttcont animationControlCont">
+                                        <div class="texts">
+                                            <div class="bigText" id="uiAnimationsText">Fluid Animations</div>
+                                            <div class="infoText" id="uiAnimationsInfo">Physics-based spring motion, micro-interactions, and transitions</div>
+                                        </div>
+                                        <label class="switch">
+                                            <input id="uiAnimationsCheckbox" type="checkbox" checked>
+                                            <span class="toggle"></span>
+                                        </label>
                                     </div>
 
                                     <div class="ttcont">

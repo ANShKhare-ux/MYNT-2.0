@@ -183,4 +183,39 @@ test('Fluid Motion System & Micro-Interactions Suite', async (t) => {
             'Must collapse animations and transitions for users with reduced motion preferences'
         );
     });
+
+    await t.test('motion & GSAP physics: defines linear spring curves, hero cascade, and corner button interactions', () => {
+        assert.ok(
+            cssContent.includes('--motion-spring:') && cssContent.includes('--motion-bounce:') && cssContent.includes('--motion-elastic:'),
+            'style.css must define Motion & GSAP linear spring and bounce tokens'
+        );
+        assert.ok(
+            cssContent.includes('@keyframes heroSpringIn') && cssContent.includes('@keyframes cornerItemIn'),
+            'style.css must define heroSpringIn and cornerItemIn choreographed keyframes'
+        );
+        assert.ok(
+            cssContent.includes('@keyframes drawerSectionIn'),
+            'style.css must define drawerSectionIn timeline cascade for settings drawer'
+        );
+        assert.ok(
+            cssContent.includes('.todoListCont:hover') && cssContent.includes('.bookmark-button:hover') && cssContent.includes('.googleAppsCont:hover'),
+            'Corner action buttons must define spring scale hover states'
+        );
+    });
+
+    await t.test('motion preferences: supports in-app UI animation toggle and OS reduced-motion independence', () => {
+        const indexHtml = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+        const preloadJs = fs.readFileSync(path.join(__dirname, '..', 'scripts', 'preload.js'), 'utf8');
+        const motionJs = fs.readFileSync(path.join(__dirname, '..', 'scripts', 'motion.js'), 'utf8');
+
+        assert.ok(indexHtml.includes('<script defer src="scripts/motion.js"></script>'), 'index.html must load scripts/motion.js');
+        assert.ok(indexHtml.includes('id="uiAnimationsCheckbox"'), 'index.html must contain uiAnimationsCheckbox toggle');
+        assert.ok(preloadJs.includes('mynt_ui_animations') && preloadJs.includes('data-motion'), 'preload.js must synchronously configure data-motion attribute');
+        assert.ok(motionJs.includes('GNU General Public License v3.0'), 'motion.js must contain GPL-3.0 header');
+        assert.ok(motionJs.includes('window.MYNT_Motion ='), 'motion.js must expose window.MYNT_Motion API');
+        assert.ok(
+            cssContent.includes('html[data-motion="disabled"]') && cssContent.includes('html:not([data-motion="enabled"])'),
+            'style.css must decouple animations from OS Windows setting via data-motion attribute'
+        );
+    });
 });
