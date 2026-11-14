@@ -162,13 +162,32 @@
 	--glass-blur: 16px;
 	--glass-blur-lg: 24px;
 	--glass-saturate: 160%;
-	--glass-border-color: rgba(255, 255, 255, 0.22);
+	--glass-border-base: rgba(255, 255, 255, 0.22);
+	--glass-border-color: var(--glass-border-base);
 	--glass-border-dark: rgba(255, 255, 255, 0.08);
-	--glass-specular: inset 0 1px 1px 0 rgba(255, 255, 255, 0.3);
+	--glass-specular-base: inset 0 1px 1px 0 rgba(255, 255, 255, 0.3);
+	--glass-specular: var(--glass-specular-base);
 	--glass-specular-dark: inset 0 1px 1px 0 rgba(255, 255, 255, 0.1);
-	--glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.14);
-	--glass-shadow-lg: 0 14px 44px 0 rgba(0, 0, 0, 0.2);
+	--glass-shadow-base: 0 8px 32px 0 rgba(0, 0, 0, 0.14);
+	--glass-shadow: var(--glass-shadow-base);
+	--glass-shadow-base-lg: 0 14px 44px 0 rgba(0, 0, 0, 0.2);
+	--glass-shadow-lg: var(--glass-shadow-base-lg);
 	--glass-shadow-dark: 0 12px 36px 0 rgba(0, 0, 0, 0.4);
+
+	/* Neumorphism Design Tokens (Settings Menu) */
+	--neu-canvas: var(--accentLightTint-blue);
+	--neu-card-bg: color-mix(in srgb, var(--accentLightTint-blue) 80%, white);
+	--neu-card-outer-bg: color-mix(in srgb, var(--accentLightTint-blue) 65%, var(--bg-color-blue));
+	--neu-surface: color-mix(in srgb, var(--accentLightTint-blue) 75%, white);
+	--neu-surface-raised: color-mix(in srgb, var(--accentLightTint-blue) 60%, white);
+	--neu-surface-pressed: color-mix(in srgb, var(--accentLightTint-blue) 90%, black);
+	--neu-shadow-dark: color-mix(in srgb, var(--textColorDark-blue) 18%, transparent);
+	--neu-shadow-light: rgba(255, 255, 255, 0.85);
+	--neu-shadow-dark-sm: color-mix(in srgb, var(--textColorDark-blue) 12%, transparent);
+	--neu-shadow-light-sm: rgba(255, 255, 255, 0.75);
+	--neu-inset-dark: color-mix(in srgb, var(--textColorDark-blue) 16%, transparent);
+	--neu-inset-light: rgba(255, 255, 255, 0.85);
+	--neu-border-highlight: rgba(255, 255, 255, 0.6);
 }
 
 /* Theme */
@@ -340,8 +359,8 @@ body[data-has-video="true"] #menuButton {
 
 /* Early-paint dark mode: applied by preload.js before deferred scripts run.
    Uses data attributes on <html> set synchronously in <head>. */
-html[data-preferred-theme="dark"]:not(:has(#darkTheme:checked)),
-html[data-preferred-theme="system"][data-system-dark="true"]:not(
+html[data-preferred-theme="dark"]:not([data-has-wallpaper="true"]):not(:has(#darkTheme:checked)),
+html[data-preferred-theme="system"][data-system-dark="true"]:not([data-has-wallpaper="true"]):not(
 		:has(#darkTheme:checked)
 	) {
 	filter: invert(1) hue-rotate(180deg);
@@ -367,14 +386,15 @@ html:has(
 	& #wIcon,
 	&:not(:has(#adaptiveIconToggle:checked))
 		.shortcutLogoContainer
-		img[data-icon-type="default"] {
+		img[data-icon-type="default"],
+	& .menuBar,
+	& #bookmarksContainer,
+	& #prompt-modal-container,
+	& .ai-settings-modal,
+	& #editBookmarkModal,
+	& .layout-editor-toolbar {
 		filter: invert(1) hue-rotate(180deg);
 		-webkit-filter: invert(1) hue-rotate(180deg);
-	}
-
-	& .menuBar,
-	& #bookmarksContainer {
-		background-color: #0000000f;
 	}
 
 	& #prompt-modal-blur,
@@ -399,6 +419,8 @@ body[data-bg="wallpaper"][sysTheme="systemDark"]:has(
 	& #darkTheme,
 	& .favicon,
 	& #wIcon,
+	& .aiModeIcon,
+	& #searchWebEngineIcon,
 	&:not(:has(#adaptiveIconToggle:checked))
 		.shortcutLogoContainer
 		img[data-icon-type="default"] {
@@ -407,6 +429,25 @@ body[data-bg="wallpaper"][sysTheme="systemDark"]:has(
 	}
 
 	--whitishColor-blue: #f2f2f2;
+}
+
+/* Exclude dedicated dark-styled components from the wallpaper inversion filter */
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #shortcuts-section,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #shortcuts-section,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #menuButton,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #menuButton,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #prompt-modal-container,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #prompt-modal-container,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .layout-editor-toolbar,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .layout-editor-toolbar {
+	filter: none !important;
+	-webkit-filter: none !important;
+}
+
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #shortcuts-section .shortcutLogoContainer img,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #shortcuts-section .shortcutLogoContainer img {
+	filter: none !important;
+	-webkit-filter: none !important;
 }
 
 /* -------------------------------------- */
@@ -2427,14 +2468,18 @@ body[data-bg="wallpaper"] .aiModeIcon:hover {
 }
 
 .black-theme body[data-bg="wallpaper"] .aiModeIcon,
-body[data-bg="wallpaper"][sysTheme="systemDark"] .aiModeIcon {
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .aiModeIcon,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .aiModeIcon,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .aiModeIcon {
 	background-color: rgba(48, 49, 52, 0.75);
 	border-color: rgba(255, 255, 255, 0.18);
 	color: #e8eaed;
 }
 
 .black-theme body[data-bg="wallpaper"] .aiModeIcon:hover,
-body[data-bg="wallpaper"][sysTheme="systemDark"] .aiModeIcon:hover {
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .aiModeIcon:hover,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .aiModeIcon:hover,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .aiModeIcon:hover {
 	background-color: rgba(60, 64, 67, 0.88);
 	border-color: rgba(255, 255, 255, 0.28);
 	color: #ffffff;
@@ -3122,7 +3167,7 @@ body[data-bg="wallpaper"][sysTheme="systemDark"]:has(
 	.shortcuts
 	.shortcutLogoContainer
 	img[data-icon-type="custom"] {
-	filter: invert(1) hue-rotate(180deg) !important;
+	filter: none !important;
 	mix-blend-mode: normal !important;
 }
 
@@ -3482,8 +3527,9 @@ body[data-bg="wallpaper"] .aiToolsCont .toolsCont a {
 
 /* ---------------Menu-bar-css---------------- */
 .menuBar {
-	background-color: #0000004f;
-	backdrop-filter: blur(15px) saturate(160%);
+	background-color: #00000055;
+	backdrop-filter: none;
+	-webkit-backdrop-filter: none;
 	position: fixed;
 	width: 100%;
 	height: 100%;
@@ -3505,8 +3551,12 @@ body[data-bg="wallpaper"] .aiToolsCont .toolsCont a {
 	/* change on some languages for fix the buttons */
 	transition: transform 0.42s var(--fluid-ease-out);
 	transform: translateX(100%);
-	background-color: var(--accentLightTint-blue);
+	background-color: var(--neu-canvas);
 	border-end-start-radius: var(--round);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
+	border-inline-start: 1px solid var(--neu-border-highlight);
+	box-shadow: -10px 0 32px rgba(0, 0, 0, 0.28);
 }
 
 .menuBar .menuCont .topRounder {
@@ -4049,25 +4099,29 @@ input:checked + .toggle:before {
 
 .black-theme .menuCont .topDiv,
 html[data-preferred-theme="dark"] .menuCont .topDiv,
-body[sysTheme="systemDark"] .menuCont .topDiv {
+body:has(.themeSegment[data-active="dark"]) .menuCont .topDiv,
+body[sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .menuCont .topDiv {
 	background-color: #1a1a1c;
 }
 
 .black-theme .menuCont .topDiv::after,
 html[data-preferred-theme="dark"] .menuCont .topDiv::after,
-body[sysTheme="systemDark"] .menuCont .topDiv::after {
+body:has(.themeSegment[data-active="dark"]) .menuCont .topDiv::after,
+body[sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .menuCont .topDiv::after {
 	background-color: #242426;
 }
 
 .black-theme .menuBar .menuCont .topRounder svg path,
 html[data-preferred-theme="dark"] .menuBar .menuCont .topRounder svg path,
-body[sysTheme="systemDark"] .menuBar .menuCont .topRounder svg path {
+body:has(.themeSegment[data-active="dark"]) .menuBar .menuCont .topRounder svg path,
+body[sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .menuBar .menuCont .topRounder svg path {
 	fill: #1a1a1c;
 }
 
 .black-theme .menuCont .topDiv h1,
 html[data-preferred-theme="dark"] .menuCont .topDiv h1,
-body[sysTheme="systemDark"] .menuCont .topDiv h1 {
+body:has(.themeSegment[data-active="dark"]) .menuCont .topDiv h1,
+body[sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .menuCont .topDiv h1 {
 	color: #e8eaed;
 }
 /* ----------- End of section ------------ */
@@ -4647,6 +4701,112 @@ option:checked {
 	content: none;
 }
 /* Segmented Control ended */
+
+/* Style Segmented Control (Neomorphism vs Glassmorphism) */
+.styleSegmentCont {
+	margin-top: 10px;
+	width: 100%;
+}
+
+.styleSegment {
+	display: flex;
+	width: 100%;
+	position: relative;
+	padding: 4px;
+	border-radius: 30px;
+	background: color-mix(
+		in srgb,
+		var(--accentLightTint-blue) 60%,
+		var(--bg-color-blue)
+	);
+	transition: background 0.25s var(--md-motion-ease), box-shadow 0.25s var(--fluid-ease-out);
+}
+
+.styleSegment .styleIndicator {
+	position: absolute;
+	top: 4px;
+	bottom: 4px;
+	left: 4px;
+	width: calc((100% - 8px) / 2);
+	background: #ffffffe6;
+	border-radius: 30px;
+	transition: transform 0.38s var(--fluid-spring);
+	z-index: 0;
+}
+
+.styleSegment .styleSegBtn {
+	position: relative;
+	z-index: 1;
+	background: none;
+	border: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 34px;
+	font-size: 0.86rem;
+	font-weight: 500;
+	line-height: 1;
+	cursor: pointer;
+	color: inherit;
+	padding: 0;
+	transition: color 0.2s ease, transform 0.15s ease;
+}
+
+.styleSegment .styleSegBtn:active {
+	transform: scale(0.96);
+}
+
+.black-theme .styleSegment,
+body:has(.themeSegment[data-active="dark"]) .styleSegment,
+body[sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .styleSegment {
+	background: #2a2a2a;
+}
+
+.black-theme .styleSegment .styleIndicator,
+body:has(.themeSegment[data-active="dark"]) .styleSegment .styleIndicator,
+body[sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .styleSegment .styleIndicator {
+	background: #1e1e1e;
+	border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Style Segment Neomorphism Mode */
+[data-ui-style="neomorphism"] .styleSegment,
+body[data-ui-style="neomorphism"] .styleSegment {
+	background: var(--neu-canvas) !important;
+	border: 1px solid var(--neu-shadow-dark-sm);
+	box-shadow: 
+		inset 3px 3px 6px var(--neu-inset-dark),
+		inset -3px -3px 6px var(--neu-inset-light) !important;
+}
+
+[data-ui-style="neomorphism"] .styleSegment .styleIndicator,
+body[data-ui-style="neomorphism"] .styleSegment .styleIndicator {
+	background: var(--neu-surface) !important;
+	box-shadow: 
+		3px 3px 8px var(--neu-shadow-dark),
+		-2px -2px 6px var(--neu-shadow-light) !important;
+	border: 1px solid var(--neu-border-highlight);
+}
+
+/* Style Segment Glassmorphism Mode */
+[data-ui-style="glassmorphism"] .styleSegment,
+body[data-ui-style="glassmorphism"] .styleSegment {
+	background: color-mix(in srgb, var(--accentLightTint-blue) 45%, transparent) !important;
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate)) !important;
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate)) !important;
+	border: 1px solid var(--glass-border-subtle) !important;
+	box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.25) !important;
+}
+
+[data-ui-style="glassmorphism"] .styleSegment .styleIndicator,
+body[data-ui-style="glassmorphism"] .styleSegment .styleIndicator {
+	background: rgba(255, 255, 255, 0.75) !important;
+	backdrop-filter: blur(var(--glass-blur-sm)) !important;
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) !important;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15), var(--glass-specular) !important;
+	border: 1px solid var(--glass-border-color);
+}
 
 .themingStuff {
 	margin: 22px auto 100px;
@@ -6064,62 +6224,72 @@ body[data-bg="wallpaper"] .dropdown-content {
 
 .black-theme .topBar,
 html[data-preferred-theme="dark"] .topBar,
-body[sysTheme="systemDark"] .topBar {
+body:has(.themeSegment[data-active="dark"]) .topBar,
+body[sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .topBar {
 	background-color: #1a1a1c;
 	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .black-theme .pageTitle,
 html[data-preferred-theme="dark"] .pageTitle,
-body[sysTheme="systemDark"] .pageTitle {
+body:has(.themeSegment[data-active="dark"]) .pageTitle,
+body[sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .pageTitle {
 	color: #e8eaed;
 }
 
 .black-theme #editShortcutsListInfo,
 html[data-preferred-theme="dark"] #editShortcutsListInfo,
-body[sysTheme="systemDark"] #editShortcutsListInfo {
+body:has(.themeSegment[data-active="dark"]) #editShortcutsListInfo,
+body[sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #editShortcutsListInfo {
 	color: rgba(232, 234, 237, 0.75);
 }
 
 .black-theme .shortcutSettingsEntry,
 html[data-preferred-theme="dark"] .shortcutSettingsEntry,
-body[sysTheme="systemDark"] .shortcutSettingsEntry {
+body:has(.themeSegment[data-active="dark"]) .shortcutSettingsEntry,
+body[sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .shortcutSettingsEntry {
 	background-color: var(--bg-color-dark);
 }
 
 .black-theme .shortcutSettingsEntry input,
 html[data-preferred-theme="dark"] .shortcutSettingsEntry input,
-body[sysTheme="systemDark"] .shortcutSettingsEntry input {
+body:has(.themeSegment[data-active="dark"]) .shortcutSettingsEntry input,
+body[sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .shortcutSettingsEntry input {
 	color: #e8eaed;
 }
 
 .black-theme .shortcutSettingsEntry input::placeholder,
 html[data-preferred-theme="dark"] .shortcutSettingsEntry input::placeholder,
-body[sysTheme="systemDark"] .shortcutSettingsEntry input::placeholder {
+body:has(.themeSegment[data-active="dark"]) .shortcutSettingsEntry input::placeholder,
+body[sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .shortcutSettingsEntry input::placeholder {
 	color: rgba(232, 234, 237, 0.5);
 }
 
 .black-theme .shortcutInputRow svg,
 html[data-preferred-theme="dark"] .shortcutInputRow svg,
-body[sysTheme="systemDark"] .shortcutInputRow svg {
+body:has(.themeSegment[data-active="dark"]) .shortcutInputRow svg,
+body[sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .shortcutInputRow svg {
 	color: rgba(232, 234, 237, 0.65);
 }
 
 .black-theme .grip-container,
 html[data-preferred-theme="dark"] .grip-container,
-body[sysTheme="systemDark"] .grip-container {
+body:has(.themeSegment[data-active="dark"]) .grip-container,
+body[sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .grip-container {
 	color: rgba(232, 234, 237, 0.6);
 }
 
 .black-theme #backButton,
 html[data-preferred-theme="dark"] #backButton,
-body[sysTheme="systemDark"] #backButton {
+body:has(.themeSegment[data-active="dark"]) #backButton,
+body[sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #backButton {
 	fill: #e8eaed;
 }
 
 .black-theme #backButton:hover,
 html[data-preferred-theme="dark"] #backButton:hover,
-body[sysTheme="systemDark"] #backButton:hover {
+body:has(.themeSegment[data-active="dark"]) #backButton:hover,
+body[sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #backButton:hover {
 	background-color: rgba(255, 255, 255, 0.12);
 	fill: #ffffff;
 }
@@ -6128,8 +6298,10 @@ body[sysTheme="systemDark"] #backButton:hover {
 .black-theme #newShortcutButton,
 html[data-preferred-theme="dark"] #resetButton,
 html[data-preferred-theme="dark"] #newShortcutButton,
-body[sysTheme="systemDark"] #resetButton,
-body[sysTheme="systemDark"] #newShortcutButton {
+body:has(.themeSegment[data-active="dark"]) #resetButton,
+body:has(.themeSegment[data-active="dark"]) #newShortcutButton,
+body[sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #resetButton,
+body[sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #newShortcutButton {
 	background: #28282c;
 	border: 1px solid rgba(255, 255, 255, 0.1);
 	fill: #e8eaed;
@@ -6139,8 +6311,10 @@ body[sysTheme="systemDark"] #newShortcutButton {
 .black-theme #newShortcutButton:hover,
 html[data-preferred-theme="dark"] #resetButton:hover,
 html[data-preferred-theme="dark"] #newShortcutButton:hover,
-body[sysTheme="systemDark"] #resetButton:hover,
-body[sysTheme="systemDark"] #newShortcutButton:hover {
+body:has(.themeSegment[data-active="dark"]) #resetButton:hover,
+body:has(.themeSegment[data-active="dark"]) #newShortcutButton:hover,
+body[sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #resetButton:hover,
+body[sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #newShortcutButton:hover {
 	fill: #ffffff;
 	background: #38383e;
 }
@@ -6149,8 +6323,10 @@ body[sysTheme="systemDark"] #newShortcutButton:hover {
 .black-theme .uploadCustomIconButton,
 html[data-preferred-theme="dark"] .shortcutDelete button,
 html[data-preferred-theme="dark"] .uploadCustomIconButton,
-body[sysTheme="systemDark"] .shortcutDelete button,
-body[sysTheme="systemDark"] .uploadCustomIconButton {
+body:has(.themeSegment[data-active="dark"]) .shortcutDelete button,
+body:has(.themeSegment[data-active="dark"]) .uploadCustomIconButton,
+body[sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .shortcutDelete button,
+body[sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .uploadCustomIconButton {
 	background: #28282c;
 	border: 1px solid rgba(255, 255, 255, 0.1);
 	fill: #e8eaed;
@@ -6160,8 +6336,10 @@ body[sysTheme="systemDark"] .uploadCustomIconButton {
 .black-theme .shortcutDelete button:hover,
 html[data-preferred-theme="dark"] .uploadCustomIconButton:hover,
 html[data-preferred-theme="dark"] .shortcutDelete button:hover,
-body[sysTheme="systemDark"] .uploadCustomIconButton:hover,
-body[sysTheme="systemDark"] .shortcutDelete button:hover {
+body:has(.themeSegment[data-active="dark"]) .uploadCustomIconButton:hover,
+body:has(.themeSegment[data-active="dark"]) .shortcutDelete button:hover,
+body[sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .uploadCustomIconButton:hover,
+body[sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .shortcutDelete button:hover {
 	background: #38383e;
 	fill: #ffffff;
 }
@@ -6767,17 +6945,13 @@ body[data-bg="wallpaper"] #editBookmarkModal {
 	box-shadow: var(--glass-shadow-lg), var(--glass-specular);
 }
 
-/* --- Slide-Out Settings Drawer Glassmorphism --- */
+/* --- Slide-Out Settings Drawer (Clean Canvas, Glassmorphism Removed) --- */
 body[data-bg="wallpaper"] .menuBar .menuCont {
-	background-color: color-mix(
-		in srgb,
-		var(--accentLightTint-blue) calc(var(--transparency) + 5%),
-		transparent
-	);
-	backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate));
-	-webkit-backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate));
-	border-inline-start: 1px solid var(--glass-border-color);
-	box-shadow: var(--glass-shadow-lg);
+	background-color: var(--neu-canvas);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
+	border-inline-start: 1px solid var(--neu-border-highlight);
+	box-shadow: -10px 0 32px rgba(0, 0, 0, 0.32);
 }
 
 /* Fix drawer header and remove broken white arch / outer rounder */
@@ -6787,7 +6961,7 @@ body[data-bg="wallpaper"] .menuBar .menuCont .topRounder {
 
 body[data-bg="wallpaper"] .menuCont .topDiv {
 	background-color: transparent;
-	border-bottom: 1px solid var(--glass-border-subtle);
+	border-bottom: 1px solid var(--neu-shadow-dark-sm);
 	height: 90px;
 	position: relative;
 }
@@ -6814,214 +6988,295 @@ body[data-bg="wallpaper"] .menuCont .optCont {
 	padding-top: 14px;
 }
 
-/* Glassmorphic Tiles (GitHub & Feedback) */
+/* Neomorphic Tiles (GitHub & Feedback) */
+.menuBar .tilesCont .tiles,
 body[data-bg="wallpaper"] .tilesCont .tiles {
-	background-color: color-mix(
-		in srgb,
-		var(--darkColor-blue) calc(var(--transparency) * 2.2),
-		rgba(0, 0, 0, 0.22)
-	);
-	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	border: 1px solid var(--glass-border-subtle);
-	box-shadow: var(--glass-shadow-sm);
-	transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+	background-color: var(--neu-surface);
+	color: var(--textColorDark-blue);
+	border-radius: 20px;
+	box-shadow: 
+		4px 4px 10px var(--neu-shadow-dark),
+		-4px -4px 10px var(--neu-shadow-light);
+	border: 1px solid var(--neu-border-highlight);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
+	transition: 
+		box-shadow 0.22s var(--fluid-ease-out),
+		transform 0.22s var(--fluid-spring),
+		background-color 0.2s ease,
+		color 0.2s ease;
 }
 
+.menuBar .tilesCont .tiles .icon svg path,
+body[data-bg="wallpaper"] .tilesCont .tiles .icon svg path {
+	fill: var(--darkColor-blue);
+	transition: fill 0.2s ease;
+}
+
+.menuBar .tilesCont .tiles:hover,
 body[data-bg="wallpaper"] .tilesCont .tiles:hover {
-	transform: translateY(-1px);
-	background-color: color-mix(
-		in srgb,
-		var(--darkColor-blue) calc(var(--transparency) * 2.8),
-		rgba(0, 0, 0, 0.32)
-	);
-	border-color: var(--glass-border-base);
-	box-shadow: var(--glass-shadow);
+	box-shadow: 
+		5px 5px 14px var(--neu-shadow-dark),
+		-5px -5px 14px var(--neu-shadow-light);
+	transform: translateY(-2px);
+	background-color: var(--neu-surface-raised);
+	color: var(--darkColor-blue);
 }
 
-/* Glassmorphic Section Cards (Outer Container) */
+.menuBar .tilesCont .tiles:active,
+body[data-bg="wallpaper"] .tilesCont .tiles:active {
+	box-shadow: 
+		inset 3px 3px 6px var(--neu-inset-dark),
+		inset -3px -3px 6px var(--neu-inset-light);
+	transform: scale(0.97);
+	background-color: var(--neu-surface-pressed);
+}
+
+/* Neomorphic Section Cards (Outer Container) */
+.menuBar .sectionOuter,
 body[data-bg="wallpaper"] .sectionOuter {
-	background-color: color-mix(
-		in srgb,
-		var(--whitishColor-blue) calc(var(--transparency) * 1.2),
-		transparent
-	);
-	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	border: 1px solid var(--glass-border-subtle);
-	box-shadow: var(--glass-shadow-sm);
+	background-color: var(--neu-card-outer-bg);
+	border-radius: 25px;
+	padding: 8px;
+	box-shadow: 
+		5px 5px 14px var(--neu-shadow-dark),
+		-4px -4px 12px var(--neu-shadow-light);
+	border: 1px solid var(--neu-border-highlight);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
+	transition: 
+		box-shadow 0.25s var(--fluid-ease-out),
+		background-color 0.25s var(--fluid-ease-out),
+		border-radius 0.25s var(--md-motion-ease);
 }
 
+.menuBar .sectionOuter:hover,
 body[data-bg="wallpaper"] .sectionOuter:hover {
-	background-color: color-mix(
-		in srgb,
-		var(--whitishColor-blue) calc(var(--transparency) * 1.5),
-		transparent
-	);
-	border-color: var(--glass-border-base);
+	box-shadow: 
+		6px 6px 16px var(--neu-shadow-dark),
+		-5px -5px 14px var(--neu-shadow-light);
+	background-color: var(--neu-card-outer-bg);
 }
 
-/* Glassmorphic Inner Solid Cards (Transforming White Solid Cards to Frosted Glass) */
+/* Neomorphic Inner Cards */
+.menuBar .sectionInner,
+.menuBar .appearanceSection .innerSurface,
 body[data-bg="wallpaper"] .sectionInner,
 body[data-bg="wallpaper"] .appearanceSection .innerSurface {
-	background-color: color-mix(
-		in srgb,
-		white calc(var(--transparency) * 1.5),
-		transparent
-	);
-	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	border: 1px solid var(--glass-border-subtle);
-	box-shadow: var(--glass-specular), 0 4px 16px rgba(0, 0, 0, 0.06);
+	background-color: var(--neu-card-bg);
+	border-radius: 20px;
+	padding: 6px 14px;
+	margin-top: 10px;
+	box-shadow: 
+		inset 2px 2px 5px var(--neu-inset-dark),
+		inset -2px -2px 5px var(--neu-inset-light),
+		0 2px 6px var(--neu-shadow-dark-sm);
+	border: 1px solid var(--neu-border-highlight);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
+	transition:
+		max-height 0.4s var(--fluid-ease-out),
+		opacity 0.25s var(--fluid-ease-out),
+		margin-top 0.25s var(--fluid-ease-out),
+		padding 0.25s var(--fluid-ease-out),
+		box-shadow 0.25s var(--fluid-ease-out),
+		background-color 0.25s var(--fluid-ease-out);
+}
+
+.menuBar .appearanceSection .sectionInner,
+body[data-bg="wallpaper"] .appearanceSection .sectionInner {
+	background-color: transparent !important;
+	border: none !important;
+	box-shadow: none !important;
+	border-radius: 0 !important;
+	padding: 0 !important;
+}
+
+.menuBar .appearanceSection .innerSurface,
+body[data-bg="wallpaper"] .appearanceSection .innerSurface {
+	margin-bottom: 12px;
+	padding: 18px 14px;
 }
 
 body[data-bg="wallpaper"] .sectionInner .ttcont:not(:last-child) {
-	border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+	border-bottom: 1px solid var(--neu-shadow-dark-sm);
 }
 
-/* Glassmorphism for Shortcut Settings (Page 2) */
+/* Neomorphism for Shortcut Settings (Page 2) */
+.menuBar .topBar,
 body[data-bg="wallpaper"] .topBar {
-	background-color: color-mix(
-		in srgb,
-		var(--accentLightTint-blue) calc(var(--transparency) + 5%),
-		transparent
-	);
-	backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate));
-	-webkit-backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate));
-	border-bottom: 1px solid var(--glass-border-subtle);
+	background-color: var(--neu-canvas);
+	border-bottom: 1px solid var(--neu-shadow-dark-sm);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
+	box-shadow: 0 4px 12px var(--neu-shadow-dark-sm);
 }
 
+.menuBar #backButton,
 body[data-bg="wallpaper"] #backButton {
-	background-color: color-mix(
-		in srgb,
-		var(--whitishColor-blue) calc(var(--transparency) * 1.5),
-		transparent
-	);
-	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	border: 1px solid var(--glass-border-subtle);
-	box-shadow: var(--glass-shadow-sm);
+	background-color: var(--neu-surface);
+	color: var(--textColorDark-blue);
 	fill: var(--textColorDark-blue);
+	border-radius: 50%;
+	border: 1px solid var(--neu-border-highlight);
+	box-shadow: 
+		4px 4px 9px var(--neu-shadow-dark),
+		-3px -3px 8px var(--neu-shadow-light);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
+	cursor: pointer;
 	transition:
 		transform 0.25s var(--fluid-spring),
 		background-color 0.25s var(--fluid-ease-out),
 		fill 0.25s var(--fluid-ease-out),
-		border-color 0.25s var(--fluid-ease-out);
-}
-
-body[data-bg="wallpaper"] #backButton:hover {
-	background-color: var(--darkColor-blue);
-	fill: #ffffff;
-	border-color: transparent;
-	transform: scale(1.1);
-}
-
-body[data-bg="wallpaper"] #backButton:active {
-	transform: scale(0.92);
-	transition: transform 0.08s var(--fluid-press);
-}
-
-body[data-bg="wallpaper"] #resetButton,
-body[data-bg="wallpaper"] #newShortcutButton {
-	background-color: color-mix(
-		in srgb,
-		var(--whitishColor-blue) calc(var(--transparency) * 1.5),
-		transparent
-	);
-	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	border: 1px solid var(--glass-border-subtle);
-	box-shadow: var(--glass-shadow-sm);
-	fill: var(--textColorDark-blue);
-	transition:
-		transform 0.25s var(--fluid-spring),
-		background-color 0.25s var(--fluid-ease-out),
-		fill 0.25s var(--fluid-ease-out),
-		border-color 0.25s var(--fluid-ease-out),
 		box-shadow 0.25s var(--fluid-ease-out);
 }
 
-body[data-bg="wallpaper"] #resetButton:hover,
-body[data-bg="wallpaper"] #newShortcutButton:hover {
-	background-color: var(--darkColor-blue);
-	fill: #ffffff;
-	border-color: transparent;
-	transform: translateY(-2px) scale(1.05);
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+.menuBar #backButton:hover,
+body[data-bg="wallpaper"] #backButton:hover {
+	background-color: var(--neu-surface-raised);
+	fill: var(--darkColor-blue);
+	transform: translateY(-2px) scale(1.08);
+	box-shadow: 
+		5px 5px 13px var(--neu-shadow-dark),
+		-4px -4px 11px var(--neu-shadow-light);
 }
 
-body[data-bg="wallpaper"] #resetButton:active,
-body[data-bg="wallpaper"] #newShortcutButton:active {
-	transform: scale(0.92);
-	transition: transform 0.08s var(--fluid-press);
+.menuBar #backButton:active,
+body[data-bg="wallpaper"] #backButton:active {
+	transform: scale(0.95);
+	box-shadow: 
+		inset 3px 3px 6px var(--neu-inset-dark),
+		inset -3px -3px 6px var(--neu-inset-light);
 }
 
-body[data-bg="wallpaper"] .shortcutDelete button,
-body[data-bg="wallpaper"] .uploadCustomIconButton {
-	background-color: color-mix(
-		in srgb,
-		var(--whitishColor-blue) calc(var(--transparency) * 1.5),
-		transparent
-	);
-	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	border: 1px solid var(--glass-border-subtle);
-	box-shadow: var(--glass-shadow-sm);
+.menuBar #resetButton,
+.menuBar #newShortcutButton,
+body[data-bg="wallpaper"] #resetButton,
+body[data-bg="wallpaper"] #newShortcutButton {
+	background-color: var(--neu-surface);
+	color: var(--textColorDark-blue);
 	fill: var(--textColorDark-blue);
+	border-radius: 50%;
+	border: 1px solid var(--neu-border-highlight);
+	box-shadow: 
+		4px 4px 9px var(--neu-shadow-dark),
+		-3px -3px 8px var(--neu-shadow-light);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
+	cursor: pointer;
 	transition:
 		transform 0.25s var(--fluid-spring),
 		background-color 0.25s var(--fluid-ease-out),
 		fill 0.25s var(--fluid-ease-out),
-		border-color 0.25s var(--fluid-ease-out);
+		box-shadow 0.25s var(--fluid-ease-out);
 }
 
+.menuBar #resetButton:hover,
+.menuBar #newShortcutButton:hover,
+body[data-bg="wallpaper"] #resetButton:hover,
+body[data-bg="wallpaper"] #newShortcutButton:hover {
+	background-color: var(--neu-surface-raised);
+	fill: var(--darkColor-blue);
+	transform: translateY(-2px) scale(1.06);
+	box-shadow: 
+		5px 5px 13px var(--neu-shadow-dark),
+		-4px -4px 11px var(--neu-shadow-light);
+}
+
+.menuBar #resetButton:active,
+.menuBar #newShortcutButton:active,
+body[data-bg="wallpaper"] #resetButton:active,
+body[data-bg="wallpaper"] #newShortcutButton:active {
+	transform: scale(0.94);
+	box-shadow: 
+		inset 3px 3px 6px var(--neu-inset-dark),
+		inset -3px -3px 6px var(--neu-inset-light);
+}
+
+.menuBar .shortcutDelete button,
+.menuBar .uploadCustomIconButton,
+body[data-bg="wallpaper"] .shortcutDelete button,
+body[data-bg="wallpaper"] .uploadCustomIconButton {
+	background-color: var(--neu-surface);
+	fill: var(--textColorDark-blue);
+	border-radius: 50%;
+	border: 1px solid var(--neu-border-highlight);
+	box-shadow: 
+		3px 3px 7px var(--neu-shadow-dark),
+		-2px -2px 6px var(--neu-shadow-light);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
+	cursor: pointer;
+	transition:
+		transform 0.25s var(--fluid-spring),
+		background-color 0.25s var(--fluid-ease-out),
+		fill 0.25s var(--fluid-ease-out),
+		box-shadow 0.25s var(--fluid-ease-out);
+}
+
+.menuBar .shortcutDelete button:hover,
+.menuBar .uploadCustomIconButton:hover,
 body[data-bg="wallpaper"] .shortcutDelete button:hover,
 body[data-bg="wallpaper"] .uploadCustomIconButton:hover {
-	background-color: var(--darkColor-blue);
-	fill: #ffffff;
-	border-color: transparent;
-	transform: translateY(-2px) scale(1.05);
+	background-color: var(--neu-surface-raised);
+	fill: var(--darkColor-blue);
+	transform: translateY(-1.5px) scale(1.06);
+	box-shadow: 
+		4px 4px 10px var(--neu-shadow-dark),
+		-3px -3px 8px var(--neu-shadow-light);
 }
 
+.menuBar .shortcutDelete button:active,
+.menuBar .uploadCustomIconButton:active,
 body[data-bg="wallpaper"] .shortcutDelete button:active,
 body[data-bg="wallpaper"] .uploadCustomIconButton:active {
-	transform: scale(0.92);
-	transition: transform 0.08s var(--fluid-press);
+	transform: scale(0.94);
+	box-shadow: 
+		inset 2px 2px 5px var(--neu-inset-dark),
+		inset -2px -2px 5px var(--neu-inset-light);
 }
 
+.menuBar .shortcutSettingsEntry,
 body[data-bg="wallpaper"] .shortcutSettingsEntry {
-	background-color: color-mix(
-		in srgb,
-		var(--whitishColor-blue) calc(var(--transparency) * 1.5),
-		transparent
-	);
-	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	border: 1px solid var(--glass-border-subtle);
-	box-shadow: var(--glass-shadow-sm);
+	background-color: var(--neu-card-bg);
+	border-radius: 18px;
+	padding: 12px 14px;
+	margin-bottom: 12px;
+	border: 1px solid var(--neu-border-highlight);
+	box-shadow: 
+		4px 4px 10px var(--neu-shadow-dark),
+		-3px -3px 8px var(--neu-shadow-light);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
+	transition: box-shadow 0.22s var(--fluid-ease-out), transform 0.22s var(--fluid-spring);
 }
 
 /* ==============================================================
-   Glassmorphic Buttons & Interactive Controls (Wallpaper Mode)
-   Transforms all buttons into frosted translucent glass with specular
-   edges, depth shadows, and harmonized hover transitions.
+   Neomorphic Buttons & Interactive Controls (Settings Menu)
+   Pure soft-UI neomorphism: extruded resting surfaces, smooth spring hover,
+   and tactile inset depression on press with zero glassmorphism blur.
    ============================================================== */
 
 /* Wallpaper Action Buttons (.uploadButton, .randomButton, .videoButton, .switchMediaButton) */
+.menuBar .uploadButton,
+.menuBar .randomButton,
+.menuBar .videoButton,
+.menuBar .switchMediaButton,
 body[data-bg="wallpaper"] .uploadButton,
 body[data-bg="wallpaper"] .randomButton,
 body[data-bg="wallpaper"] .videoButton,
 body[data-bg="wallpaper"] .switchMediaButton {
-	background-color: color-mix(
-		in srgb,
-		var(--whitishColor-blue) calc(var(--transparency) * 1.5),
-		rgba(255, 255, 255, 0.45)
-	);
-	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	border: 1px solid var(--glass-border-subtle);
-	box-shadow: var(--glass-specular), var(--glass-shadow-sm);
+	background-color: var(--neu-surface);
 	color: var(--darkColor-blue);
+	border-radius: 100px;
+	border: 1px solid var(--neu-border-highlight);
+	box-shadow: 
+		4px 4px 9px var(--neu-shadow-dark),
+		-3px -3px 8px var(--neu-shadow-light);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
+	cursor: pointer;
 	transition:
 		transform 0.25s var(--fluid-spring),
 		background-color 0.25s var(--fluid-ease-out),
@@ -7030,37 +7285,51 @@ body[data-bg="wallpaper"] .switchMediaButton {
 		color 0.25s var(--fluid-ease-out);
 }
 
+.menuBar .uploadButton:hover,
+.menuBar .randomButton:hover,
+.menuBar .videoButton:hover,
+.menuBar .switchMediaButton:hover,
 body[data-bg="wallpaper"] .uploadButton:hover,
 body[data-bg="wallpaper"] .randomButton:hover,
 body[data-bg="wallpaper"] .videoButton:hover,
 body[data-bg="wallpaper"] .switchMediaButton:hover {
-	background-color: var(--darkColor-blue);
-	color: var(--whitishColor-blue);
-	border-color: var(--glass-border-base);
-	transform: translateY(-2px) scale(1.02);
-	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16), var(--glass-specular);
+	background-color: var(--neu-surface-raised);
+	color: var(--darkerColor-blue);
+	transform: translateY(-2px);
+	box-shadow: 
+		5px 5px 13px var(--neu-shadow-dark),
+		-4px -4px 11px var(--neu-shadow-light);
 }
 
+.menuBar .uploadButton:active,
+.menuBar .randomButton:active,
+.menuBar .videoButton:active,
+.menuBar .switchMediaButton:active,
 body[data-bg="wallpaper"] .uploadButton:active,
 body[data-bg="wallpaper"] .randomButton:active,
 body[data-bg="wallpaper"] .videoButton:active,
 body[data-bg="wallpaper"] .switchMediaButton:active {
-	transform: scale(0.94);
-	transition: transform 0.08s var(--fluid-press);
+	transform: scale(0.96);
+	box-shadow: 
+		inset 3px 3px 6px var(--neu-inset-dark),
+		inset -3px -3px 6px var(--neu-inset-light);
+	background-color: var(--neu-surface-pressed);
 }
 
 /* Clear Background Button */
+.menuBar .clearButton,
 body[data-bg="wallpaper"] .clearButton {
-	background-color: color-mix(
-		in srgb,
-		var(--darkColor-blue) 75%,
-		rgba(0, 0, 0, 0.25)
-	);
-	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	border: 1px solid var(--glass-border-subtle);
-	box-shadow: var(--glass-specular), var(--glass-shadow-sm);
-	color: var(--whitishColor-blue);
+	background-color: var(--neu-surface);
+	color: #e53935;
+	fill: #e53935;
+	border-radius: 100px;
+	border: 1px solid var(--neu-border-highlight);
+	box-shadow: 
+		4px 4px 9px var(--neu-shadow-dark),
+		-3px -3px 8px var(--neu-shadow-light);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
+	cursor: pointer;
 	transition:
 		transform 0.25s var(--fluid-spring),
 		background-color 0.25s var(--fluid-ease-out),
@@ -7069,91 +7338,106 @@ body[data-bg="wallpaper"] .clearButton {
 		color 0.25s var(--fluid-ease-out);
 }
 
+.menuBar .clearButton:hover,
 body[data-bg="wallpaper"] .clearButton:hover {
-	background-color: color-mix(
-		in srgb,
-		var(--darkerColor-blue) 90%,
-		rgba(0, 0, 0, 0.4)
-	);
-	color: #ffffff;
-	border-color: var(--glass-border-base);
-	transform: translateY(-2px) scale(1.02);
-	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22), var(--glass-specular);
+	background-color: color-mix(in srgb, #e53935 14%, var(--neu-surface));
+	color: #d32f2f;
+	transform: translateY(-2px);
+	box-shadow: 
+		5px 5px 13px var(--neu-shadow-dark),
+		-4px -4px 11px var(--neu-shadow-light);
 }
 
+.menuBar .clearButton:active,
 body[data-bg="wallpaper"] .clearButton:active {
-	transform: scale(0.94);
-	transition: transform 0.08s var(--fluid-press);
+	transform: scale(0.96);
+	box-shadow: 
+		inset 3px 3px 6px var(--neu-inset-dark),
+		inset -3px -3px 6px var(--neu-inset-light);
+	background-color: var(--neu-surface-pressed);
 }
 
 /* Theme Segment Controls & Indicator */
+.menuBar .themeSegment,
 body[data-bg="wallpaper"] .themeSegment {
-	background-color: color-mix(
-		in srgb,
-		var(--accentLightTint-blue) calc(var(--transparency) * 1.2),
-		rgba(0, 0, 0, 0.08)
-	);
-	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	border: 1px solid var(--glass-border-subtle);
-	box-shadow: var(--glass-shadow-sm);
+	background-color: var(--neu-canvas);
+	border-radius: 100px;
+	border: 1px solid var(--neu-shadow-dark-sm);
+	box-shadow: 
+		inset 3px 3px 6px var(--neu-inset-dark),
+		inset -3px -3px 6px var(--neu-inset-light);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
 }
 
+.menuBar .themeIndicator,
 body[data-bg="wallpaper"] .themeIndicator {
-	background: color-mix(in srgb, white 70%, transparent);
-	backdrop-filter: blur(var(--glass-blur-sm));
-	-webkit-backdrop-filter: blur(var(--glass-blur-sm));
-	border: 1px solid var(--glass-border-subtle);
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1), var(--glass-specular);
+	background: var(--neu-surface-raised);
+	border-radius: 100px;
+	border: 1px solid var(--neu-border-highlight);
+	box-shadow: 
+		3px 3px 7px var(--neu-shadow-dark),
+		-2px -2px 6px var(--neu-shadow-light);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
 }
 
 /* Color Palette Buttons & Containers */
+.menuBar .themingStuff .btn,
+.menuBar .languageIcon,
 body[data-bg="wallpaper"] .themingStuff .btn,
 body[data-bg="wallpaper"] .languageIcon {
-	background-color: color-mix(
-		in srgb,
-		var(--accentLightTint-blue) 35%,
-		rgba(255, 255, 255, 0.22)
-	) !important;
-	backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-	-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-	border: 1px solid var(--glass-border-color);
-	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.14), var(--glass-specular);
+	background-color: var(--neu-surface) !important;
+	border-radius: 50%;
+	border: 1px solid var(--neu-border-highlight);
+	box-shadow: 
+		4px 4px 9px var(--neu-shadow-dark),
+		-3px -3px 8px var(--neu-shadow-light) !important;
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
 	transition:
 		transform 0.25s var(--fluid-spring),
 		box-shadow 0.25s var(--fluid-ease-out),
-		background-color 0.3s ease,
-		border-color 0.25s ease;
+		background-color 0.3s ease;
 }
 
+.menuBar .languageIcon,
+body[data-bg="wallpaper"] .languageIcon {
+	border-radius: 14px;
+}
+
+.menuBar .themingStuff .btn:hover,
+.menuBar .languageIcon:hover,
 body[data-bg="wallpaper"] .themingStuff .btn:hover,
 body[data-bg="wallpaper"] .languageIcon:hover {
 	transform: scale(1.08);
-	background-color: color-mix(
-		in srgb,
-		var(--accentLightTint-blue) 48%,
-		rgba(255, 255, 255, 0.32)
-	) !important;
-	border-color: rgba(255, 255, 255, 0.45);
-	box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2), var(--glass-specular);
+	background-color: var(--neu-surface-raised) !important;
+	box-shadow: 
+		5px 5px 13px var(--neu-shadow-dark),
+		-4px -4px 11px var(--neu-shadow-light) !important;
 }
 
+.menuBar .themingStuff .btn:active,
+.menuBar .languageIcon:active,
 body[data-bg="wallpaper"] .themingStuff .btn:active,
 body[data-bg="wallpaper"] .languageIcon:active {
-	transform: scale(0.92);
-	transition: transform 0.08s var(--fluid-press);
+	transform: scale(0.94);
+	box-shadow: 
+		inset 3px 3px 6px var(--neu-inset-dark),
+		inset -3px -3px 6px var(--neu-inset-light) !important;
 }
+
+.menuBar .colorsContainer,
 body[data-bg="wallpaper"] .colorsContainer {
-	background-color: color-mix(
-		in srgb,
-		var(--accentLightTint-blue) 28%,
-		rgba(255, 255, 255, 0.2)
-	) !important;
-	backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-	-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-	border: 1px solid var(--glass-border-color);
-	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14), var(--glass-specular);
-	transition: background-color 0.8s ease, border-color 0.8s ease, box-shadow 0.8s ease;
+	background-color: var(--neu-canvas) !important;
+	border-radius: 20px;
+	border: 1px solid var(--neu-shadow-dark-sm);
+	box-shadow: 
+		inset 2px 2px 6px var(--neu-inset-dark),
+		inset -2px -2px 6px var(--neu-inset-light) !important;
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
+	transition: background-color 0.8s ease, box-shadow 0.8s ease;
 }
 
 @keyframes swatchSelectBounce {
@@ -7168,83 +7452,92 @@ body[data-bg="wallpaper"] .colorsContainer {
 	}
 }
 
-/* Individual Color Swatches Glassmorphism in Wallpaper Mode */
+/* Individual Color Swatches Neomorphism */
+.menuBar .colorsContainer input[type="radio"],
 body[data-bg="wallpaper"] .colorsContainer input[type="radio"] {
-	border: 1.5px solid rgba(255, 255, 255, 0.45);
-	box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6), inset 0 -1px 3px rgba(0, 0, 0, 0.25), 0 3px 8px rgba(0, 0, 0, 0.16);
-	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
+	box-shadow: 
+		3px 3px 7px var(--neu-shadow-dark),
+		-2px -2px 6px var(--neu-shadow-light);
+	border: 2px solid transparent;
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
 	transition:
 		transform 0.25s var(--fluid-spring-bouncy),
-		box-shadow 0.25s var(--fluid-ease-out),
-		border-color 0.2s ease;
+		box-shadow 0.25s var(--fluid-ease-out);
 }
 
+.menuBar .colorsContainer input[type="radio"]:hover,
 body[data-bg="wallpaper"] .colorsContainer input[type="radio"]:hover {
 	transform: translateY(-2px) scale(1.15);
-	border-color: #ffffff;
-	box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.8), inset 0 -1px 3px rgba(0, 0, 0, 0.3), 0 6px 14px rgba(0, 0, 0, 0.22);
+	box-shadow: 
+		4px 4px 10px var(--neu-shadow-dark),
+		-3px -3px 8px var(--neu-shadow-light);
 }
 
+.menuBar .colorsContainer input[type="radio"]:active,
 body[data-bg="wallpaper"] .colorsContainer input[type="radio"]:active {
-	transform: scale(0.88);
-	transition: transform 0.08s var(--fluid-press);
+	transform: scale(0.9);
+	box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.5);
 }
 
+.menuBar .colorsContainer input[type="radio"]:checked,
 body[data-bg="wallpaper"] .colorsContainer input[type="radio"]:checked {
 	transform: scale(1.08);
-	border-color: #ffffff;
-	box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.9), 0 0 0 2.5px rgba(255, 255, 255, 0.75), 0 4px 14px rgba(0, 0, 0, 0.25);
+	box-shadow: 
+		inset 2px 2px 4px rgba(0, 0, 0, 0.45),
+		inset -2px -2px 4px rgba(255, 255, 255, 0.45),
+		0 0 0 2.5px var(--accentLightTint-blue);
 	animation: swatchSelectBounce 0.35s var(--fluid-spring);
 }
 
+.menuBar .colorPickerLabel,
 body[data-bg="wallpaper"] .colorPickerLabel {
-	background-color: color-mix(
-		in srgb,
-		var(--accentLightTint-blue) 45%,
-		rgba(255, 255, 255, 0.2)
-	) !important;
-	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	border: 1px solid var(--glass-border-color);
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1), var(--glass-specular);
+	background-color: var(--neu-surface) !important;
 	color: var(--textColorDark-blue);
+	border-radius: 10px;
+	border: 1px solid var(--neu-border-highlight);
+	box-shadow: 
+		3px 3px 8px var(--neu-shadow-dark),
+		-2px -2px 6px var(--neu-shadow-light) !important;
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
 	transition:
 		transform 0.25s var(--fluid-spring),
 		box-shadow 0.25s var(--fluid-ease-out),
 		background-color 0.3s ease,
-		border-color 0.2s ease,
 		color 0.3s ease;
 }
 
+.menuBar .colorPickerLabel:hover,
 body[data-bg="wallpaper"] .colorPickerLabel:hover {
 	transform: translateY(-2px) scale(1.02);
-	background-color: color-mix(
-		in srgb,
-		var(--darkColor-blue) 75%,
-		rgba(255, 255, 255, 0.3)
-	) !important;
-	color: #ffffff;
-	border-color: rgba(255, 255, 255, 0.6);
-	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18), var(--glass-specular);
+	background-color: var(--neu-surface-raised) !important;
+	color: var(--darkColor-blue);
+	box-shadow: 
+		4px 4px 11px var(--neu-shadow-dark),
+		-3px -3px 9px var(--neu-shadow-light) !important;
 }
 
+.menuBar .colorPickerLabel:active,
 body[data-bg="wallpaper"] .colorPickerLabel:active {
-	transform: scale(0.94);
-	transition: transform 0.08s var(--fluid-press);
+	transform: scale(0.95);
+	box-shadow: 
+		inset 2px 2px 5px var(--neu-inset-dark),
+		inset -2px -2px 5px var(--neu-inset-light) !important;
 }
 
 /* Opacity Slider Pill */
+.menuBar .opacitySlider,
 body[data-bg="wallpaper"] .opacitySlider {
-	background-color: color-mix(
-		in srgb,
-		var(--darkColor-blue) 80%,
-		rgba(0, 0, 0, 0.22)
-	);
-	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	border: 1px solid var(--glass-border-subtle);
-	box-shadow: var(--glass-specular), var(--glass-shadow-sm);
+	background-color: var(--neu-surface);
+	color: var(--textColorDark-blue);
+	border-radius: 100px;
+	border: 1px solid var(--neu-border-highlight);
+	box-shadow: 
+		3px 3px 8px var(--neu-shadow-dark),
+		-2px -2px 6px var(--neu-shadow-light);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
 }
 
 /* Search Bar & Task Buttons */
@@ -7304,21 +7597,27 @@ body[data-bg="wallpaper"] #todoAdd:active {
 	transition: transform 0.08s var(--fluid-press);
 }
 
-/* Save, Backup, Restore, and Reset Buttons */
+/* Save, Backup, Restore, and Reset Buttons (Neomorphic) */
+.menuBar .savebtn,
+.menuBar .backupRestoreBtn,
+.menuBar .resetbtn,
+.menuBar #dontShowTips,
+.menuBar .layoutEditBtn,
+.menuBar .layoutResetBtn,
 body[data-bg="wallpaper"] .savebtn,
 body[data-bg="wallpaper"] .backupRestoreBtn,
 body[data-bg="wallpaper"] .resetbtn,
 body[data-bg="wallpaper"] #dontShowTips {
-	background-color: color-mix(
-		in srgb,
-		var(--whitishColor-blue) calc(var(--transparency) * 1.5),
-		rgba(255, 255, 255, 0.45)
-	);
-	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate));
-	border: 1px solid var(--glass-border-subtle);
-	box-shadow: var(--glass-specular), var(--glass-shadow-sm);
+	background-color: var(--neu-surface);
 	color: var(--textColorDark-blue);
+	border-radius: 100px;
+	border: 1px solid var(--neu-border-highlight);
+	box-shadow: 
+		4px 4px 9px var(--neu-shadow-dark),
+		-3px -3px 8px var(--neu-shadow-light);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
+	cursor: pointer;
 	transition:
 		transform 0.25s var(--fluid-spring),
 		background-color 0.25s var(--fluid-ease-out),
@@ -7327,23 +7626,39 @@ body[data-bg="wallpaper"] #dontShowTips {
 		color 0.25s var(--fluid-ease-out);
 }
 
+.menuBar .savebtn:hover,
+.menuBar .backupRestoreBtn:hover,
+.menuBar .resetbtn:hover,
+.menuBar #dontShowTips:hover,
+.menuBar .layoutEditBtn:hover,
+.menuBar .layoutResetBtn:hover,
 body[data-bg="wallpaper"] .savebtn:hover,
 body[data-bg="wallpaper"] .backupRestoreBtn:hover,
 body[data-bg="wallpaper"] .resetbtn:hover,
 body[data-bg="wallpaper"] #dontShowTips:hover {
-	background-color: var(--darkColor-blue);
-	color: #ffffff;
-	border-color: var(--glass-border-base);
-	transform: translateY(-2px) scale(1.02);
-	box-shadow: var(--glass-shadow);
+	background-color: var(--neu-surface-raised);
+	color: var(--darkColor-blue);
+	transform: translateY(-2px);
+	box-shadow: 
+		5px 5px 13px var(--neu-shadow-dark),
+		-4px -4px 11px var(--neu-shadow-light);
 }
 
+.menuBar .savebtn:active,
+.menuBar .backupRestoreBtn:active,
+.menuBar .resetbtn:active,
+.menuBar #dontShowTips:active,
+.menuBar .layoutEditBtn:active,
+.menuBar .layoutResetBtn:active,
 body[data-bg="wallpaper"] .savebtn:active,
 body[data-bg="wallpaper"] .backupRestoreBtn:active,
 body[data-bg="wallpaper"] .resetbtn:active,
 body[data-bg="wallpaper"] #dontShowTips:active {
-	transform: scale(0.94);
-	transition: transform 0.08s var(--fluid-press);
+	transform: scale(0.96);
+	box-shadow: 
+		inset 3px 3px 6px var(--neu-inset-dark),
+		inset -3px -3px 6px var(--neu-inset-light);
+	background-color: var(--neu-surface-pressed);
 }
 
 /* Modal and Dialog Action Buttons */
@@ -7427,30 +7742,72 @@ body[data-bg="wallpaper"] .bookmark-sidebar .topOutRoundCorner {
 	display: none !important;
 }
 
+/* --- Light Theme Harmonization (Guarantees crisp light mode even on dark OS) --- */
+html[data-preferred-theme="light"],
+body:has(.themeSegment[data-active="light"]),
+body[sysTheme="systemLight"]:has(.themeSegment[data-active="system"]) {
+	--glass-border-color: var(--glass-border-base);
+	--glass-specular: var(--glass-specular-base);
+	--glass-shadow: var(--glass-shadow-base);
+	--glass-shadow-lg: var(--glass-shadow-base-lg);
+
+	/* Neumorphism Light Theme Tokens (Settings Menu) */
+	--neu-canvas: var(--accentLightTint-blue);
+	--neu-card-bg: color-mix(in srgb, var(--accentLightTint-blue) 80%, white);
+	--neu-card-outer-bg: color-mix(in srgb, var(--accentLightTint-blue) 65%, var(--bg-color-blue));
+	--neu-surface: color-mix(in srgb, var(--accentLightTint-blue) 75%, white);
+	--neu-surface-raised: color-mix(in srgb, var(--accentLightTint-blue) 60%, white);
+	--neu-surface-pressed: color-mix(in srgb, var(--accentLightTint-blue) 90%, black);
+	--neu-shadow-dark: color-mix(in srgb, var(--textColorDark-blue) 18%, transparent);
+	--neu-shadow-light: rgba(255, 255, 255, 0.85);
+	--neu-shadow-dark-sm: color-mix(in srgb, var(--textColorDark-blue) 12%, transparent);
+	--neu-shadow-light-sm: rgba(255, 255, 255, 0.75);
+	--neu-inset-dark: color-mix(in srgb, var(--textColorDark-blue) 16%, transparent);
+	--neu-inset-light: rgba(255, 255, 255, 0.85);
+	--neu-border-highlight: rgba(255, 255, 255, 0.6);
+}
+
 /* --- Dark Theme Harmonization --- */
 .black-theme,
 html[data-preferred-theme="dark"],
-body[sysTheme="systemDark"] {
+html[data-preferred-theme="system"][data-system-dark="true"],
+body:has(.themeSegment[data-active="dark"]),
+body[sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) {
 	--glass-border-color: var(--glass-border-dark);
 	--glass-specular: var(--glass-specular-dark);
 	--glass-shadow: var(--glass-shadow-dark);
 	--glass-shadow-lg: var(--glass-shadow-dark);
+
+	/* Neumorphism Dark Theme Tokens (Settings Menu) */
+	--neu-canvas: #1e1e23;
+	--neu-card-bg: #27272d;
+	--neu-card-outer-bg: #222227;
+	--neu-surface: #2b2b32;
+	--neu-surface-raised: #32323b;
+	--neu-surface-pressed: #1b1b20;
+	--neu-shadow-dark: rgba(0, 0, 0, 0.55);
+	--neu-shadow-light: rgba(255, 255, 255, 0.065);
+	--neu-shadow-dark-sm: rgba(0, 0, 0, 0.4);
+	--neu-shadow-light-sm: rgba(255, 255, 255, 0.05);
+	--neu-inset-dark: rgba(0, 0, 0, 0.55);
+	--neu-inset-light: rgba(255, 255, 255, 0.055);
+	--neu-border-highlight: rgba(255, 255, 255, 0.06);
 }
 
-body[data-bg="wallpaper"].black-theme .todo-container .addTaskCont,
-html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .todo-container .addTaskCont,
-body[data-bg="wallpaper"][sysTheme="systemDark"] .todo-container .addTaskCont {
+body[data-bg="wallpaper"].black-theme .todo-container .addTaskCont {
 	background-color: color-mix(in srgb, #2a2a2a 70%, transparent);
 }
 
-/* Dark Theme Adaptations for Settings Drawer & Cards */
+/* Dark Theme Adaptations for Settings Drawer & Cards (Neomorphic) */
 .black-theme body[data-bg="wallpaper"] .menuBar .menuCont,
 html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .menuBar .menuCont,
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .menuBar .menuCont,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .menuBar .menuCont {
-	background-color: rgba(22, 22, 26, calc(0.68 + (var(--transparency) - 0.5) * 0.25));
-	border-inline-start: 1px solid rgba(255, 255, 255, 0.14);
-	box-shadow: -8px 0 32px rgba(0, 0, 0, 0.45);
+	background-color: var(--neu-canvas);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
+	border-inline-start: 1px solid rgba(255, 255, 255, 0.08);
+	box-shadow: -10px 0 36px rgba(0, 0, 0, 0.55);
 }
 
 .black-theme body[data-bg="wallpaper"] .menuCont .topDiv h1,
@@ -7464,17 +7821,23 @@ body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="
 html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .sectionOuter,
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .sectionOuter,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .sectionOuter {
-	background-color: rgba(255, 255, 255, 0.05);
-	border: 1px solid rgba(255, 255, 255, 0.12);
-	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+	background-color: var(--neu-card-outer-bg);
+	border: 1px solid var(--neu-border-highlight);
+	box-shadow: 
+		5px 5px 14px var(--neu-shadow-dark),
+		-4px -4px 12px var(--neu-shadow-light);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
 }
 
 .black-theme body[data-bg="wallpaper"] .sectionOuter:hover,
 html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .sectionOuter:hover,
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .sectionOuter:hover,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .sectionOuter:hover {
-	background-color: rgba(255, 255, 255, 0.08);
-	border-color: rgba(255, 255, 255, 0.18);
+	background-color: var(--neu-card-outer-bg);
+	box-shadow: 
+		6px 6px 16px var(--neu-shadow-dark),
+		-5px -5px 14px var(--neu-shadow-light);
 }
 
 .black-theme body[data-bg="wallpaper"] .sectionInner,
@@ -7485,9 +7848,14 @@ body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .sectionInner,
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .appearanceSection .innerSurface,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .sectionInner,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .appearanceSection .innerSurface {
-	background-color: rgba(255, 255, 255, 0.08);
-	border: 1px solid rgba(255, 255, 255, 0.14);
-	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 4px 16px rgba(0, 0, 0, 0.25);
+	background-color: var(--neu-card-bg);
+	border: 1px solid var(--neu-border-highlight);
+	box-shadow: 
+		inset 2px 2px 5px var(--neu-inset-dark),
+		inset -2px -2px 5px var(--neu-inset-light),
+		0 2px 6px var(--neu-shadow-dark-sm);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
 }
 
 .black-theme body[data-bg="wallpaper"] .sectionInner .ttcont:not(:last-child),
@@ -7529,17 +7897,25 @@ body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="
 html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .tilesCont .tiles,
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .tilesCont .tiles,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .tilesCont .tiles {
-	background-color: rgba(255, 255, 255, 0.12);
-	border-color: rgba(255, 255, 255, 0.18);
-	color: #ffffff;
+	background-color: var(--neu-surface);
+	border: 1px solid var(--neu-border-highlight);
+	color: #e8eaed;
+	box-shadow: 
+		4px 4px 10px var(--neu-shadow-dark),
+		-3px -3px 8px var(--neu-shadow-light);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
 }
 
 .black-theme body[data-bg="wallpaper"] .tilesCont .tiles:hover,
 html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .tilesCont .tiles:hover,
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .tilesCont .tiles:hover,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .tilesCont .tiles:hover {
-	background-color: rgba(255, 255, 255, 0.2);
-	border-color: rgba(255, 255, 255, 0.28);
+	background-color: var(--neu-surface-raised);
+	box-shadow: 
+		5px 5px 14px var(--neu-shadow-dark),
+		-4px -4px 11px var(--neu-shadow-light);
+	color: #ffffff;
 }
 
 .black-theme body[data-bg="wallpaper"] .topBar,
@@ -7568,18 +7944,26 @@ body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="
 html[data-preferred-theme="dark"] body[data-bg="wallpaper"] #backButton,
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #backButton,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #backButton {
-	background-color: rgba(255, 255, 255, 0.1);
-	border: 1px solid rgba(255, 255, 255, 0.15);
+	background-color: var(--neu-surface);
+	border: 1px solid var(--neu-border-highlight);
 	fill: #e8eaed;
+	box-shadow: 
+		4px 4px 9px var(--neu-shadow-dark),
+		-3px -3px 8px var(--neu-shadow-light);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
 }
 
 .black-theme body[data-bg="wallpaper"] #backButton:hover,
 html[data-preferred-theme="dark"] body[data-bg="wallpaper"] #backButton:hover,
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #backButton:hover,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #backButton:hover {
-	background-color: rgba(255, 255, 255, 0.22);
+	background-color: var(--neu-surface-raised);
 	fill: #ffffff;
-	border-color: rgba(255, 255, 255, 0.25);
+	border-color: rgba(255, 255, 255, 0.2);
+	box-shadow: 
+		5px 5px 13px var(--neu-shadow-dark),
+		-4px -4px 11px var(--neu-shadow-light);
 }
 
 .black-theme body[data-bg="wallpaper"] #resetButton,
@@ -7590,9 +7974,14 @@ body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #resetButton,
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #newShortcutButton,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #resetButton,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #newShortcutButton {
-	background-color: rgba(255, 255, 255, 0.1);
-	border: 1px solid rgba(255, 255, 255, 0.15);
+	background-color: var(--neu-surface);
+	border: 1px solid var(--neu-border-highlight);
 	fill: #e8eaed;
+	box-shadow: 
+		4px 4px 9px var(--neu-shadow-dark),
+		-3px -3px 8px var(--neu-shadow-light);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
 }
 
 .black-theme body[data-bg="wallpaper"] #resetButton:hover,
@@ -7603,9 +7992,12 @@ body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #resetButton:ho
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #newShortcutButton:hover,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #resetButton:hover,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #newShortcutButton:hover {
-	background-color: rgba(255, 255, 255, 0.22);
+	background-color: var(--neu-surface-raised);
 	fill: #ffffff;
-	border-color: rgba(255, 255, 255, 0.25);
+	border-color: rgba(255, 255, 255, 0.2);
+	box-shadow: 
+		5px 5px 13px var(--neu-shadow-dark),
+		-4px -4px 11px var(--neu-shadow-light);
 }
 
 .black-theme body[data-bg="wallpaper"] .shortcutDelete button,
@@ -7616,9 +8008,14 @@ body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .shortcutDelete
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .uploadCustomIconButton,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .shortcutDelete button,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .uploadCustomIconButton {
-	background-color: rgba(255, 255, 255, 0.1);
-	border: 1px solid rgba(255, 255, 255, 0.14);
+	background-color: var(--neu-surface);
+	border: 1px solid var(--neu-border-highlight);
 	fill: #e8eaed;
+	box-shadow: 
+		3px 3px 7px var(--neu-shadow-dark),
+		-2px -2px 6px var(--neu-shadow-light);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
 }
 
 .black-theme body[data-bg="wallpaper"] .shortcutDelete button:hover,
@@ -7629,9 +8026,12 @@ body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .shortcutDelete
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .uploadCustomIconButton:hover,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .shortcutDelete button:hover,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .uploadCustomIconButton:hover {
-	background-color: rgba(255, 255, 255, 0.22);
+	background-color: var(--neu-surface-raised);
 	fill: #ffffff;
-	border-color: rgba(255, 255, 255, 0.25);
+	border-color: rgba(255, 255, 255, 0.2);
+	box-shadow: 
+		4px 4px 10px var(--neu-shadow-dark),
+		-3px -3px 8px var(--neu-shadow-light);
 }
 
 .black-theme body[data-bg="wallpaper"] .shortcutSettingsEntry,
@@ -7670,7 +8070,7 @@ body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="
 	color: rgba(232, 234, 237, 0.6);
 }
 
-/* Dark Theme Harmonization for All Buttons in Wallpaper Mode */
+/* Dark Theme Neomorphic Buttons in Settings Menu */
 .black-theme body[data-bg="wallpaper"] .uploadButton,
 .black-theme body[data-bg="wallpaper"] .randomButton,
 .black-theme body[data-bg="wallpaper"] .videoButton,
@@ -7682,11 +8082,6 @@ body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="
 .black-theme body[data-bg="wallpaper"] .themingStuff .btn,
 .black-theme body[data-bg="wallpaper"] .languageIcon,
 .black-theme body[data-bg="wallpaper"] .colorPickerLabel,
-.black-theme body[data-bg="wallpaper"] .prompt-modal-button,
-.black-theme body[data-bg="wallpaper"] .bookmark-sort-button,
-.black-theme body[data-bg="wallpaper"] .bookmark-view-as-button,
-.black-theme body[data-bg="wallpaper"] #saveBookmarkChanges,
-.black-theme body[data-bg="wallpaper"] #cancelBookmarkEdit,
 html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .uploadButton,
 html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .randomButton,
 html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .videoButton,
@@ -7698,7 +8093,6 @@ html[data-preferred-theme="dark"] body[data-bg="wallpaper"] #dontShowTips,
 html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .themingStuff .btn,
 html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .languageIcon,
 html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .colorPickerLabel,
-html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .prompt-modal-button,
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .uploadButton,
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .randomButton,
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .videoButton,
@@ -7710,7 +8104,6 @@ body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #dontShowTips,
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .themingStuff .btn,
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .languageIcon,
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .colorPickerLabel,
-body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .prompt-modal-button,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .uploadButton,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .randomButton,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .videoButton,
@@ -7721,12 +8114,15 @@ body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #dontShowTips,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .themingStuff .btn,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .languageIcon,
-body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .colorPickerLabel,
-body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .prompt-modal-button {
-	background-color: rgba(255, 255, 255, 0.08);
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .colorPickerLabel {
+	background-color: var(--neu-surface);
 	color: #e8eaed;
-	border: 1px solid rgba(255, 255, 255, 0.16);
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+	border: 1px solid var(--neu-border-highlight);
+	box-shadow: 
+		4px 4px 9px var(--neu-shadow-dark),
+		-3px -3px 8px var(--neu-shadow-light);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
 }
 
 .black-theme body[data-bg="wallpaper"] .uploadButton:hover,
@@ -7738,7 +8134,6 @@ body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="
 .black-theme body[data-bg="wallpaper"] .resetbtn:hover,
 .black-theme body[data-bg="wallpaper"] #dontShowTips:hover,
 .black-theme body[data-bg="wallpaper"] .colorPickerLabel:hover,
-.black-theme body[data-bg="wallpaper"] .prompt-modal-button:hover,
 html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .uploadButton:hover,
 html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .randomButton:hover,
 html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .videoButton:hover,
@@ -7748,7 +8143,6 @@ html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .backupRestoreBtn:ho
 html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .resetbtn:hover,
 html[data-preferred-theme="dark"] body[data-bg="wallpaper"] #dontShowTips:hover,
 html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .colorPickerLabel:hover,
-html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .prompt-modal-button:hover,
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .uploadButton:hover,
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .randomButton:hover,
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .videoButton:hover,
@@ -7758,7 +8152,6 @@ body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .backupRestoreB
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .resetbtn:hover,
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) #dontShowTips:hover,
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .colorPickerLabel:hover,
-body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .prompt-modal-button:hover,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .uploadButton:hover,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .randomButton:hover,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .videoButton:hover,
@@ -7767,7 +8160,33 @@ body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .backupRestoreBtn:hover,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .resetbtn:hover,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #dontShowTips:hover,
-body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .colorPickerLabel:hover,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .colorPickerLabel:hover {
+	background-color: var(--neu-surface-raised);
+	color: #ffffff;
+	border-color: rgba(255, 255, 255, 0.2);
+	box-shadow: 
+		5px 5px 13px var(--neu-shadow-dark),
+		-4px -4px 11px var(--neu-shadow-light);
+}
+
+/* Glassmorphic Modals & Sidebar Buttons in Dark Wallpaper Mode */
+.black-theme body[data-bg="wallpaper"] .prompt-modal-button,
+.black-theme body[data-bg="wallpaper"] .bookmark-sort-button,
+.black-theme body[data-bg="wallpaper"] .bookmark-view-as-button,
+.black-theme body[data-bg="wallpaper"] #saveBookmarkChanges,
+.black-theme body[data-bg="wallpaper"] #cancelBookmarkEdit,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .prompt-modal-button,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .prompt-modal-button,
+body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .prompt-modal-button {
+	background-color: rgba(255, 255, 255, 0.08);
+	color: #e8eaed;
+	border: 1px solid rgba(255, 255, 255, 0.16);
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.black-theme body[data-bg="wallpaper"] .prompt-modal-button:hover,
+html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .prompt-modal-button:hover,
+body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .prompt-modal-button:hover,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .prompt-modal-button:hover {
 	background-color: rgba(255, 255, 255, 0.18);
 	color: #ffffff;
@@ -7779,37 +8198,51 @@ body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="
 html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .clearButton,
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .clearButton,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .clearButton {
-	background-color: rgba(235, 75, 75, 0.22);
+	background-color: var(--neu-surface);
 	color: #ffb4ab;
-	border: 1px solid rgba(255, 180, 171, 0.25);
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+	border: 1px solid var(--neu-border-highlight);
+	box-shadow: 
+		4px 4px 9px var(--neu-shadow-dark),
+		-3px -3px 8px var(--neu-shadow-light);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
 }
 
 .black-theme body[data-bg="wallpaper"] .clearButton:hover,
 html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .clearButton:hover,
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .clearButton:hover,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .clearButton:hover {
-	background-color: rgba(235, 75, 75, 0.38);
+	background-color: color-mix(in srgb, #e53935 22%, var(--neu-surface));
 	color: #ffffff;
-	border-color: rgba(255, 180, 171, 0.45);
-	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+	border-color: rgba(255, 180, 171, 0.35);
+	box-shadow: 
+		5px 5px 13px var(--neu-shadow-dark),
+		-4px -4px 11px var(--neu-shadow-light);
 }
 
 .black-theme body[data-bg="wallpaper"] .colorsContainer,
 html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .colorsContainer,
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .colorsContainer,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .colorsContainer {
-	background-color: color-mix(in srgb, var(--darkColor-dark, #1c1c1e) 48%, rgba(0, 0, 0, 0.4)) !important;
-	border: 1px solid var(--glass-border-dark);
-	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), var(--glass-specular-dark);
+	background-color: var(--neu-canvas) !important;
+	border: 1px solid var(--neu-shadow-dark-sm);
+	box-shadow: 
+		inset 2px 2px 6px var(--neu-inset-dark),
+		inset -2px -2px 6px var(--neu-inset-light) !important;
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
 }
 
 .black-theme body[data-bg="wallpaper"] .colorsContainer input[type="radio"],
 html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .colorsContainer input[type="radio"],
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .colorsContainer input[type="radio"],
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .colorsContainer input[type="radio"] {
-	border-color: rgba(255, 255, 255, 0.25);
-	box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.35), inset 0 -1px 3px rgba(0, 0, 0, 0.45), 0 3px 8px rgba(0, 0, 0, 0.3);
+	border-color: rgba(255, 255, 255, 0.15);
+	box-shadow: 
+		3px 3px 6px var(--neu-shadow-dark),
+		-2px -2px 5px var(--neu-shadow-light);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
 }
 
 .black-theme body[data-bg="wallpaper"] .colorsContainer input[type="radio"]:checked,
@@ -7817,15 +8250,22 @@ html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .colorsContainer inp
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .colorsContainer input[type="radio"]:checked,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .colorsContainer input[type="radio"]:checked {
 	border-color: rgba(255, 255, 255, 0.85);
-	box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.5), 0 0 0 2.5px rgba(255, 255, 255, 0.55), 0 4px 14px rgba(0, 0, 0, 0.45);
+	box-shadow: 
+		inset 2px 2px 4px rgba(0, 0, 0, 0.6),
+		0 0 0 2.5px rgba(255, 255, 255, 0.45);
 }
 
 .black-theme body[data-bg="wallpaper"] .themeSegment,
 html[data-preferred-theme="dark"] body[data-bg="wallpaper"] .themeSegment,
 body[data-bg="wallpaper"]:has(.themeSegment[data-active="dark"]) .themeSegment,
 body[data-bg="wallpaper"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .themeSegment {
-	background-color: rgba(0, 0, 0, 0.28);
-	border: 1px solid rgba(255, 255, 255, 0.12);
+	background-color: var(--neu-canvas);
+	border: 1px solid var(--neu-shadow-dark-sm);
+	box-shadow: 
+		inset 3px 3px 6px var(--neu-inset-dark),
+		inset -3px -3px 6px var(--neu-inset-light);
+	backdrop-filter: none !important;
+	-webkit-backdrop-filter: none !important;
 }
 
 .black-theme body[data-bg="wallpaper"] .themeIndicator,
@@ -7962,6 +8402,117 @@ body[data-has-video="true"]:has(.themeSegment[data-active="dark"]) #menuButton:a
 body[data-has-video="true"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) #menuButton:active {
 	transform: scale(0.92) rotate(45deg);
 	transition: transform 0.08s var(--fluid-press);
+}
+
+/* ========================================================== */
+/* UI Style Switching: Glassmorphism vs Neomorphism           */
+/* ========================================================== */
+
+/* --- Glassmorphism Mode for Settings Menu --- */
+html[data-ui-style="glassmorphism"] .menuBar,
+body[data-ui-style="glassmorphism"] .menuBar {
+	backdrop-filter: blur(15px) saturate(160%) !important;
+	-webkit-backdrop-filter: blur(15px) saturate(160%) !important;
+	background-color: #0000004f !important;
+}
+
+html[data-ui-style="glassmorphism"] .menuBar .menuCont,
+body[data-ui-style="glassmorphism"] .menuBar .menuCont,
+body[data-bg="wallpaper"][data-ui-style="glassmorphism"] .menuBar .menuCont {
+	background-color: color-mix(in srgb, var(--accentLightTint-blue) 75%, transparent) !important;
+	backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate)) !important;
+	-webkit-backdrop-filter: blur(var(--glass-blur-lg)) saturate(var(--glass-saturate)) !important;
+	border-inline-start: 1px solid var(--glass-border-color) !important;
+	box-shadow: var(--glass-shadow-lg), var(--glass-specular) !important;
+}
+
+html[data-ui-style="glassmorphism"] .sectionOuter,
+body[data-ui-style="glassmorphism"] .sectionOuter,
+body[data-bg="wallpaper"][data-ui-style="glassmorphism"] .sectionOuter {
+	background-color: color-mix(in srgb, var(--accentLightTint-blue) 45%, transparent) !important;
+	backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) !important;
+	-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate)) !important;
+	border: 1px solid var(--glass-border-color) !important;
+	box-shadow: var(--glass-shadow), var(--glass-specular) !important;
+}
+
+html[data-ui-style="glassmorphism"] .sectionInner,
+html[data-ui-style="glassmorphism"] .appearanceSection .innerSurface,
+body[data-ui-style="glassmorphism"] .sectionInner,
+body[data-ui-style="glassmorphism"] .appearanceSection .innerSurface,
+body[data-bg="wallpaper"][data-ui-style="glassmorphism"] .sectionInner,
+body[data-bg="wallpaper"][data-ui-style="glassmorphism"] .appearanceSection .innerSurface {
+	background-color: color-mix(in srgb, var(--accentLightTint-blue) 65%, transparent) !important;
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate)) !important;
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate)) !important;
+	border: 1px solid var(--glass-border-subtle) !important;
+	box-shadow: var(--glass-shadow-sm), inset 0 1px 1px rgba(255, 255, 255, 0.25) !important;
+}
+
+html[data-ui-style="glassmorphism"] .tilesCont .tiles,
+body[data-ui-style="glassmorphism"] .tilesCont .tiles,
+body[data-bg="wallpaper"][data-ui-style="glassmorphism"] .tilesCont .tiles,
+html[data-ui-style="glassmorphism"] .uploadButton,
+html[data-ui-style="glassmorphism"] .randomButton,
+html[data-ui-style="glassmorphism"] .videoButton,
+html[data-ui-style="glassmorphism"] .switchMediaButton,
+html[data-ui-style="glassmorphism"] .clearButton,
+html[data-ui-style="glassmorphism"] .savebtn,
+html[data-ui-style="glassmorphism"] .backupRestoreBtn,
+html[data-ui-style="glassmorphism"] .resetbtn,
+html[data-ui-style="glassmorphism"] #dontShowTips,
+html[data-ui-style="glassmorphism"] .layoutEditBtn,
+html[data-ui-style="glassmorphism"] .layoutResetBtn,
+html[data-ui-style="glassmorphism"] #shortcutEditButton,
+html[data-ui-style="glassmorphism"] #aiToolsEditButton,
+html[data-ui-style="glassmorphism"] #backButton,
+html[data-ui-style="glassmorphism"] #newShortcutButton,
+html[data-ui-style="glassmorphism"] #resetButton,
+html[data-ui-style="glassmorphism"] .shortcutDelete button,
+html[data-ui-style="glassmorphism"] .uploadCustomIconButton {
+	background-color: color-mix(in srgb, var(--accentLightTint-blue) 60%, transparent) !important;
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate)) !important;
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(var(--glass-saturate)) !important;
+	border: 1px solid var(--glass-border-subtle) !important;
+	box-shadow: var(--glass-shadow-sm), var(--glass-specular) !important;
+}
+
+/* Glassmorphism Dark Mode in Settings Menu */
+.black-theme[data-ui-style="glassmorphism"] .menuBar .menuCont,
+html[data-preferred-theme="dark"][data-ui-style="glassmorphism"] .menuBar .menuCont,
+body[data-ui-style="glassmorphism"]:has(.themeSegment[data-active="dark"]) .menuBar .menuCont,
+body[data-ui-style="glassmorphism"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .menuBar .menuCont {
+	background-color: rgba(22, 22, 26, 0.72) !important;
+	backdrop-filter: blur(var(--glass-blur-lg)) saturate(180%) !important;
+	-webkit-backdrop-filter: blur(var(--glass-blur-lg)) saturate(180%) !important;
+	border-inline-start: 1px solid var(--glass-border-dark) !important;
+	box-shadow: var(--glass-shadow-dark), var(--glass-specular-dark) !important;
+}
+
+.black-theme[data-ui-style="glassmorphism"] .sectionOuter,
+html[data-preferred-theme="dark"][data-ui-style="glassmorphism"] .sectionOuter,
+body[data-ui-style="glassmorphism"]:has(.themeSegment[data-active="dark"]) .sectionOuter,
+body[data-ui-style="glassmorphism"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .sectionOuter {
+	background-color: rgba(30, 30, 36, 0.58) !important;
+	backdrop-filter: blur(var(--glass-blur)) saturate(180%) !important;
+	-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%) !important;
+	border: 1px solid var(--glass-border-dark) !important;
+	box-shadow: var(--glass-shadow-dark), var(--glass-specular-dark) !important;
+}
+
+.black-theme[data-ui-style="glassmorphism"] .sectionInner,
+.black-theme[data-ui-style="glassmorphism"] .appearanceSection .innerSurface,
+html[data-preferred-theme="dark"][data-ui-style="glassmorphism"] .sectionInner,
+html[data-preferred-theme="dark"][data-ui-style="glassmorphism"] .appearanceSection .innerSurface,
+body[data-ui-style="glassmorphism"]:has(.themeSegment[data-active="dark"]) .sectionInner,
+body[data-ui-style="glassmorphism"]:has(.themeSegment[data-active="dark"]) .appearanceSection .innerSurface,
+body[data-ui-style="glassmorphism"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .sectionInner,
+body[data-ui-style="glassmorphism"][sysTheme="systemDark"]:has(.themeSegment[data-active="system"]) .appearanceSection .innerSurface {
+	background-color: rgba(18, 18, 22, 0.65) !important;
+	backdrop-filter: blur(var(--glass-blur-sm)) saturate(180%) !important;
+	-webkit-backdrop-filter: blur(var(--glass-blur-sm)) saturate(180%) !important;
+	border: 1px solid var(--glass-border-dark) !important;
+	box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08) !important;
 }
 
 /* --- Accessibility: Reduced Transparency Support --- */

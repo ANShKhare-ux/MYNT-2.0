@@ -84,6 +84,86 @@ syncThemeChange(systemTheme);
     initializeThemeMode();
 })();
 
+// ===== Toggle / Segmented Control for UI Style (Neomorphism vs Glassmorphism) =====
+(function () {
+    const uiStyleKey = "mynt_ui_style";
+    const segment = document.getElementById("uiStyleSegment");
+    const toggleBtn = document.getElementById("uiStyleToggle");
+    if (!segment && !toggleBtn) return;
+    const indicator = segment ? segment.querySelector(".styleIndicator") : null;
+    const buttons = segment ? segment.querySelectorAll(".styleSegBtn") : [];
+
+    function moveIndicator(style) {
+        if (!indicator) return;
+        const ltrIndex = style === "glassmorphism" ? 1 : 0;
+        const index = isRTL ? 1 - ltrIndex : ltrIndex;
+        indicator.style.transform = `translateX(${index * 100}%)`;
+    }
+
+    function applyUiStyle(style) {
+        const validStyle = style === "glassmorphism" ? "glassmorphism" : "neomorphism";
+        localStorage.setItem(uiStyleKey, validStyle);
+        document.documentElement.setAttribute("data-ui-style", validStyle);
+        if (document.body) {
+            document.body.setAttribute("data-ui-style", validStyle);
+        }
+        if (segment) {
+            segment.dataset.active = validStyle;
+        }
+        buttons.forEach(btn => {
+            const isActive = btn.dataset.style === validStyle;
+            btn.classList.toggle("active", isActive);
+            btn.setAttribute("aria-pressed", isActive ? "true" : "false");
+        });
+        moveIndicator(validStyle);
+        if (toggleBtn) {
+            toggleBtn.dataset.currentStyle = validStyle;
+            if (toggleBtn.type === "checkbox") {
+                toggleBtn.checked = validStyle === "glassmorphism";
+            }
+        }
+    }
+
+    window.toggleUiStyle = function () {
+        const currentStyle = localStorage.getItem(uiStyleKey) || "neomorphism";
+        const newStyle = currentStyle === "neomorphism" ? "glassmorphism" : "neomorphism";
+        applyUiStyle(newStyle);
+        return newStyle;
+    };
+
+    buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            applyUiStyle(btn.dataset.style);
+        });
+    });
+
+    if (toggleBtn) {
+        toggleBtn.addEventListener("click", (e) => {
+            if (toggleBtn.type === "checkbox") {
+                applyUiStyle(toggleBtn.checked ? "glassmorphism" : "neomorphism");
+            } else {
+                window.toggleUiStyle();
+            }
+        });
+    }
+
+    // Keyboard navigation
+    if (segment) {
+        segment.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+                window.toggleUiStyle();
+            }
+        });
+    }
+
+    function initializeUiStyle() {
+        const savedStyle = localStorage.getItem(uiStyleKey) || "neomorphism";
+        applyUiStyle(savedStyle);
+    }
+
+    initializeUiStyle();
+})();
+
 document.addEventListener("DOMContentLoaded", () => {
     // Check for custom color
     const storedCustomColor = localStorage.getItem(customThemeStorageKey);
@@ -112,6 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Clean up preload data attributes
     document.documentElement.removeAttribute("data-preferred-theme");
     document.documentElement.removeAttribute("data-system-dark");
+    document.documentElement.removeAttribute("data-has-wallpaper");
 
     // Stop blinking of some elements when the page is reloaded
     setTimeout(() => {

@@ -1,6 +1,6 @@
 # Project Memory — MYNT: Material You New Tab
 
-**Last Updated:** 2026-11-07  
+**Last Updated:** 2026-11-14  
 **Repository Branch:** `main` (`origin/main`)  
 **Git Remote:** `https://github.com/ANShKhare-ux/MYNT-2.0.git`  
 **License:** GNU General Public License v3.0 (GPL-3.0)  
@@ -34,6 +34,23 @@ Core goals:
     - **Shortcut & Modal Action Buttons**: `#backButton`, `#newShortcutButton`, `#resetButton`, `.uploadCustomIconButton`, `.shortcutDelete button`, `.prompt-modal-button`, `.ai-reset-button`, `.ai-save-button`, and bookmark sorting/view buttons.
     - **Shortcuts, Color Palette & Dock Glassmorphism**: Shortcut icon badges (`.shortcutsContainer .shortcuts .shortcutLogoContainer`) and color palette cards (`.colorsContainer`, `#themeButton`, `.colorPlate`, `.colorPickerLabel`) render as translucent frosted glass surfaces with specular borders and floating elevation, replacing opaque solid white backgrounds across color cards. In both light and dark wallpaper modes, shortcut badges and `#menuButton` dynamically adhere to the active color theme (`var(--darkColor-blue)` and `var(--accentLightTint-blue)`), keeping icon glyphs crisp white (`#ffffff`) and eliminating hardcoded monochrome greys, alongside frosted glass dock backdrop (`.shortcutsContainer::before`) and concentric frosted `#menuButton`.
     - Fixes top drawer header alignment, eliminates stark solid white headers and buttons in wallpaper/dark modes, ensures high-contrast typography, adapts smoothly to light/dark themes, and provides accessibility fallback for `prefers-reduced-transparency`.
+  - **Neomorphism System in Settings Menu**:
+    - Grounded in tactile soft-UI design principles, glassmorphism (`backdrop-filter: blur(...)`, translucent see-through surfaces, specular alpha borders) has been completely removed from the settings drawer backdrop (`.menuBar`) and drawer canvas (`.menuCont`), giving it a clean, solid, opaque surface (`var(--neu-canvas)` / `#1e1e23` in dark mode).
+    - **Neomorphic Cards (Cards Only)**: `.sectionOuter` features soft extruded light-source dual box-shadows (`5px 5px 14px var(--neu-shadow-dark), -4px -4px 12px var(--neu-shadow-light)`). Inner sub-cards (`.sectionInner` and `.appearanceSection .innerSurface`) feature soft embossed/recessed surfaces (`inset 2px 2px 5px var(--neu-inset-dark), inset -2px -2px 5px var(--neu-inset-light), 0 2px 6px var(--neu-shadow-dark-sm)`). Shortcut edit page cards (`.shortcutSettingsEntry`) and sticky top bar (`.topBar`) utilize solid opaque neomorphic elevation without blur.
+    - **Neomorphic Buttons (Buttons Only)**: All settings action buttons (`.tiles`, `.uploadButton`, `.randomButton`, `.videoButton`, `.switchMediaButton`, `.clearButton`, `.savebtn`, `.backupRestoreBtn`, `.resetbtn`, `#dontShowTips`, `.layoutEditBtn`, `.layoutResetBtn`, `#shortcutEditButton`, `#aiToolsEditButton`, `#backButton`, `#newShortcutButton`, `#resetButton`, `.shortcutDelete button`, `.uploadCustomIconButton`, `.themeSegment` pill, `.colorsContainer input[type="radio"]` jewel swatches) feature elevated soft-UI dual box-shadows and signature tactile sunken depressions on pointer-down (`box-shadow: inset 3px 3px 6px var(--neu-inset-dark), inset -3px -3px 6px var(--neu-inset-light); transform: scale(0.97)`).
+    - **Light Theme Harmonization & OS Decoupling**: Resolved issue where users on dark OS configurations experienced dark drawer tokens and unreadable navy text when choosing "Light" mode. Decoupled `body[sysTheme="systemDark"]` so dark styles and tokens only apply when Dark mode is explicitly active (`:has(.themeSegment[data-active="dark"])`) or when System mode is active with dark OS (`body[sysTheme="systemDark"]:has(.themeSegment[data-active="system"])`). Enforced light neomorphic tokens (`--neu-canvas: var(--accentLightTint-blue)`, `--neu-card-bg`, `--neu-surface`, `--neu-shadow-dark/light`) and prevented dark style leakage.
+    - **Dark Mode Integrity & Negative Effect Prevention**:
+      - Resolved visual "negative effect" caused by conflicts between CSS `filter: invert(1) hue-rotate(180deg)` and dedicated dark-mode CSS styles.
+      - **Solid Color Dark Mode**: Counter-inverted `.menuBar`, `#bookmarksContainer`, `#prompt-modal-container`, `.ai-settings-modal`, `#editBookmarkModal`, and `.layout-editor-toolbar` inside inverted `html` (`filter: invert(1) hue-rotate(180deg)`), ensuring their dark neomorphic canvases (`#1e1e23`), dark cards (`#27272d`), white typography (`#e8eaed`), and shadows render with genuine dark contrast rather than an inverted pale-white negative. Removed `#0000000f` background override on `.menuBar`.
+      - **Wallpaper Dark Mode**: Excluded `#shortcuts-section`, `#menuButton`, `#prompt-modal-container`, and `.layout-editor-toolbar` from the wallpaper invert filter (`filter: none !important`), allowing their rich dark glass badges, dark translucent dock (`.shortcutsContainer::before`), pure white SVG icons (`.bgLightTint`), and multi-ringed `#menuButton` to render directly without turning into blinding white negatives with black icons.
+      - **Center Container Protection**: Counter-inverted `.aiModeIcon` and `#searchWebEngineIcon` inside the inverted `.centerDiv`, preserving the dark Google AI pill surface (`rgba(48, 49, 52, 0.75)`), white text (`#e8eaed`), and official Google brand colors.
+      - **Custom Icon Protection**: Removed rogue dark-mode invert rule on user-uploaded custom shortcut icons (`img[data-icon-type="custom"]`), permanently keeping `filter: none !important`.
+      - **Preload FOUC Protection**: Added `data-has-wallpaper="true"` attribute in `scripts/preload.js` and excluded it from early-paint root invert in `style.css`, completely eliminating photo/video wallpaper negative flash on page load.
+    - **Interface Style Switcher (Neomorphism vs Glassmorphism)**:
+      - Interactive segmented toggle control (`#uiStyleSegment`) and toggle button (`#uiStyleToggle`) in Settings > Appearance allowing users to switch between **Neomorphism** (tactile soft-UI extruded cards and buttons with zero blur) and **Glassmorphism** (frosted glass `backdrop-filter: blur(...)` surfaces with specular highlights) at will.
+      - **Persistent State & Zero-FOUC**: Synchronously preloads `data-ui-style` on `<html>` from `localStorage.mynt_ui_style` in `scripts/preload.js` and toggles seamlessly with physics-based spring animations (`--fluid-spring`).
+      - Full light and dark theme adaptation for both styles, with verified isolation ensuring outside widgets preserve wallpaper glassmorphism.
+    - **Isolation & Scope Preservation**: Glassmorphism is strictly preserved for outside dashboard widgets and buttons in wallpaper mode (Search bar, Clock, Weather, Bookmarks sidebar, To-Do list, Bottom shortcuts dock, and floating `#menuButton`).
   - **Fluid Motion & Physics-Based Micro-Interactions System**:
     - Grounded in Apple Fluid Design (WWDC) and Material 3 Emphasized Motion physics, replacing static transitions with tactile curves:
       - `--fluid-spring`: `cubic-bezier(0.34, 1.35, 0.64, 1)` for snappy spring overshoot.
@@ -188,7 +205,7 @@ graph TD
 - **`scripts/background.js`**: Service worker listening for extension update events and registering uninstall survey URL.
 - **`locales/*.js`**: 32 standalone translation dictionary files.
 - **`docs/`**: Dual-purpose directory holding extension HTML pages (`whats-new.html`, `feedback.html`, `Get_WeatherAPI_Key.html`) and engineering documentation (`architecture.md`, `development.md`).
-- **`tests/`**: Automated test suite containing `manifest.test.js`, `locales.test.js`, `localization-helpers.test.js`, `security-helpers.test.js`, `backup-validation.test.js`, `glassmorphism.test.js`, and `ai-search-mode.test.js`.
+- **`tests/`**: Automated test suite containing `manifest.test.js`, `locales.test.js`, `localization-helpers.test.js`, `security-helpers.test.js`, `backup-validation.test.js`, `glassmorphism.test.js`, `ai-search-mode.test.js`, `layout-editor.test.js`, `video-wallpaper.test.js`, `fluid-motion.test.js`, and `neomorphism.test.js`.
 
 ---
 
@@ -211,7 +228,10 @@ All testing and validation commands use the host's native Node.js runtime:
 
 | Command | Purpose |
 |---|---|
-| `node --test` | Runs the full automated test suite (61 tests across 8 test suites). |
+| `node --test` | Runs the full automated test suite (93 tests across 11 test suites). |
+| `node --test tests/neomorphism.test.js` | Validates settings menu neomorphic tokens, soft cards and buttons, glassmorphism removal in drawer, and dashboard glassmorphism preservation. |
+| `node --test tests/fluid-motion.test.js` | Validates physics-based micro-interactions, spring easing curves, and reduced-motion decoupling. |
+| `node --test tests/layout-editor.test.js` | Validates custom layout drag-and-drop repositioning for all 11 widgets and translation architecture. |
 | `node --test tests/video-wallpaper.test.js` | Validates video wallpaper elements, autoplay, hardware acceleration, memory cleanup, and dual-media switching. |
 | `node --test tests/ai-search-mode.test.js` | Validates Google AI Mode pill button, udm=50 search synthesis, engine filtering, and styles. |
 | `node --test tests/glassmorphism.test.js` | Validates glassmorphism tokens, component filters, and accessibility. |

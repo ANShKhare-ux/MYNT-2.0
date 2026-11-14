@@ -37,6 +37,11 @@
     //     observer.observe(document.documentElement, { childList: true });
     // }
 
+    // --- Wallpaper Mode Detection during Preload ---
+    if (localStorage.getItem('hasWallpaper') === 'true') {
+        root.setAttribute('data-has-wallpaper', 'true');
+    }
+
     // --- Light/Dark/System mode preference ---
     const preferredTheme = localStorage.getItem('preferredTheme');
     // Migrate legacy dark mode checkbox
@@ -68,6 +73,14 @@
         }
     } catch (e) {
         root.setAttribute('data-motion', 'enabled');
+    }
+
+    // --- UI Style Preference (Neomorphism vs Glassmorphism) ---
+    try {
+        const savedStyle = localStorage.getItem('mynt_ui_style') || 'neomorphism';
+        root.setAttribute('data-ui-style', savedStyle);
+    } catch (e) {
+        root.setAttribute('data-ui-style', 'neomorphism');
     }
 
     // --- Color theme application ---
